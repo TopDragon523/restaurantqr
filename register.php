@@ -195,22 +195,22 @@ if (isset($_POST["username"]) && isset($_POST['email']) && isset($_POST['passwor
 				event.preventDefault();
 				if ($("#username").val() == '') {
 					validated = false
-					handleFormChild($(this), "error_username", "You have to enter your first name!", false);
+					handleFormChild($("#username"), "error_username", "You have to enter your first name!", false);
 				}
 				if ($("#email").val() == '') {
 					validated = false
-					handleFormChild($(this), "error_email", "You have to enter your Email!", false);
+					handleFormChild($("#email"), "error_email", "You have to enter your Email!", false);
 				}
 				if ($("#password").val() == '') {
 					validated = false
-					handleFormChild($(this), "error_password", "You have to enter your Password!", false);
+					handleFormChild($("#password"), "error_password", "You have to enter your Password!", false);
 					handleFormChild($("#confirmpass"), "error_confirmpass", "", false);
 					$("#confirmpass").removeAttr('style');
 					$("#confirmpass").val("");
 				}
 				if (($("#confirmpass").val() != '') && ($("#password").val() != $("#confirmpass").val())) {
 					validated = false
-					handleFormChild($(this), "error_confirmpass", "Password and confirm password fields do not match!", false);
+					handleFormChild($("#confirmpass"), "error_confirmpass", "Password and confirm password fields do not match!", false);
 				}
 				if (validated) {
 					$.ajax({
@@ -243,8 +243,8 @@ if (isset($_POST["username"]) && isset($_POST['email']) && isset($_POST['passwor
 							`);
 
 							const timeout = setTimeout(() => {
-								$(".alert-error").removeClass('show');
-								$(".alert-error").addClass('hide');
+								$(".alert-danger").removeClass('show');
+								$(".alert-danger").addClass('hide');
 							}, 2000);
 						}
 					});

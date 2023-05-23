@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION["username"]) || !isset($_SESSION["email"])) {
+	header("location: login.php");
+	exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
