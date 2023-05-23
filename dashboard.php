@@ -767,7 +767,7 @@ if (!isset($_SESSION["username"]) || !isset($_SESSION["email"])) {
 										</svg>
 										<span class="ms-2">Inbox </span>
 									</a>
-									<a href="./page-login.html" class="dropdown-item ai-icon">
+									<a href="logout.php" class="dropdown-item ai-icon">
 										<svg id="icon-logout" xmlns="http://www.w3.org/2000/svg" class="text-danger" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 											<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
 											<polyline points="16 17 21 12 16 7"></polyline>
