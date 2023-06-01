@@ -177,7 +177,7 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
 								</div>
 							`);
 							if (resJson.status) {
-								window.location.href = "dashboard.php"
+								window.location.href = "templates.php"
 							}
 							emptyForm();
 							const timeout = setTimeout(() => {

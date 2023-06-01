@@ -509,12 +509,6 @@ var Davur = function(){
 		
 	} 
 	
-	/* Handle Support ============ */
-	var handleSupport = function(){
-		var support = '<script id="DZScript" src="https://dzassets.s3.amazonaws.com/w3-global.js"></script>';
-		jQuery('body').append(support);
-	}
-	
 	/* Function ============ */
 	return {
 		init:function(){
@@ -535,7 +529,7 @@ var Davur = function(){
 			handlePerfectScrollbar();
 			cartButton();
 			pointerEffect();
-			handleSupport();
+			// handleSupport();
 			setTimeout(function(){
 				handleWowAnimation();
 			}, 1500);

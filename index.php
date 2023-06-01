@@ -57,7 +57,7 @@
 
 						<!-- Website Logo -->
 						<div class="logo-header logo-dark">
-							<a href="index.html"><img src="assets/images/logo.png" alt=""></a>
+							<a href="index.php"><img src="assets/images/logo.png" alt=""></a>
 						</div>
 
 						<!-- Nav Toggle Button -->

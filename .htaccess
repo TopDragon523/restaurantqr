@@ -1,6 +1,0 @@
-RewriteEngine On
-
-RewriteBase /restaurantqr/
-RewriteRule ^restaurantqr/login$ /login [L]
-RewriteRule ^login$ login.php
-RewriteRule ^register$ register.php

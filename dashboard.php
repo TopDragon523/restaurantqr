@@ -6,57 +6,11 @@ if (!isset($_SESSION["username"]) || !isset($_SESSION["email"])) {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+<?php
+include("header.php");
+?>
 
-<head>
-	<!-- All Meta -->
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="author" content="DexignZone">
-	<meta name="robots" content="">
-	<meta name="keywords" content="admin dashboard, admin template, administration, analytics, bootstrap, cafe admin, elegant, food, health, kitchen, modern, responsive admin dashboard, restaurant dashboard">
-	<meta name="description" content="Discover Davur - the ultimate admin dashboard and Bootstrap 5 template. Specially designed for professionals, and for business. Davur provides advanced features and an easy-to-use interface for creating a top-quality website with frontend">
-	<meta property="og:title" content="Davur : Restaurant Admin Dashboard + FrontEnd">
-	<meta property="og:description" content="Discover Davur - the ultimate admin dashboard and Bootstrap 5 template. Specially designed for professionals, and for business. Davur provides advanced features and an easy-to-use interface for creating a top-quality website with frontend">
-	<meta property="og:image" content="https://davur.dexignzone.com/dashboard/social-image.png">
-	<meta name="format-detection" content="telephone=no">
-
-	<!-- Mobile Specific -->
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-
-	<!-- Title -->
-	<title>Davur : Restaurant Admin Dashboard + FrontEnd</title>
-
-	<!-- Favicon icon -->
-	<link rel="icon" type="image/png" sizes="16x16" href="./images/favicon.png">
-	<link href="./vendor/jqvmap/css/jqvmap.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="./vendor/chartist/css/chartist.min.css">
-	<link href="vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">
-	<link href="css/style.css" rel="stylesheet">
-	<link href="https://cdn.lineicons.com/2.0/LineIcons.css" rel="stylesheet">
-
-</head>
-
-<body>
-
-	<!--*******************
-        Preloader start
-    ********************-->
-	<div id="preloader">
-		<div class="sk-three-bounce">
-			<div class="sk-child sk-bounce1"></div>
-			<div class="sk-child sk-bounce2"></div>
-			<div class="sk-child sk-bounce3"></div>
-		</div>
-	</div>
-	<!--*******************
-        Preloader end
-    ********************-->
-
-	<!--**********************************
-        Main wrapper start
-    ***********************************-->
+	<!--**********************************Main wrapper start***********************************-->
 	<div id="main-wrapper">
 
 		<!--**********************************
@@ -833,7 +787,7 @@ if (!isset($_SESSION["username"]) || !isset($_SESSION["email"])) {
 							<span class="nav-text">Frontend 2</span>
 							<span class="badge badge-xs badge-danger">New</span>
 						</a>
-						<ul aria-expanded="false">
+								<ul aria-expanded="false">
 							<li><a href="https://davur.dexignzone.com/websitetemplate/xhtml/index.html" target="_blank">Home</a></li>
 							<li><a href="https://davur.dexignzone.com/websitetemplate/xhtml/about-us.html" target="_blank">About Us</a></li>
 							<li><a class="has-arrow" href="javascript:void()" aria-expanded="false">Shop</a>
@@ -1449,56 +1403,9 @@ if (!isset($_SESSION["username"]) || !isset($_SESSION["email"])) {
             Content body end
         ***********************************-->
 
-		<!--**********************************
-            Footer start
-        ***********************************-->
-		<div class="footer">
-			<div class="copyright">
-				<p>Copyright © Designed &amp; Developed by <a href="http://dexignzone.com/" target="_blank">DexignZone</a>2023</p>
-			</div>
-		</div>
-		<!--**********************************
-            Footer end
-        ***********************************-->
-
-		<!--**********************************
-           Support ticket button start
-        ***********************************-->
-
-		<!--**********************************
-           Support ticket button end
-        ***********************************-->
-
-
 	</div>
-	<!--**********************************
-        Main wrapper end
-    ***********************************-->
+	<!--**********************************Content body end***********************************-->
 
-	<!--**********************************
-        Scripts
-    ***********************************-->
-	<!-- Required vendors -->
-	<script src="vendor/global/global.min.js"></script>
-	<script src="vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
-	<script src="vendor/chart-js/chart.bundle.min.js"></script>
-	<script src="js/custom.min.js"></script>
-	<script src="js/deznav-init.js"></script>
-
-	<!-- Counter Up -->
-	<script src="vendor/waypoints/jquery.waypoints.min.js"></script>
-	<script src="vendor/jquery.counterup/jquery.counterup.min.js"></script>
-
-	<!-- Apex Chart -->
-	<script src="vendor/apexchart/apexchart.js"></script>
-
-	<!-- Chart piety plugin files -->
-	<script src="vendor/peity/jquery.peity.min.js"></script>
-
-	<!-- Dashboard 1 -->
-	<script src="js/dashboard/dashboard-1.js"></script>
-
-
-</body>
-
-</html>
+	<?php
+	include("footer.php");
+	?>
