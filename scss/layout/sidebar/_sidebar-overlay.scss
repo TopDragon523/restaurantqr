@@ -1,13 +1,13 @@
 [data-sidebar-style="overlay"] {
     .deznav {
-        left: -100%;
+        // left: -100%;
         @at-root [direction="rtl"]#{&} {
             left: auto;
             right: -100%;
         }
     }
     .content-body {
-        margin-left: 0;
+        margin-left: 5rem;
     }
     .nav-header {
         position: absolute;
@@ -24,11 +24,19 @@
             left: auto;
         }
         .deznav {
-            left: 0;
-            @at-root [direction="rtl"]#{&} {
-                left: auto;
-                right: 0;
-            }
+            width: 5rem;
+            overflow: visible;
+            position: absolute;
+            .deznav-scroll {
+				overflow: visible !important;
+				width: 0;
+				display: none;
+			}
+            // left: 0;
+            // @at-root [direction="rtl"]#{&} {
+            //     left: auto;
+            //     right: 0;
+            // }
         }
     }
     .footer {

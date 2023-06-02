@@ -64,34 +64,34 @@
 		
 	}
 	.menu-toggle {
-        .nav-header {
-            width: 5rem;
-            z-index: 999;
-            .brand-logo {
-                padding-left: 0;
-                padding-right: 0;
-                justify-content: center;
-            }
-            .nav-control {
-                .hamburger {
-                    .line {
-                        background-color: var(--primary)!important;
-                    }
-                }
-            }
-        }
+        // .nav-header {
+        //     width: 0;
+        //     z-index: 999;
+        //     .brand-logo {
+        //         padding-left: 0;
+        //         padding-right: 0;
+        //         justify-content: center;
+        //     }
+        //     .nav-control {
+        //         .hamburger {
+        //             .line {
+        //                 background-color: var(--primary)!important;
+        //             }
+        //         }
+        //     }
+        // }
 		.copyright,
 		.add-menu-sidebar{
 			display:none;
 		}
-        .header {
-            padding-left: 5rem;
-            width: 100%;
-            @at-root [direction="rtl"]#{&} {
-                padding: 0 0.9375rem;
-                padding-right: 5rem;
-            }
-        }
+        // .header {
+        //     padding-left: 5rem;
+        //     width: 100%;
+        //     @at-root [direction="rtl"]#{&} {
+        //         padding: 0 0.9375rem;
+        //         padding-right: 5rem;
+        //     }
+        // }
         .deznav {
             width: 5rem;
             overflow: visible;
@@ -102,6 +102,7 @@
             .slimScrollDiv,
             .deznav-scroll {
                 overflow: visible !important;
+				display: none;
             }
             .metismenu {
 			

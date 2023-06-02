@@ -502,7 +502,7 @@ body > *{
 	scrollbar-color: rgba(111, 133, 147, 0.1) #fff0;
 }
 ::-webkit-scrollbar {
-	width: 5px;
+	width: 0;
 	opacity:0;
 }
 /* ::-webkit-scrollbar-thumb{

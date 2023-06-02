@@ -10,8 +10,8 @@
 	}
 
 	var handleTheme = function(){
-		$('#preloader').fadeOut(500);
-		$('#main-wrapper').addClass('show');
+		$('#preloader').fadeOut(100);
+		$('#main-wrapper').addClass('show menu-toggle');
 	}
 
    var handleMetisMenu = function() {
@@ -39,11 +39,21 @@
 	}
 
     var handleNavigation = function() {
-		$(".nav-control").on('click', function() {
+		$(".tool-tab").on('click', function() {
+			if($(this).hasClass("active")){			
+				$('#main-wrapper').addClass("menu-toggle");
+			} else {
+				$('#main-wrapper').removeClass("menu-toggle");
+			}
+			if($(this).hasClass("active")) {
+				$(".tool-tab").removeClass("active");
+			} else {
+				$(".tool-tab").removeClass("active");
+				$(this).addClass("active");
+			}
 
-			$('#main-wrapper').toggleClass("menu-toggle");
 
-			$(".hamburger").toggleClass("is-active");
+			$("div.deznav .deznav-scroll").text($(this).children().first().children().last().text());
 		});
 	}
 
@@ -327,10 +337,10 @@
 			handleMinHeight();
 			handleDataAction();
 			handleHeaderHight();
-			//handleDzScroll();
+			handleDzScroll();
 			handleMenuTabs();
 			handleChatbox();
-			//handlePerfectScrollbar();
+			handlePerfectScrollbar();
 			handleBtnNumber();
 			handleDzChatUser();
 			handleDzFullScreen();

@@ -1,5 +1,6 @@
 @charset "UTF-8";
 /*
+    sass veresion for node sass@1.21.0
     Table of Contents
 
     Name                 : Davur
@@ -13101,7 +13102,7 @@ div, span, ol, ul {
 
 [data-sidebar-style=mini] .nav-control,
 [data-layout=horizontal] .nav-control {
-  display: none;
+  display: block;
 }
 
 @media only screen and (max-width: 47.9375rem) {
@@ -13292,14 +13293,14 @@ div, span, ol, ul {
 
 @media (min-width: 767px) {
   [data-sidebar-style=compact] .nav-control {
-    display: none;
+    display: block;
   }
   [data-sidebar-style=compact] .nav-header {
     width: 9.375rem;
   }
 }
 [data-sidebar-style=full][data-layout=vertical] .menu-toggle .brand-title {
-  display: none;
+  display: block;
 }
 [data-sidebar-style=full][data-layout=vertical] .menu-toggle .nav-header .logo-abbr {
   display: block;
@@ -13314,7 +13315,7 @@ div, span, ol, ul {
 }
 
 [data-sidebar-style=compact][data-layout=vertical] .nav-header .brand-title {
-  display: none;
+  display: block;
 }
 [data-sidebar-style=compact][data-layout=vertical] .nav-header .logo-compact {
   max-width: 75px;
@@ -13330,7 +13331,7 @@ div, span, ol, ul {
   width: 9.375rem;
 }
 [data-sidebar-style=modern][data-layout=vertical] .nav-header .brand-title {
-  display: none;
+  display: block;
 }
 [data-sidebar-style=modern][data-layout=vertical] .nav-header .logo-compact {
   display: none;
@@ -13343,7 +13344,7 @@ div, span, ol, ul {
   padding: 0rem;
   background-color: #fff;
   z-index: 3;
-  padding-left: 18.563rem;
+  padding-left: 17rem;
   transition: all 0.2s ease;
 }
 @media only screen and (max-width: 87.5rem) {
@@ -13953,13 +13954,13 @@ svg.pulse-svg .third-circle {
 }
 
 .content-body {
-  margin-left: 18.563rem;
+  margin-left: 22rem;
   z-index: 0;
   transition: all 0.2s ease;
 }
 @media only screen and (min-width: 1200px) and (max-width: 1400px) {
   .content-body {
-    margin-left: 17rem;
+    margin-left: 22rem;
   }
 }
 
@@ -14194,14 +14195,15 @@ svg.pulse-svg .third-circle {
   }
 }
 .deznav {
-  width: 18.563rem;
+  width: 22rem;
   padding-bottom: 0;
   height: 100%;
   position: absolute;
   top: 0;
   padding-top: 80px;
-  z-index: 3;
+  z-index: 2;
   background-color: #fff;
+  display: flex;
   transition: all 0.2s ease;
   box-shadow: 18px 0px 35px 0px rgba(0, 0, 0, 0.02);
 }
@@ -14216,14 +14218,30 @@ svg.pulse-svg .third-circle {
     width: 18rem;
   }
 }
+.deznav .left-panel {
+  width: 5rem;
+  overflow: scroll;
+}
+.deznav .left-panel .active {
+  border-left: 0.2rem solid var(--primary);
+  background-color: #D2D6DE;
+}
+.deznav .left-panel .tool-tab {
+  padding: 0.2rem 0;
+}
+.deznav .left-panel .tool-tab i {
+  font-size: 2rem;
+}
 .deznav .deznav-scroll {
   position: relative;
   height: 100%;
   overflow-y: scroll;
+  background-color: #D2D6DE;
+  width: 17rem;
 }
 @media only screen and (min-width: 1200px) and (max-width: 1400px) {
   .deznav {
-    width: 17rem;
+    width: 22rem;
   }
 }
 .deznav ul {
@@ -14754,31 +14772,10 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 [data-sidebar-style=full][data-layout=vertical] .deznav .metismenu > li .has-arrow:after {
   right: 1.5rem;
 }
-[data-sidebar-style=full][data-layout=vertical] .menu-toggle .nav-header {
-  width: 5rem;
-  z-index: 999;
-}
-[data-sidebar-style=full][data-layout=vertical] .menu-toggle .nav-header .brand-logo {
-  padding-left: 0;
-  padding-right: 0;
-  justify-content: center;
-}
-[data-sidebar-style=full][data-layout=vertical] .menu-toggle .nav-header .nav-control .hamburger .line {
-  background-color: var(--primary) !important;
-}
 [data-sidebar-style=full][data-layout=vertical] .menu-toggle .copyright,
 [data-sidebar-style=full][data-layout=vertical] .menu-toggle .add-menu-sidebar {
   display: none;
 }
-[data-sidebar-style=full][data-layout=vertical] .menu-toggle .header {
-  padding-left: 5rem;
-  width: 100%;
-}
-[direction=rtl][data-sidebar-style=full][data-layout=vertical] .menu-toggle .header {
-  padding: 0 0.9375rem;
-  padding-right: 5rem;
-}
-
 [data-sidebar-style=full][data-layout=vertical] .menu-toggle .deznav {
   width: 5rem;
   overflow: visible;
@@ -14790,6 +14787,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 [data-sidebar-style=full][data-layout=vertical] .menu-toggle .deznav .slimScrollDiv,
 [data-sidebar-style=full][data-layout=vertical] .menu-toggle .deznav .deznav-scroll {
   overflow: visible !important;
+  display: none;
 }
 [data-sidebar-style=full][data-layout=vertical] .menu-toggle .deznav .metismenu li {
   position: relative;
@@ -14935,6 +14933,195 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   padding-left: 1.875rem;
 }
 
+/*$primary  : #7356f1 !default;*/
+:root {
+  --primary: #2f4cdd;
+  --secondary: #3e4954;
+  --primary-hover: #1e38bb;
+  --primary-dark: #101e63;
+  --rgba-primary-1: rgba(47, 76, 221, 0.1);
+  --rgba-primary-2: rgba(47, 76, 221, 0.2);
+  --rgba-primary-3: rgba(47, 76, 221, 0.3);
+  --rgba-primary-4: rgba(47, 76, 221, 0.4);
+  --rgba-primary-5: rgba(47, 76, 221, 0.5);
+  --rgba-primary-6: rgba(47, 76, 221, 0.6);
+  --rgba-primary-7: rgba(47, 76, 221, 0.7);
+  --rgba-primary-8: rgba(47, 76, 221, 0.8);
+  --rgba-primary-9: rgba(47, 76, 221, 0.9);
+}
+
+/*
+0 - 600: Phone
+600 - 900: Tablet portrait
+900 - 1200: Tablet landscape
+1200 - 1800: Normal styles
+1800+ : Big Desktop
+1em = 16px
+The smaller device rules always should write below the bigger device rules
+Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Component
+*/
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .copyright,
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .add-menu-sidebar {
+  display: none;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav {
+  width: 5rem;
+  overflow: visible;
+  position: absolute;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .nav-text {
+  display: none;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .slimScrollDiv,
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .deznav-scroll {
+  overflow: visible !important;
+  width: 0;
+  display: none;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu li {
+  position: relative;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu li a {
+  padding: 0.8125rem 0.9375rem;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu li a svg {
+  max-width: 24px;
+  max-height: 24px;
+  margin-right: 0;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu li a:before {
+  content: none;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu li a .badge {
+  display: none;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu li > ul {
+  position: absolute;
+  left: 5rem;
+  top: 0;
+  width: 12rem;
+  z-index: 1001;
+  display: none;
+  padding-left: 1px;
+  height: auto !important;
+  box-shadow: 0px 0px 40px 0px rgba(82, 63, 105, 0.1);
+  border-radius: 6px;
+  margin-left: 0;
+  border: 0;
+  background: #fff;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu li > ul:after {
+  content: "";
+  position: absolute;
+  background: inherit;
+  width: 10px;
+  height: 10px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  left: -5px;
+  top: 20px;
+}
+[direction=rtl][data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu li > ul {
+  left: auto;
+  right: 3rem;
+}
+
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu li > ul li:hover ul {
+  left: 11.8125rem;
+  top: 0;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu li > ul li:hover ul:after {
+  content: none;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu li:hover > ul {
+  display: block;
+  height: auto;
+  overflow: visible;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu > li {
+  transition: all 0.4s ease-in-out;
+  padding: 0 13px;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu > li > a {
+  text-align: center;
+  margin-top: 5px;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu > li > a.has-arrow:after {
+  display: none;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu > li > a i {
+  padding: 0;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu > li.mm-active > a {
+  background: var(--primary);
+  border-radius: 0.5rem;
+  color: #fff;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu > li.mm-active > a i {
+  color: #fff;
+  padding: 0;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu > li:hover:nth-last-child(-n+1) > ul {
+  bottom: 0;
+  top: auto;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu > li:hover > a {
+  border-radius: 0.5rem;
+  background: var(--primary);
+  color: #fff;
+}
+[data-theme-version=dark][data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu > li:hover > a {
+  background: #1e2746;
+}
+
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu > li:hover > a i {
+  color: #fff;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu > li:hover > ul {
+  height: auto !important;
+  padding: 10px 0;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu > li:hover > ul a {
+  padding: 6px 20px 6px 20px;
+  margin-left: -0.1rem;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu > li:hover > ul ul {
+  padding: 10px 0;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu > li:hover > ul ul a {
+  padding: 6px 20px 6px 20px;
+  margin-left: -0.1rem;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu .nav-label,
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .deznav .metismenu .nav-badge {
+  display: none;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .content-body {
+  margin-left: 5rem;
+}
+[direction=rtl][data-sidebar-style=mini][data-layout=vertical] .menu-toggle .content-body {
+  margin-right: 5rem;
+  margin-left: auto;
+  border: 0;
+}
+
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle + .footer {
+  padding-left: 5rem;
+}
+[direction=rtl][data-sidebar-style=mini][data-layout=vertical] .menu-toggle + .footer {
+  padding-left: 0;
+  padding-right: 5rem;
+}
+
+[data-sidebar-style=mini][data-layout=horizontal] .deznav .metismenu {
+  padding: 0 30px;
+}
+[data-sidebar-style=mini][data-layout=horizontal] .header .header-content {
+  padding-left: 1.875rem;
+}
+
 /*
 0 - 600: Phone
 600 - 900: Tablet portrait
@@ -14966,19 +15153,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   [data-sidebar-style=mini] .nav-header {
     width: 5rem;
   }
-  [data-sidebar-style=mini] .nav-header .nav-control {
-    z-index: -1;
-  }
-  [data-sidebar-style=mini] .nav-header .nav-control .hamburger {
-    left: 5rem !important;
-  }
-  [data-sidebar-style=mini] .nav-header .nav-control .hamburger .line {
-    background-color: #6e6e6e !important;
-  }
   [data-sidebar-style=mini] .nav-header .brand-title {
-    display: none;
-  }
-  [data-sidebar-style=mini] .nav-header .hamburger {
     display: none;
   }
   [data-sidebar-style=mini] .header .header-content {
@@ -14989,7 +15164,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   }
 
   [data-sidebar-style=mini] .deznav {
-    width: 5rem;
+    width: 22rem;
     overflow: visible;
     position: absolute;
   }
@@ -15205,16 +15380,13 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
     transform: rotate(-45deg) translateY(-50%);
   }
 }
-[data-sidebar-style=overlay] .deznav {
-  left: -100%;
-}
 [direction=rtl][data-sidebar-style=overlay] .deznav {
   left: auto;
   right: -100%;
 }
 
 [data-sidebar-style=overlay] .content-body {
-  margin-left: 0;
+  margin-left: 5rem;
 }
 [data-sidebar-style=overlay] .nav-header {
   position: absolute;
@@ -15230,13 +15402,15 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   left: auto;
 }
 [data-sidebar-style=overlay] .menu-toggle .deznav {
-  left: 0;
+  width: 5rem;
+  overflow: visible;
+  position: absolute;
 }
-[direction=rtl][data-sidebar-style=overlay] .menu-toggle .deznav {
-  left: auto;
-  right: 0;
+[data-sidebar-style=overlay] .menu-toggle .deznav .deznav-scroll {
+  overflow: visible !important;
+  width: 0;
+  display: none;
 }
-
 [data-sidebar-style=overlay] .footer {
   padding-left: 0;
 }
@@ -26452,7 +26626,7 @@ body > * {
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 0;
   opacity: 0;
 }
 

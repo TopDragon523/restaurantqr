@@ -10,7 +10,7 @@
     background-color: $white;
     z-index: 3;
     // box-shadow: 0 0 1rem $l-border;
-    padding-left: 18.563rem;
+    padding-left: 17rem;
     transition: all .2s ease;
 	@include respond('laptop'){
 		padding-left: 17rem;

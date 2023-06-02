@@ -1,7 +1,7 @@
 [data-sidebar-style="mini"],
 [data-layout="horizontal"] {
     .nav-control {
-        display: none;
+        display: block;
     }
 }
 
@@ -225,7 +225,7 @@
 @media (min-width:767px) {
     [data-sidebar-style="compact"] {
         .nav-control {
-            display: none;
+            display: block;
         }
         .nav-header {
             width: 9.375rem;
@@ -236,7 +236,7 @@
 [data-sidebar-style="full"][data-layout="vertical"] {
     .menu-toggle {
         .brand-title {
-            display: none;
+            display: block;
         }
         .nav-header {
             .logo-abbr {
@@ -263,7 +263,7 @@
 [data-sidebar-style="compact"][data-layout="vertical"] {
     .nav-header {
         .brand-title {
-            display: none;
+            display: block;
         }
         .logo-compact {
             max-width: 75px;
@@ -281,7 +281,7 @@
     .nav-header {
         width: 9.375rem;
         .brand-title {
-            display: none;
+            display: block;
         }
         .logo-compact {
             display: none;
