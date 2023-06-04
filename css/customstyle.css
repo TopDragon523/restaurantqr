@@ -14235,17 +14235,22 @@ svg.pulse-svg .third-circle {
   background-color: #D2D6DE;
 }
 .deznav .left-panel .tool-tab {
-  padding: 0.2rem 0;
+  padding: 1rem 0;
 }
 .deznav .left-panel .tool-tab i {
-  font-size: 2rem;
+  font-size: 1.2rem;
+}
+.deznav .left-panel .tool-tab span {
+  font-size: 0.7rem !important;
+  margin-top: 0.4rem;
 }
 .deznav .deznav-scroll {
   position: relative;
   height: 100%;
   overflow-y: scroll;
-  background-color: #D2D6DE;
   width: 17rem;
+  border: 1px solid lightgray;
+  background: white;
 }
 @media only screen and (min-width: 1200px) and (max-width: 1400px) {
   .deznav {

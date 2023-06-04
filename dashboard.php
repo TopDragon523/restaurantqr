@@ -749,6 +749,12 @@ include("header.php");
 					<span>Photo</span>
 				</div>
 			</div>
+			<div class="tool-tab">
+				<div class="d-flex flex-column justify-content-center align-items-center">
+					<i class="lni lni-pallet"></i>
+					<span>Background</span>
+				</div>
+			</div>
 		</div>
 		<div class="deznav-scroll"></div>
 		<!-- <ul class="metismenu" id="menu"> -->

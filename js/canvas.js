@@ -33,7 +33,7 @@ $(function () {
   selectionTr.nodes(nodeList);
   // add a new feature, lets add ability to draw selection rectangle
   var selectionRectangle = new Konva.Rect({
-    fill: 'rgba(0,0,255,0.5)',
+    fill: '#00a1ff82',
     visible: false,
   });
   workingArea.add(selectionRectangle);
@@ -83,11 +83,29 @@ $(function () {
       selectionRectangle.visible(false);
     });
 
-    var shapes = stage.find('.rect');
+    var shapes = workingArea.getChildren(function (node) {
+      if (node.getClassName() !== 'Transformer' && node.getClassName() !== 'Stage' && node.getClassName() !== 'Rect') {
+        return node;
+      }
+    });
+
+    var trList = workingArea.getChildren(function (node) {
+      if (node.getClassName() === 'Transformer') {
+        return node;
+      }
+    });
+
     var box = selectionRectangle.getClientRect();
     var selected = shapes.filter((shape) =>
       Konva.Util.haveIntersection(box, shape.getClientRect())
     );
+    var selectedTrs = trList.filter((shape) =>
+      Konva.Util.haveIntersection(box, shape.getClientRect())
+    );
+    selectedTrs.map((shape) => {
+      shape.show();
+      shape.forceUpdate();
+    });
     selectionTr.nodes(selected);
   });
 
@@ -205,6 +223,13 @@ $(function () {
       tr.show();
 
       deselectOtherComponents(tr);
+    });
+    document.addEventListener('keydown', function(event) {
+      var keyCode = event.keyCode;
+      if (keyCode === 46 && tr.nodes().length > 0) {
+        tr.destroy();
+        textNode.destroy();
+      }
     });
 
     textNode.on("dblclick dbltap", function (e) {
@@ -325,5 +350,72 @@ $(function () {
         window.addEventListener("click", handleOutsideClick);
       });
     });
+  });
+
+  $("body").delegate(".background-component img", "click", function () {
+    const index = parseInt($(this).data("index"));
+    const imgUrl = backgroundImages[index];
+    var container = stage.container();
+    container.style.backgroundImage = `url(${imgUrl})`;
+    container.style.backgroundSize = "cover";
+    container.style.backgroundRepeat = "no-repeat";
+    container.style.backgroundPosition = "center center";
+  });
+
+  $("body").delegate(".photo-component img", "click", function () {
+    const index = parseInt($(this).data("index"));
+    const imgUrl = photos[index];
+    Konva.Image.fromURL(
+      imgUrl,
+      (img) => {
+        img.setAttrs({
+          x: 80,
+          y: 100,
+          name: 'image',
+          draggable: true,
+        });
+        workingArea.add(img);
+
+        const tr = new Konva.Transformer({
+          nodes: [img],
+          keepRatio: false,
+          boundBoxFunc: (oldBox, newBox) => {
+            if (newBox.width < 10 || newBox.height < 10) {
+              return oldBox;
+            }
+            return newBox;
+          },
+        });
+
+        workingArea.add(tr);
+        
+        deselectOtherComponents(tr);
+
+        document.addEventListener('keydown', function(event) {
+          var keyCode = event.keyCode;
+          if (keyCode === 46 && tr.nodes().length > 0) {
+            tr.destroy();
+            img.destroy();
+          }
+        });
+
+        img.on("click", function (e) {
+          img.show();
+          tr.show();
+    
+          deselectOtherComponents(tr);
+        });
+
+        img.on('transform', () => {
+          // reset scale on transform
+          img.setAttrs({
+            scaleX: 1,
+            scaleY: 1,
+            width: img.width() * img.scaleX(),
+            height: img.height() * img.scaleY(),
+          });
+        });
+      }
+    );
   });
 });
