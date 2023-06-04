@@ -1,41 +1,22 @@
-		<!--**********************************
-            Footer start
-        ***********************************-->
-		<div class="footer">
+		<!--**********************************Footer start***********************************-->
+		<!-- <div class="footer bg-green">
 			<div class="copyright">
 				<p>Copyright © Designed &amp; Developed by <a href="http://dexignzone.com/" target="_blank">DexignZone</a>2023</p>
 			</div>
-		</div>
-		<!--**********************************
-            Footer end
-        ***********************************-->
-
-		<!--**********************************
-           Support ticket button start
-        ***********************************-->
-
-		<!--**********************************
-           Support ticket button end
-        ***********************************-->
-
+		</div> -->
+		<!--**********************************Footer end***********************************-->
 
 		</div>
-		<!--**********************************
-        Main wrapper end
-    ***********************************-->
+		<!--**********************************Main wrapper end***********************************-->
 
-		<!--**********************************
-        Scripts
-    ***********************************-->
+		<!--**********************************Scripts***********************************-->
 		<!-- Required vendors -->
 		<script src="vendor/global/global.min.js"></script>
 		<script src="vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
 		<script src="vendor/chart-js/chart.bundle.min.js"></script>
+		<script src="js/init-components.js"></script>
 		<script src="js/custom.js"></script>
 		<script src="js/deznav-init.js"></script>
-
-		<!-- konva script -->
-		<script src="https://unpkg.com/konva@9.0.2/konva.min.js"></script>
 
 		<!-- Counter Up -->
 		<script src="vendor/waypoints/jquery.waypoints.min.js"></script>
@@ -48,7 +29,11 @@
 		<script src="vendor/peity/jquery.peity.min.js"></script>
 
 		<!-- Dashboard 1 -->
-		<script src="js/dashboard/dashboard-1.js"></script>
+		<!-- <script src="js/dashboard/dashboard-1.js"></script> -->
+
+		<!-- konva script -->
+		<script src="https://unpkg.com/konva@9.0.2/konva.min.js"></script>
+		<script src="js/canvas.js"></script>
 
 		</body>
 

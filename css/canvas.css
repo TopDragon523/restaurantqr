@@ -1,0 +1,19 @@
+#container {
+    width: 499px;
+    height: 709px;
+    background: white;
+    margin: auto;
+}
+
+.text-component {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    background: white;
+    margin: 10px;
+}
+
+.text-component:hover {
+    border: 2px solid var(--primary);
+}

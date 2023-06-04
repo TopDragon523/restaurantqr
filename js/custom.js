@@ -38,24 +38,59 @@
 		});
 	}
 
-    var handleNavigation = function() {
-		$(".tool-tab").on('click', function() {
-			if($(this).hasClass("active")){			
-				$('#main-wrapper').addClass("menu-toggle");
-			} else {
-				$('#main-wrapper').removeClass("menu-toggle");
-			}
-			if($(this).hasClass("active")) {
-				$(".tool-tab").removeClass("active");
-			} else {
-				$(".tool-tab").removeClass("active");
-				$(this).addClass("active");
-			}
+	var clearLeftPanel = function () {
+		$("div.deznav .deznav-scroll").text("");
+	};
 
+	var handleNavigation = function () {
+		$(".tool-tab").on("click", function () {
+		if ($(this).hasClass("active")) {
+			$("#main-wrapper").addClass("menu-toggle");
+		} else {
+			$("#main-wrapper").removeClass("menu-toggle");
+		}
+		if ($(this).hasClass("active")) {
+			$(".tool-tab").removeClass("active");
+		} else {
+			$(".tool-tab").removeClass("active");
+			$(this).addClass("active");
+		}
 
-			$("div.deznav .deznav-scroll").text($(this).children().first().children().last().text());
+		var tabName = $(this)
+			.children()
+			.first()
+			.children()
+			.last()
+			.text()
+			.toLowerCase();
+		switch (tabName) {
+			case "demo":
+			clearLeftPanel();
+			$("div.deznav .deznav-scroll").text(
+				$(this).children().first().children().last().text()
+			);
+			break;
+			case "text":
+			clearLeftPanel();
+			textComponents.map(function (item, index) {
+				const $textItem = $("<div>");
+				$textItem.attr("class", "text-component");
+				$textItem.attr("data-index", index);
+				$textItem.css(item.style);
+
+				$textItem.html(item.label);
+				$textItem.appendTo("div.deznav .deznav-scroll");
+			});
+			break;
+			case "photo":
+			clearLeftPanel();
+			$("div.deznav .deznav-scroll").text(
+				$(this).children().first().children().last().text()
+			);
+			break;
+		}
 		});
-	}
+	};
 
 	var handleCurrentActive = function() {
 		for (var nk = window.location,
@@ -334,7 +369,7 @@
 			handleAllChecked();
 			handleNavigation();
 			handleMiniSidebar();
-			handleMinHeight();
+			// handleMinHeight();
 			handleDataAction();
 			handleHeaderHight();
 			handleDzScroll();

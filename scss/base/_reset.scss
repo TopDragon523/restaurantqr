@@ -52,6 +52,7 @@ p {
     transition: all 0.25s ease-in;
     overflow: hidden;
     position: relative;
+	height: 100vh;
     &.show {
         opacity: 1;
     }
@@ -93,6 +94,11 @@ a {
 }
 
 .content-body {
+	height: 100%;
+	#stage {
+		height: calc(100vh - 5rem);
+		display: flex;
+	}
     .container {
         margin-top: 40px;
     }

@@ -251,6 +251,9 @@
                 margin-left: auto;
 				border: 0;
             }
+			#stage {
+				width : calc(100vw - 5rem)!important;
+			}
         }
         &+.footer {
             padding-left: 5rem;

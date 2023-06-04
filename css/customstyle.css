@@ -12083,6 +12083,7 @@ p {
   transition: all 0.25s ease-in;
   overflow: hidden;
   position: relative;
+  height: 100vh;
 }
 #main-wrapper.show {
   opacity: 1;
@@ -12120,6 +12121,13 @@ a {
   white-space: nowrap;
 }
 
+.content-body {
+  height: 100%;
+}
+.content-body #stage {
+  height: calc(100vh - 5rem);
+  display: flex;
+}
 .content-body .container {
   margin-top: 40px;
 }
@@ -13086,7 +13094,7 @@ div, span, ol, ul {
   }
 }
 .footer {
-  padding-left: 17.1875rem;
+  padding-left: 22rem;
   background-color: #f1f1f1;
 }
 .footer .copyright {
@@ -14918,6 +14926,9 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   border: 0;
 }
 
+[data-sidebar-style=full][data-layout=vertical] .menu-toggle .content-body #stage {
+  width: calc(100vw - 5rem) !important;
+}
 [data-sidebar-style=full][data-layout=vertical] .menu-toggle + .footer {
   padding-left: 5rem;
 }
