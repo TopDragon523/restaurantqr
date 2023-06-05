@@ -1,5 +1,5 @@
 <?php
-$hostname = "192.168.121.13";
+$hostname = "localhost";
 $username = "root";
 $password = "";
 $dbname = "restaurant-qr";
