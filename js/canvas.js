@@ -25,14 +25,163 @@ $(function () {
   workingArea.clip(true);
   stage.add(workingArea);
 
+  // Selection Part
+  var selectionTr = new Konva.Transformer();
+  workingArea.add(selectionTr);
+
+  // by default select all shapes
+  selectionTr.nodes(nodeList);
+  // add a new feature, lets add ability to draw selection rectangle
+  var selectionRectangle = new Konva.Rect({
+    fill: '#00a1ff82',
+    visible: false,
+  });
+  workingArea.add(selectionRectangle);
+
+  var x1, y1, x2, y2;
+  stage.on('mousedown touchstart', (e) => {
+    // do nothing if we mousedown on any shape
+    if (e.target !== stage) {
+      return;
+    }
+    e.evt.preventDefault();
+    x1 = stage.getPointerPosition().x;
+    y1 = stage.getPointerPosition().y;
+    x2 = stage.getPointerPosition().x;
+    y2 = stage.getPointerPosition().y;
+
+    selectionRectangle.visible(true);
+    selectionRectangle.width(0);
+    selectionRectangle.height(0);
+  });
+
+  stage.on('mousemove touchmove', (e) => {
+    // do nothing if we didn't start selection
+    if (!selectionRectangle.visible()) {
+      return;
+    }
+    e.evt.preventDefault();
+    x2 = stage.getPointerPosition().x;
+    y2 = stage.getPointerPosition().y;
+
+    selectionRectangle.setAttrs({
+      x: Math.min(x1, x2),
+      y: Math.min(y1, y2),
+      width: Math.abs(x2 - x1),
+      height: Math.abs(y2 - y1),
+    });
+  });
+
+  stage.on('mouseup touchend', (e) => {
+    // do nothing if we didn't start selection
+    if (!selectionRectangle.visible()) {
+      return;
+    }
+    e.evt.preventDefault();
+    // update visibility in timeout, so we can check it in click event
+    setTimeout(() => {
+      selectionRectangle.visible(false);
+    });
+
+    var shapes = workingArea.getChildren(function (node) {
+      if (node.getClassName() !== 'Transformer' && node.getClassName() !== 'Stage' && node.getClassName() !== 'Rect') {
+        return node;
+      }
+    });
+
+    var trList = workingArea.getChildren(function (node) {
+      if (node.getClassName() === 'Transformer') {
+        return node;
+      }
+    });
+
+    var box = selectionRectangle.getClientRect();
+    var selected = shapes.filter((shape) =>
+      Konva.Util.haveIntersection(box, shape.getClientRect())
+    );
+    var selectedTrs = trList.filter((shape) =>
+      Konva.Util.haveIntersection(box, shape.getClientRect())
+    );
+    selectedTrs.map((shape) => {
+      shape.show();
+      shape.forceUpdate();
+    });
+    selectionTr.nodes(selected);
+  });
+
+  // clicks should select/deselect shapes
+  stage.on('click tap', function (e) {
+    // if we are selecting with rect, do nothing
+    if (selectionRectangle.visible()) {
+      return;
+    }
+
+    // if click on empty area - remove all selections
+    if (e.target === stage) {
+      selectionTr.nodes([]);
+      return;
+    }
+
+    // do nothing if clicked NOT on our rectangles
+    if (!e.target.hasName('rect')) {
+      return;
+    }
+
+    // do we pressed shift or ctrl?
+    const metaPressed = e.evt.shiftKey || e.evt.ctrlKey || e.evt.metaKey;
+    const isSelected = selectionTr.nodes().indexOf(e.target) >= 0;
+
+    if (!metaPressed && !isSelected) {
+      // if no key pressed and the node is not selected
+      // select just one
+      selectionTr.nodes([e.target]);
+    } else if (metaPressed && isSelected) {
+      // if we pressed keys and node was selected
+      // we need to remove it from selection:
+      const nodes = selectionTr.nodes().slice(); // use slice to have new copy of array
+      // remove node from array
+      nodes.splice(nodes.indexOf(e.target), 1);
+      selectionTr.nodes(nodes);
+    } else if (metaPressed && !isSelected) {
+      // add the node into selection
+      const nodes = selectionTr.nodes().concat([e.target]);
+      selectionTr.nodes(nodes);
+    }
+  });
+  // Selection Part
+
+  function deselectOtherComponents(currentTransformer) {
+    workingArea.getChildren(function (node) {
+      if (node.getClassName() === 'Transformer' && node !== currentTransformer) {
+        node.hide();
+        node.forceUpdate();
+      }
+    });
+  }
+
+  function deselectAllComponents() {
+    workingArea.getChildren(function (node) {
+      if (node.getClassName() === 'Transformer') {
+        node.hide();
+        node.forceUpdate();
+      }
+    });
+  }
+
+  stage.on('click', function (evt) {
+    var shape = evt.target;
+    if (shape.getClassName() == 'Stage') {
+      deselectAllComponents();
+    }
+  });
+
   $("body").delegate(".text-component", "click", function () {
-    console.log("helwo");
     const index = parseInt($(this).data("index"));
     const component = textComponents[index];
     var textNode = new Konva.Text({
       text: component.label,
-      x: 50,
-      y: 80,
+      x: width / 2 - 100,
+      y: (height - component.style.fontSize) / 2,
       fontSize: component.style.fontSize,
       fontFamily: component.style.fontFamily,
       draggable: true,
@@ -47,8 +196,6 @@ $(function () {
     workingArea.add(textNode);
     var tr = new Konva.Transformer({
       node: textNode,
-      enabledAnchors: ["top-left", "top-right", "bottom-left", "bottom-right"],
-      // set minimum width of text
       boundBoxFunc: function (oldBox, newBox) {
         newBox.width = Math.max(30, newBox.width);
         return newBox;
@@ -56,91 +203,33 @@ $(function () {
     });
 
     textNode.on("transform", function () {
-      // reset scale, so only with is changing by transformer
       textNode.setAttrs({
         width: textNode.width() * textNode.scaleX(),
-        scaleX: 1,
+        height: textNode.height() * textNode.scaleY(),
       });
+      var currentScale = textNode.scaleX();
+
+      textNode.fontSize(textNode.fontSize() * currentScale);
     });
 
-    tr.hide();
+    tr.show();
 
     workingArea.add(tr);
 
-    textNode.on("click tap", () => {
+    deselectOtherComponents(tr);
+
+    textNode.on("click", function (e) {
       textNode.show();
       tr.show();
 
-      // var textPosition = textNode.absolutePosition();
-
-      // var areaPosition = {
-      //   x: stage.container().offsetLeft + textPosition.x,
-      //   y: stage.container().offsetTop + textPosition.y,
-      // };
-
-      // var textarea = document.createElement("p");
-      // document.body.appendChild(textarea);
-      // textarea.id = textNode.attrs.id;
-
-      // textarea.value = textNode.text();
-      // textarea.style.position = "absolute";
-      // textarea.style.top = areaPosition.y + "px";
-      // textarea.style.left = areaPosition.x + "px";
-      // textarea.style.width = textNode.width() - textNode.padding() * 2 + "px";
-      // textarea.style.height =
-      //   textNode.height() - textNode.padding() * 2 + 5 + "px";
-      // textarea.style.fontSize = textNode.fontSize() + "px";
-      // textarea.style.border = "none";
-      // textarea.style.padding = "0px";
-      // textarea.style.margin = "0px";
-      // textarea.style.overflow = "hidden";
-      // textarea.style.background = "none";
-      // textarea.style.outline = "none";
-      // textarea.style.resize = "none";
-      // textarea.style.lineHeight = textNode.lineHeight();
-      // textarea.style.fontFamily = textNode.fontFamily();
-      // textarea.style.transformOrigin = "left top";
-      // textarea.style.textAlign = textNode.align();
-      // textarea.style.color = textNode.fill();
-      // rotation = textNode.rotation();
-      // var transform = "";
-      // if (rotation) {
-      //   transform += "rotateZ(" + rotation + "deg)";
-      // }
-
-      // var px = 0;
-      // var isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
-
-      // if (isFirefox) {
-      //   px += 2 + Math.round(textNode.fontSize() / 20);
-      // }
-      // transform += "translateY(-" + px + "px)";
-
-      // textarea.style.transform = transform;
-
-      // // reset height
-      // textarea.style.height = "auto";
-      // textarea.style.height = textarea.scrollHeight + 3 + "px";
-
-      // // textarea.focus();
-
-      // function removeTextarea() {
-      //   textarea.parentNode.removeChild(textarea);
-      //   window.removeEventListener("click", handleOutsideClick);
-      //   textNode.show();
-      //   tr.hide();
-      //   tr.forceUpdate();
-      // }
-
-      function handleOutsideClick(e) {
-        textNode.show();
-        tr.hide();
-        tr.forceUpdate();
+      deselectOtherComponents(tr);
+    });
+    document.addEventListener('keydown', function(event) {
+      var keyCode = event.keyCode;
+      if (keyCode === 46 && tr.nodes().length > 0) {
+        tr.destroy();
+        textNode.destroy();
       }
-
-      setTimeout(() => {
-        window.addEventListener("click", handleOutsideClick);
-      });
     });
 
     textNode.on("dblclick dbltap", function (e) {
@@ -247,6 +336,7 @@ $(function () {
       });
 
       textarea.addEventListener("input", function (e) {
+        textNode.height(textarea.offsetHeight);
         tr.forceUpdate();
       });
 
@@ -260,5 +350,72 @@ $(function () {
         window.addEventListener("click", handleOutsideClick);
       });
     });
+  });
+
+  $("body").delegate(".background-component img", "click", function () {
+    const index = parseInt($(this).data("index"));
+    const imgUrl = backgroundImages[index];
+    var container = stage.container();
+    container.style.backgroundImage = `url(${imgUrl})`;
+    container.style.backgroundSize = "cover";
+    container.style.backgroundRepeat = "no-repeat";
+    container.style.backgroundPosition = "center center";
+  });
+
+  $("body").delegate(".photo-component img", "click", function () {
+    const index = parseInt($(this).data("index"));
+    const imgUrl = photos[index];
+    Konva.Image.fromURL(
+      imgUrl,
+      (img) => {
+        img.setAttrs({
+          x: 80,
+          y: 100,
+          name: 'image',
+          draggable: true,
+        });
+        workingArea.add(img);
+
+        const tr = new Konva.Transformer({
+          nodes: [img],
+          keepRatio: false,
+          boundBoxFunc: (oldBox, newBox) => {
+            if (newBox.width < 10 || newBox.height < 10) {
+              return oldBox;
+            }
+            return newBox;
+          },
+        });
+
+        workingArea.add(tr);
+        
+        deselectOtherComponents(tr);
+
+        document.addEventListener('keydown', function(event) {
+          var keyCode = event.keyCode;
+          if (keyCode === 46 && tr.nodes().length > 0) {
+            tr.destroy();
+            img.destroy();
+          }
+        });
+
+        img.on("click", function (e) {
+          img.show();
+          tr.show();
+    
+          deselectOtherComponents(tr);
+        });
+
+        img.on('transform', () => {
+          // reset scale on transform
+          img.setAttrs({
+            scaleX: 1,
+            scaleY: 1,
+            width: img.width() * img.scaleX(),
+            height: img.height() * img.scaleY(),
+          });
+        });
+      }
+    );
   });
 });

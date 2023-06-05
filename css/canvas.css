@@ -9,11 +9,25 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 30px;
+    padding: 10px;
     background: white;
     margin: 10px;
+    border: 2px solid transparent;
 }
 
 .text-component:hover {
     border: 2px solid var(--primary);
+}
+
+.background-component, .photo-component {
+    width: 80%;
+    margin: auto;
+    text-align: center;
+    padding: 20px;
+}
+
+.background-component img, .photo-component img {
+    width: inherit;
+    box-shadow: 0 0 5px rgba(16, 22, 26, 0.3);
+    border-radius: 5px;
 }

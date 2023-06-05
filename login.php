@@ -23,7 +23,7 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
 			echo (json_encode($result));
 			die;
 		} else {
-			$result = array("status" => false, "message" => "Eamil or password is incorrect");
+			$result = array("status" => false, "message" => "Email or password is incorrect");
 			echo (json_encode($result));
 			die;
 		}

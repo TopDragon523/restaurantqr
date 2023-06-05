@@ -161,9 +161,13 @@
             background-color: $grey;
         }
         .tool-tab {
-            padding: 0.2rem 0;
+            padding: 1rem 0;
             i {
-                font-size: 2rem;
+                font-size: 1.2rem;
+            }
+            span {
+                font-size: 0.7rem !important;
+                margin-top: 0.4rem;
             }
         }
     }
@@ -172,8 +176,10 @@
         position: relative;
         height: 100%;
 		overflow-y: scroll;
-		background-color: $grey;
+		// background-color: $grey;
         width: 17rem;
+        border: 1px solid lightgray;
+        background: white;
         // overflow: visible!important;
         // border-top-left-radius: 5px;
         // border-top-right-radius: 5px;
