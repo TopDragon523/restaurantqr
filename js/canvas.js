@@ -76,10 +76,16 @@ $(function () {
       "bottom-left",
       "bottom-right",
       "middle-left",
-      "middle-top",
       "middle-right",
-      "middle-bottom",
+      "top-center",
+      "bottom-center",
     ],
+    boundBoxFunc: (oldBox, newBox) => {
+      if (newBox.width < 10 || newBox.height < 10) {
+        return oldBox;
+      }
+      return newBox;
+    },
   });
   trLayer.add(selectionTr);
   trLayer.add(textTr);
@@ -213,11 +219,12 @@ $(function () {
   });
 
   function deselectOtherComponents(currentTransformer) {
-    shapeLayer.getChildren(function (node) {
+    trLayer.getChildren(function (node) {
       if (
         node.getClassName() === "Transformer" &&
         node !== currentTransformer
       ) {
+        node.nodes([]);
         node.hide();
         node.forceUpdate();
       }
@@ -240,6 +247,9 @@ $(function () {
   $("body").delegate(".text-component", "click", function () {
     const index = parseInt($(this).data("index"));
     const component = textComponents[index];
+
+    deselectOtherComponents(textTr);
+
     let textNode = new Konva.Text({
       text: component.label,
       x: width / 2 - 100,
@@ -295,9 +305,10 @@ $(function () {
     });
 
     textNode.on("click", function (e) {
-      console.log("aaaaaa", this);
+      console.log("Text node is clicked ", this);
       textTr.show();
       textTr.forceUpdate();
+      deselectOtherComponents(textTr);
       const isSelected = textTr.nodes().indexOf(e.target) >= 0;
       if (!isSelected) {
         textTr.nodes([this]);
@@ -378,38 +389,6 @@ $(function () {
           textTr.forceUpdate();
         }
 
-        function setTextareaWidth(newWidth) {
-          if (!newWidth) {
-            newWidth = textNode.placeholder.length * textNode.fontSize();
-          }
-
-          let isSafari = /^((?!chrome|android).)*safari/i.test(
-            navigator.userAgent
-          );
-          let isFirefox =
-            navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
-          if (isSafari || isFirefox) {
-            newWidth = Math.ceil(newWidth);
-          }
-
-          let isEdge =
-            document.documentMode || /Edge/.test(navigator.userAgent);
-          if (isEdge) {
-            newWidth += 1;
-          }
-          textarea.style.width = newWidth + "px";
-        }
-
-        // textarea.addEventListener("keydown", function (e) {
-        //   if (e.keyCode === 13 && !e.shiftKey) {
-        //     textNode.text(textarea.value);
-        //     removeTextarea();
-        //   }
-        //   if (e.keyCode === 27) {
-        //     removeTextarea();
-        //   }
-        // });
-
         setTimeout(() => {
           window.addEventListener("click", handleOutsideClick);
         });
@@ -417,10 +396,11 @@ $(function () {
     });
 
     document.addEventListener("keydown", function (event) {
-      let keyCode = event.keyCode;
-      if (keyCode === 46 && tr.nodes().length > 0) {
-        tr.destroy();
-        textNode.destroy();
+      const keyCode = event.keyCode;
+      if (keyCode === 46 && textTr.nodes().length > 0) {
+        let selectedNode = textTr.nodes()[0];
+        selectedNode.destroy();
+        textTr.nodes([]);
       }
     });
   });
@@ -430,7 +410,7 @@ $(function () {
     const imgUrl = backgroundImages[index]; // from init-component file
     let bgImageObj = new Image();
     bgImageObj.src = imgUrl;
-    var bgImage = new Konva.Image({
+    let bgImage = new Konva.Image({
       x: width / 2 - paper.width / 2,
       y: height / 2 - paper.height / 2,
       width: paper.width,
@@ -448,54 +428,118 @@ $(function () {
   $("body").delegate(".photo-component img", "click", function () {
     const index = parseInt($(this).data("index"));
     const imgUrl = photos[index];
-    Konva.Image.fromURL(imgUrl, (img) => {
-      img.setAttrs({
-        x: 80,
-        y: 100,
-        name: "image",
-        draggable: true,
-      });
-      shapeLayer.add(img);
 
-      const tr = new Konva.Transformer({
-        nodes: [img],
-        keepRatio: false,
-        boundBoxFunc: (oldBox, newBox) => {
-          if (newBox.width < 10 || newBox.height < 10) {
-            return oldBox;
-          }
-          return newBox;
-        },
-      });
+    deselectOtherComponents(imageTr);
 
-      trLayer.add(tr);
+    let imageObj = new Image();
+    imageObj.src = imgUrl;
 
-      deselectOtherComponents(tr);
+    let imageNode = new Konva.Image({
+      x: 80,
+      y: 100,
+      image: imageObj,
+      draggable: true,
+    });
+    shapeLayer.add(imageNode);
 
-      document.addEventListener("keydown", function (event) {
-        let keyCode = event.keyCode;
-        if (keyCode === 46 && tr.nodes().length > 0) {
-          tr.destroy();
-          img.destroy();
-        }
-      });
+    imageTr.nodes([imageNode]);
+    imageTr.show();
 
-      img.on("click", function (e) {
-        img.show();
-        tr.show();
+    // deselectOtherComponents(tr);
+    imageNode.on("dragmove", function () {
+      imageTr.nodes([this]);
+      imageTr.show();
+    });
 
-        deselectOtherComponents(tr);
-      });
-
-      img.on("transform", () => {
-        // reset scale on transform
-        img.setAttrs({
-          scaleX: 1,
-          scaleY: 1,
-          width: img.width() * img.scaleX(),
-          height: img.height() * img.scaleY(),
-        });
+    imageNode.on("transform", function () {
+      console.log(
+        "Image transformer active anchor is ",
+        imageTr.getActiveAnchor()
+      );
+      // reset scale on transform
+      imageNode.setAttrs({
+        scaleX: 1,
+        scaleY: 1,
+        width: imageNode.width() * imageNode.scaleX(),
+        height: imageNode.height() * imageNode.scaleY(),
       });
     });
+
+    imageNode.on("click", function (e) {
+      console.log("image node is clicked ", this);
+      deselectOtherComponents(imageTr);
+      imageTr.show();
+      imageNode.show();
+      imageTr.forceUpdate();
+      imageTr.nodes([this]);
+    });
+
+    document.addEventListener("keydown", function (e) {
+      const keyCode = e.keyCode;
+      if (keyCode === 46 && imageTr.nodes().length > 0) {
+        let selectedNode = imageTr.nodes()[0];
+        selectedNode.destroy();
+        imageTr.nodes([]);
+      }
+    });
+    //   imageNode.setAttrs({
+    //     x: 80,
+    //     y: 100,
+    //     name: "image",
+    //     draggable: true,
+    //   });
+    //   shapeLayer.add(imageNode);
+
+    //   // const tr = new Konva.Transformer({
+    //   //   nodes: [imageNode],
+    //   //   keepRatio: false,
+    //   //   boundBoxFunc: (oldBox, newBox) => {
+    //   //     if (newBox.width < 10 || newBox.height < 10) {
+    //   //       return oldBox;
+    //   //     }
+    //   //     return newBox;
+    //   //   },
+    //   // });
+
+    //   // trLayer.add(tr);
+    //   imageTr.nodes([imageNode]);
+    //   imageTr.show();
+
+    //   // deselectOtherComponents(tr);
+    //   imageNode.on("dragmove", function () {
+    //     imageTr.nodes([this]);
+    //     imageTr.show();
+    //   });
+
+    //   imageNode.on("transform", function () {
+    //     console.log(
+    //       "Image transformer active anchor is ",
+    //       imageTr.getActiveAnchor()
+    //     );
+    //     // reset scale on transform
+    //     imageNode.setAttrs({
+    //       scaleX: 1,
+    //       scaleY: 1,
+    //       width: imageNode.width() * imageNode.scaleX(),
+    //       height: imageNode.height() * imageNode.scaleY(),
+    //     });
+    //   });
+
+    //   imageNode.on("click", function (e) {
+    //     console.log("image node is clicked ", this);
+    //     imageTr.show();
+    //     imageNode.show();
+    //     imageTr.forceUpdate();
+    //     imageTr.nodes([this]);
+    //   });`
+
+    //   document.addEventListener("keydown", function (event) {
+    //     let keyCode = event.keyCode;
+    //     if (keyCode === 46 && tr.nodes().length > 0) {
+    //       tr.destroy();
+    //       imageNode.destroy();
+    //     }
+    //   });
+    // });
   });
 });
