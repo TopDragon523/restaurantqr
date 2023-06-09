@@ -1,11 +1,11 @@
 $(function () {
   let id = 0;
-  let nodeList = [];
+  let nodeList = { Text: 1, Image: 2 };
   let width = $("#stage").width();
   let height = $("#stage").height();
-  let paper = { width: 499, height: 709 };
+  const paper = { width: 499, height: 709 };
 
-  console.log("width and height is ", width, height);
+  // create stage
   let stage = new Konva.Stage({
     container: "stage",
     width,
@@ -13,135 +13,69 @@ $(function () {
   });
 
   // create three layers
-  let bgLayer = new Konva.Layer({ id: "bgLayer", listening: false });
-  let maskLayer = new Konva.Layer({ id: "maskLayer", listening: false });
-  let trLayer = new Konva.Layer({ id: "trLayer", listening: true });
-  let shapeLayer = new Konva.Layer({ id: "shapeLayer", listening: true });
+  let layer = new Konva.Layer({ id: "layer", listening: true });
 
-  stage.add(bgLayer);
-  stage.add(shapeLayer);
-  stage.add(maskLayer);
-  stage.add(trLayer);
-  trLayer.moveToTop();
-  bgLayer.moveToBottom();
-
-  let maskRect = new Konva.Rect({
-    x: 0,
-    y: 0,
-    width,
-    height,
-    fill: "lightgrey",
-    opacity: 0.8,
-  });
-  let hole = new Konva.Rect({
+  let whiteRect = new Konva.Image({
     x: width / 2 - paper.width / 2,
     y: height / 2 - paper.height / 2,
     width: paper.width,
     height: paper.height,
-    fill: "white",
+    image: null,
+    listening: false,
   });
 
-  maskLayer.add(maskRect);
-  hole.globalCompositeOperation("destination-out");
-  maskLayer.add(hole);
+  let shapeGroup = new Konva.Group();
 
-  // pervent the default  browser zooming by mouse wheel
-  stage.container().addEventListener("wheel", function (e) {
-    if (e.shiftKey) {
-      return;
-    }
-    e.preventDefault();
+  var maskRect = new Konva.Shape({
+    x: 0,
+    y: 0,
+    listening: false,
+    sceneFunc: function (context) {
+      context.beginPath();
+      context.rect(0, 0, width, height);
+
+      context.moveTo(
+        width / 2 - paper.width / 2,
+        height / 2 - paper.height / 2
+      );
+      context.lineTo(
+        width / 2 - paper.width / 2,
+        height / 2 + paper.height / 2
+      );
+      context.lineTo(
+        width / 2 + paper.width / 2,
+        height / 2 + paper.height / 2
+      );
+      context.lineTo(
+        width / 2 + paper.width / 2,
+        height / 2 - paper.height / 2
+      );
+      context.closePath();
+      context.fillStrokeShape(this);
+    },
+    fill: "lightgrey",
+    opacity: 0.8,
   });
 
-  // Selection Part
   let selectionTr = new Konva.Transformer({
     rotationSnaps: [0, 45, 90, 135, 180, -45, -90, -135],
-    rotateAnchorOffset: 60,
   });
-  let textTr = new Konva.Transformer({
-    enabledAnchors: [
-      "top-left",
-      "top-right",
-      "bottom-left",
-      "bottom-right",
-      "middle-left",
-      "middle-right",
-    ],
-    keepRatio: true,
-  });
-  let imageTr = new Konva.Transformer({
-    enabledAnchors: [
-      "top-left",
-      "top-right",
-      "bottom-left",
-      "bottom-right",
-      "middle-left",
-      "middle-right",
-      "top-center",
-      "bottom-center",
-    ],
-    boundBoxFunc: (oldBox, newBox) => {
-      if (newBox.width < 10 || newBox.height < 10) {
-        return oldBox;
-      }
-      return newBox;
-    },
-  });
-  trLayer.add(selectionTr);
-  trLayer.add(textTr);
-  trLayer.add(imageTr);
-  console.log("textTr ", textTr);
-  selectionTr.nodes(nodeList);
 
   let selectionRectangle = new Konva.Rect({
     fill: "#9ad1e7",
-    stroke: "#20abe2",
+    stroke: "#1071ea",
     opacity: 0.5,
     visible: false,
   });
-  trLayer.add(selectionRectangle);
+  // set ordering layer
+  stage.add(layer);
+  layer.add(whiteRect);
+  layer.add(shapeGroup);
+  layer.add(maskRect);
+  layer.add(selectionRectangle);
+  layer.add(selectionTr);
 
   // clicks should select/deselect shapes
-  stage.on("click", function (e) {
-    console.log("click target event ", e.target.getClassName());
-    // if we are selecting with rect, do nothing
-    if (selectionRectangle.width() !== 0 && selectionRectangle.height() !== 0) {
-      return;
-    }
-    // if click on empty area - remove all selections
-    if (e.target.getClassName() == "Stage") {
-      deselectAllComponents();
-      return;
-    }
-
-    // do nothing if clicked NOT on our rectangles
-    if (!e.target.hasName("rect")) {
-      return;
-    }
-
-    // // do we pressed shift or ctrl?
-    // const metaPressed = e.evt.shiftKey || e.evt.ctrlKey || e.evt.metaKey;
-    // const isSelected = selectionTr.nodes().indexOf(e.target) >= 0;
-
-    // if (!metaPressed && !isSelected) {
-    //   // if no key pressed and the node is not selected
-    //   // select just one
-    //   console.log("is selected this target ", isSelected);
-    //   deselectAllComponents();
-    //   selectionTr.nodes([e.target]);
-    // } else if (metaPressed && isSelected) {
-    //   // if we pressed keys and node was selected
-    //   // we need to remove it from selection:
-    //   const nodes = selectionTr.nodes().slice(); // use slice to have new copy of array
-    //   // remove node from array
-    //   nodes.splice(nodes.indexOf(e.target), 1);
-    //   selectionTr.nodes(nodes);
-    // } else if (metaPressed && !isSelected) {
-    //   // add the node into selection
-    //   const nodes = selectionTr.nodes().concat([e.target]);
-    //   selectionTr.nodes(nodes);
-    // }
-  });
 
   stage.on("mousedown touchstart", (e) => {
     // do nothing if we mousedown on any shape
@@ -177,78 +111,72 @@ $(function () {
   });
 
   stage.on("mouseup touchend", (e) => {
-    // do nothing if we didn't start selection
     if (!selectionRectangle.visible()) {
       return;
     }
+
     e.evt.preventDefault();
-    // update visibility in timeout, so we can check it in click event
+
     setTimeout(() => {
       selectionRectangle.visible(false);
     });
 
-    let shapes = shapeLayer.getChildren(function (node) {
-      if (
-        node.getClassName() !== "Transformer" &&
-        node.getClassName() !== "Stage" &&
-        node.getClassName() !== "Rect"
-      ) {
-        return node;
-      }
-    });
-
-    let trList = shapeLayer.getChildren(function (node) {
-      if (node.getClassName() === "Transformer") {
-        return node;
-      }
-    });
+    let shapes = shapeGroup.getChildren();
 
     let box = selectionRectangle.getClientRect();
 
     let selected = shapes.filter((shape) =>
       Konva.Util.haveIntersection(box, shape.getClientRect())
     );
-    let selectedTrs = trList.filter((tr) =>
-      Konva.Util.haveIntersection(box, tr.getClientRect())
-    );
-    selectedTrs.map((tr) => {
-      tr.show();
-      tr.forceUpdate();
-    });
+
+    if (selected.length === 1) {
+      const nodeType = selected[0].getClassName();
+      handleTransformer(nodeList[nodeType]);
+    } else {
+      handleTransformer(0);
+    }
     selectionTr.nodes(selected);
+    selectionTr.show();
   });
 
-  function deselectOtherComponents(currentTransformer) {
-    trLayer.getChildren(function (node) {
-      if (
-        node.getClassName() === "Transformer" &&
-        node !== currentTransformer
-      ) {
-        node.nodes([]);
-        node.hide();
-        node.forceUpdate();
-      }
-    });
-  }
+  stage.on("click tap", function (e) {
+    console.log("click target event ", e.target.getClassName());
+    if (selectionRectangle.width() !== 0 || selectionRectangle.height() !== 0) {
+      return;
+    }
 
-  function deselectAllComponents() {
-    selectionTr.nodes([]);
-    textTr.nodes([]);
-    imageTr.nodes([]);
-    trLayer.getChildren(function (node) {
-      if (node.getClassName() === "Transformer") {
-        node.hide();
-        node.forceUpdate();
-      }
-    });
-  }
+    if (e.target.getClassName() == "Stage") {
+      deselectAllComponents();
+      return;
+    }
+    // // do we pressed shift or ctrl?
+    // const metaPressed = e.evt.shiftKey || e.evt.ctrlKey || e.evt.metaKey;
+    // const isSelected = selectionTr.nodes().indexOf(e.target) >= 0;
+
+    // if (!metaPressed && !isSelected) {
+    //   // if no key pressed and the node is not selected
+    //   // select just one
+    //   console.log("is selected this target ", isSelected);
+    //   deselectAllComponents();
+    //   selectionTr.nodes([e.target]);
+    // } else if (metaPressed && isSelected) {
+    //   // if we pressed keys and node was selected
+    //   // we need to remove it from selection:
+    //   const nodes = selectionTr.nodes().slice(); // use slice to have new copy of array
+    //   // remove node from array
+    //   nodes.splice(nodes.indexOf(e.target), 1);
+    //   selectionTr.nodes(nodes);
+    // } else if (metaPressed && !isSelected) {
+    //   // add the node into selection
+    //   const nodes = selectionTr.nodes().concat([e.target]);
+    //   selectionTr.nodes(nodes);
+    // }
+  });
 
   // handle the toolbox tab
   $("body").delegate(".text-component", "click", function () {
     const index = parseInt($(this).data("index"));
     const component = textComponents[index];
-
-    deselectOtherComponents(textTr);
 
     let textNode = new Konva.Text({
       text: component.label,
@@ -263,24 +191,27 @@ $(function () {
       fill: component.style.color,
       id: "text-" + id,
     });
-    shapeLayer.add(textNode);
+    shapeGroup.add(textNode);
 
     console.log(textNode);
-    nodeList.push(textNode);
     id++;
 
-    textTr.nodes([textNode]);
-    textTr.show();
+    handleTransformer(1);
+    selectionTr.nodes([textNode]);
+    selectionTr.show();
 
-    textNode.on("dragmove", function () {
-      textTr.nodes([this]);
-      textTr.show();
-    });
+    // textNode.on("dragmove", function () {
+    //   selectionTr.nodes([this]);
+    //   // if (selectionTr.nodes().indexOf(this) > -1) {
+    //   //   textTr.hide();
+    //   // } else {
+    //   selectionTr.show();
+    //   // }
+    // });
 
     textNode.on("transform", function () {
-      console.log("hello", textTr.getActiveAnchor());
-
-      const activeAnchor = textTr.getActiveAnchor();
+      console.log("Selected  active anchor is ", selectionTr.getActiveAnchor());
+      const activeAnchor = selectionTr.getActiveAnchor();
       switch (activeAnchor) {
         case "top-left":
         case "top-right":
@@ -293,7 +224,6 @@ $(function () {
           break;
         case "middle-left":
         case "middle-right":
-          console.log("Transformer", textTr.scaleX(), textTr.scaleY());
           this.width(Math.max(200, this.width() * this.scaleX()));
           break;
         case "rotator":
@@ -301,17 +231,18 @@ $(function () {
       }
       this.scaleX(1);
       this.scaleY(1);
-      textTr.forceUpdate();
+      selectionTr.forceUpdate();
     });
 
-    textNode.on("click", function (e) {
+    textNode.on("click touchend", function (e) {
       console.log("Text node is clicked ", this);
-      textTr.show();
-      textTr.forceUpdate();
-      deselectOtherComponents(textTr);
-      const isSelected = textTr.nodes().indexOf(e.target) >= 0;
+      handleTransformer(1);
+      selectionTr.show();
+      selectionTr.forceUpdate();
+
+      const isSelected = selectionTr.nodes().indexOf(e.target) >= 0;
       if (!isSelected) {
-        textTr.nodes([this]);
+        selectionTr.nodes([this]);
       } else {
         textNode.hide();
 
@@ -360,19 +291,20 @@ $(function () {
         transform += "translateY(-" + px + "px)";
 
         textarea.style.transform = transform;
-
-        // reset height
-        textarea.style.height = "auto";
-        textarea.style.height = textarea.scrollHeight + 3 + "px";
-
         textarea.focus();
 
         textarea.addEventListener("input", function (e) {
-          textarea.style.height =
-            textarea.scrollHeight + textNode.fontSize() + "px";
+          e.preventDefault();
+          textarea.style.height = "auto";
+          if (textarea.clientHeight >= textarea.scrollHeight) {
+            textarea.style.height =
+              textarea.scrollHeight - textNode.fontSize() + "px";
+          } else {
+            textarea.style.height = textarea.scrollHeight + "px";
+          }
 
           textNode.text(textarea.value);
-          textTr.forceUpdate();
+          selectionTr.forceUpdate();
         });
 
         function handleOutsideClick(e) {
@@ -382,11 +314,11 @@ $(function () {
         }
 
         function removeTextarea() {
+          console.log("aaaaaaaaaaaaaaaa");
           textarea.parentNode.removeChild(textarea);
           window.removeEventListener("click", handleOutsideClick);
           textNode.show();
-          textTr.hide();
-          textTr.forceUpdate();
+          deselectAllComponents();
         }
 
         setTimeout(() => {
@@ -397,39 +329,19 @@ $(function () {
 
     document.addEventListener("keydown", function (event) {
       const keyCode = event.keyCode;
-      if (keyCode === 46 && textTr.nodes().length > 0) {
-        let selectedNode = textTr.nodes()[0];
+      if (keyCode === 46 && selectionTr.nodes().length > 0) {
+        let selectedNode = selectionTr.nodes()[0];
         selectedNode.destroy();
-        textTr.nodes([]);
+        selectionTr.nodes([]);
       }
     });
-  });
-
-  $("body").delegate(".background-component img", "click", function () {
-    const index = parseInt($(this).data("index"));
-    const imgUrl = backgroundImages[index]; // from init-component file
-    let bgImageObj = new Image();
-    bgImageObj.src = imgUrl;
-    let bgImage = new Konva.Image({
-      x: width / 2 - paper.width / 2,
-      y: height / 2 - paper.height / 2,
-      width: paper.width,
-      height: paper.height,
-      image: bgImageObj,
-    });
-    bgLayer.add(bgImage);
-    // let container = stage.container();
-    // container.style.backgroundImage = `url(${imgUrl})`;
-    // container.style.backgroundSize = "cover";
-    // container.style.backgroundRepeat = "no-repeat";
-    // container.style.backgroundPosition = "center center";
   });
 
   $("body").delegate(".photo-component img", "click", function () {
     const index = parseInt($(this).data("index"));
     const imgUrl = photos[index];
 
-    deselectOtherComponents(imageTr);
+    deselectAllComponents();
 
     let imageObj = new Image();
     imageObj.src = imgUrl;
@@ -440,21 +352,26 @@ $(function () {
       image: imageObj,
       draggable: true,
     });
-    shapeLayer.add(imageNode);
+    shapeGroup.add(imageNode);
 
-    imageTr.nodes([imageNode]);
-    imageTr.show();
+    handleTransformer(2);
+    selectionTr.nodes([imageNode]);
+    selectionTr.show();
 
-    // deselectOtherComponents(tr);
-    imageNode.on("dragmove", function () {
-      imageTr.nodes([this]);
-      imageTr.show();
-    });
+    // deselectAllComponents(tr);
+    // imageNode.on("dragmove", function () {
+    //   selectionTr.nodes([this]);
+    //   // if (selectionTr.nodes().indexOf(this) > -1) {
+    //   //   selectionTr.hide();
+    //   // } else {
+    //   selectionTr.show();
+    //   // }
+    // });
 
     imageNode.on("transform", function () {
       console.log(
         "Image transformer active anchor is ",
-        imageTr.getActiveAnchor()
+        selectionTr.getActiveAnchor()
       );
       // reset scale on transform
       imageNode.setAttrs({
@@ -465,81 +382,92 @@ $(function () {
       });
     });
 
-    imageNode.on("click", function (e) {
+    imageNode.on("click touchend", function (e) {
       console.log("image node is clicked ", this);
-      deselectOtherComponents(imageTr);
-      imageTr.show();
+      handleTransformer(2);
+      deselectAllComponents();
+      selectionTr.nodes([this]);
+      selectionTr.show();
       imageNode.show();
-      imageTr.forceUpdate();
-      imageTr.nodes([this]);
+      selectionTr.forceUpdate();
     });
 
     document.addEventListener("keydown", function (e) {
       const keyCode = e.keyCode;
-      if (keyCode === 46 && imageTr.nodes().length > 0) {
-        let selectedNode = imageTr.nodes()[0];
+      if (keyCode === 46 && selectionTr.nodes().length > 0) {
+        let selectedNode = selectionTr.nodes()[0];
         selectedNode.destroy();
-        imageTr.nodes([]);
+        selectionTr.nodes([]);
       }
     });
-    //   imageNode.setAttrs({
-    //     x: 80,
-    //     y: 100,
-    //     name: "image",
-    //     draggable: true,
-    //   });
-    //   shapeLayer.add(imageNode);
-
-    //   // const tr = new Konva.Transformer({
-    //   //   nodes: [imageNode],
-    //   //   keepRatio: false,
-    //   //   boundBoxFunc: (oldBox, newBox) => {
-    //   //     if (newBox.width < 10 || newBox.height < 10) {
-    //   //       return oldBox;
-    //   //     }
-    //   //     return newBox;
-    //   //   },
-    //   // });
-
-    //   // trLayer.add(tr);
-    //   imageTr.nodes([imageNode]);
-    //   imageTr.show();
-
-    //   // deselectOtherComponents(tr);
-    //   imageNode.on("dragmove", function () {
-    //     imageTr.nodes([this]);
-    //     imageTr.show();
-    //   });
-
-    //   imageNode.on("transform", function () {
-    //     console.log(
-    //       "Image transformer active anchor is ",
-    //       imageTr.getActiveAnchor()
-    //     );
-    //     // reset scale on transform
-    //     imageNode.setAttrs({
-    //       scaleX: 1,
-    //       scaleY: 1,
-    //       width: imageNode.width() * imageNode.scaleX(),
-    //       height: imageNode.height() * imageNode.scaleY(),
-    //     });
-    //   });
-
-    //   imageNode.on("click", function (e) {
-    //     console.log("image node is clicked ", this);
-    //     imageTr.show();
-    //     imageNode.show();
-    //     imageTr.forceUpdate();
-    //     imageTr.nodes([this]);
-    //   });`
-
-    //   document.addEventListener("keydown", function (event) {
-    //     let keyCode = event.keyCode;
-    //     if (keyCode === 46 && tr.nodes().length > 0) {
-    //       tr.destroy();
-    //       imageNode.destroy();
-    //     }
-    //   });
-    // });
   });
+
+  $("body").delegate(".background-component img", "click", function () {
+    const index = parseInt($(this).data("index"));
+    const imgUrl = backgroundImages[index]; // from init-component file
+
+    let bgImageObj = new Image();
+    bgImageObj.src = imgUrl;
+    whiteRect.image(bgImageObj);
+  });
+
+  // pervent the default  browser zooming by mouse wheel
+  stage.container().addEventListener("wheel", function (e) {
+    if (e.shiftKey) {
+      return;
+    }
+    e.preventDefault();
+  });
+
+  function handleTransformer(index) {
+    // selectionnode : 0
+    // textnode : 1
+    // imagenode : 2
+    switch (index) {
+      case 0:
+        selectionTr.setAttrs({
+          enabledAnchors: [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right",
+          ],
+        });
+        break;
+      case 1:
+        selectionTr.setAttrs({
+          enabledAnchors: [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right",
+            "middle-left",
+            "middle-right",
+          ],
+        });
+        break;
+      case 2:
+        selectionTr.setAttrs({
+          enabledAnchors: [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right",
+            "middle-left",
+            "middle-right",
+            "top-center",
+            "bottom-center",
+          ],
+        });
+        break;
+    }
+  }
+
+  function deselectAllComponents() {
+    console.log("this is desel");
+    selected = [];
+    selectionTr.hide();
+    selectionTr.nodes([]);
+    selectionTr.forceUpdate();
+  }
 });
