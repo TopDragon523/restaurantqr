@@ -772,8 +772,8 @@ include("header.php");
 	<div class="content-body">
 		<!-- row -->
 		<div id="stage">
-			<div id="container">
-			</div>
+			<!-- <div id="container">
+			</div> -->
 		</div>
 		<!--**********************************Content body end***********************************-->
 

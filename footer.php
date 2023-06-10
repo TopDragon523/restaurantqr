@@ -32,7 +32,7 @@
 		<!-- <script src="js/dashboard/dashboard-1.js"></script> -->
 
 		<!-- konva script -->
-		<script src="https://unpkg.com/konva@9.0.2/konva.min.js"></script>
+		<script src="https://unpkg.com/konva@9.2.0/konva.min.js"></script>
 		<script src="js/canvas.js"></script>
 
 		</body>

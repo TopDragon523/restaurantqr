@@ -96,6 +96,7 @@ a {
 .content-body {
 	height: 100%;
 	#stage {
+		width : calc(1000vw - 22rem);
 		height: calc(100vh - 5rem);
 		display: flex;
 	}

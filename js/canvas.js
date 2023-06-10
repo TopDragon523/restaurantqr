@@ -1,45 +1,92 @@
 $(function () {
-  // const B5_DIEMENSION = { width: 499, height: 709 };
   let id = 0;
-  let nodeList = [];
-  var width = $("#container").width();
-  var height = $("#container").height();
+  let nodeList = { Text: 1, Image: 2 };
+  let width = $("#stage").width();
+  let height = $("#stage").height();
+  let x1, y1, x2, y2;
+  const paper = { width: 499, height: 709 };
 
-  console.log("width and height is ", width, height);
-  var stage = new Konva.Stage({
-    container: "container",
+  // create stage
+  let stage = new Konva.Stage({
+    container: "stage",
     width,
     height,
   });
-  console.log("stage diemenstion ", stage.width(), stage.height());
 
-  stage.container().addEventListener("wheel", function (e) {
-    if (e.shiftKey) {
-      return;
-    }
-    e.preventDefault();
+  // create three layers
+  let layer = new Konva.Layer({ id: "layer", listening: true });
+
+  let whiteRect = new Konva.Image({
+    x: width / 2 - paper.width / 2,
+    y: height / 2 - paper.height / 2,
+    width: paper.width,
+    height: paper.height,
+    image: null,
+    listening: false,
   });
 
-  var workingArea = new Konva.Layer();
+  let shapeGroup = new Konva.Group();
 
-  workingArea.clip(true);
-  stage.add(workingArea);
+  var maskRect = new Konva.Shape({
+    x: 0,
+    y: 0,
+    listening: false,
+    sceneFunc: function (context) {
+      context.beginPath();
+      context.rect(0, 0, width, height);
 
-  // Selection Part
-  var selectionTr = new Konva.Transformer();
-  workingArea.add(selectionTr);
+      context.moveTo(
+        width / 2 - paper.width / 2,
+        height / 2 - paper.height / 2
+      );
+      context.lineTo(
+        width / 2 - paper.width / 2,
+        height / 2 + paper.height / 2
+      );
+      context.lineTo(
+        width / 2 + paper.width / 2,
+        height / 2 + paper.height / 2
+      );
+      context.lineTo(
+        width / 2 + paper.width / 2,
+        height / 2 - paper.height / 2
+      );
+      context.closePath();
+      context.fillStrokeShape(this);
+    },
+    fill: "lightgrey",
+    opacity: 0.8,
+  });
 
-  // by default select all shapes
-  selectionTr.nodes(nodeList);
-  // add a new feature, lets add ability to draw selection rectangle
-  var selectionRectangle = new Konva.Rect({
-    fill: '#00a1ff82',
+  let selectionTr = new Konva.Transformer({
+    borderStroke: "#00a1ff",
+    borderStrokeWidth: 2,
+    anchorStroke: "#00a1ff",
+    anchorStrokeWidth: 2,
+    rotationSnaps: [0, 45, 90, 135, 180, -45, -90, -135],
+  });
+
+  let selectionRectangle = new Konva.Rect({
+    x: -1,
+    y: -1,
+    width: 0,
+    height: 0,
+    fill: "#9ad1e7",
+    stroke: "#1071ea",
+    opacity: 0.5,
     visible: false,
   });
-  workingArea.add(selectionRectangle);
+  // set ordering layer
+  stage.add(layer);
+  layer.add(whiteRect);
+  layer.add(shapeGroup);
+  layer.add(maskRect);
+  layer.add(selectionRectangle);
+  layer.add(selectionTr);
 
-  var x1, y1, x2, y2;
-  stage.on('mousedown touchstart', (e) => {
+  // clicks should select/deselect shapes
+
+  stage.on("mousedown touchstart", (e) => {
     // do nothing if we mousedown on any shape
     if (e.target !== stage) {
       return;
@@ -55,7 +102,7 @@ $(function () {
     selectionRectangle.height(0);
   });
 
-  stage.on('mousemove touchmove', (e) => {
+  stage.on("mousemove touchmove", (e) => {
     // do nothing if we didn't start selection
     if (!selectionRectangle.visible()) {
       return;
@@ -64,358 +111,368 @@ $(function () {
     x2 = stage.getPointerPosition().x;
     y2 = stage.getPointerPosition().y;
 
+    console.log("aaaaaaaa", x2, y2);
+
     selectionRectangle.setAttrs({
       x: Math.min(x1, x2),
       y: Math.min(y1, y2),
       width: Math.abs(x2 - x1),
       height: Math.abs(y2 - y1),
     });
+    // // inint rectanlge when the cursor reach edge of stage
+    // if (x2 < 1 || x2 > stage.width() - 1 || y2 < 1 || y2 > stage.height() - 1) {
+    //   setTimeout(() => {
+    //     selectionRectangle.visible(false);
+    //   });
+    //   selectionRectangle.x(-1);
+    //   selectionRectangle.y(-1);
+    //   return;
+    // }
+    layer.batchDraw();
   });
 
-  stage.on('mouseup touchend', (e) => {
-    // do nothing if we didn't start selection
+  stage.on("mouseup touchend", (e) => {
     if (!selectionRectangle.visible()) {
       return;
     }
+
     e.evt.preventDefault();
-    // update visibility in timeout, so we can check it in click event
+
     setTimeout(() => {
       selectionRectangle.visible(false);
     });
 
-    var shapes = workingArea.getChildren(function (node) {
-      if (node.getClassName() !== 'Transformer' && node.getClassName() !== 'Stage' && node.getClassName() !== 'Rect') {
-        return node;
+    let shapes = shapeGroup.getChildren();
+    let box = selectionRectangle.getClientRect();
+
+    // reset selectioni rectangle
+    selectionRectangle.x(-1);
+    selectionRectangle.y(-1);
+
+    // only check selected  shapes  when mousemove event only
+    if (box.x !== -2 && box.y !== -2) {
+      let selected = shapes.filter((shape) =>
+        Konva.Util.haveIntersection(box, shape.getClientRect())
+      );
+
+      if (selected.length === 1) {
+        const nodeType = selected[0].getClassName();
+        handleTransformer(nodeList[nodeType]);
+      } else {
+        handleTransformer(0);
       }
-    });
-
-    var trList = workingArea.getChildren(function (node) {
-      if (node.getClassName() === 'Transformer') {
-        return node;
-      }
-    });
-
-    var box = selectionRectangle.getClientRect();
-    var selected = shapes.filter((shape) =>
-      Konva.Util.haveIntersection(box, shape.getClientRect())
-    );
-    var selectedTrs = trList.filter((shape) =>
-      Konva.Util.haveIntersection(box, shape.getClientRect())
-    );
-    selectedTrs.map((shape) => {
-      shape.show();
-      shape.forceUpdate();
-    });
-    selectionTr.nodes(selected);
-  });
-
-  // clicks should select/deselect shapes
-  stage.on('click tap', function (e) {
-    // if we are selecting with rect, do nothing
-    if (selectionRectangle.visible()) {
-      return;
-    }
-
-    // if click on empty area - remove all selections
-    if (e.target === stage) {
-      selectionTr.nodes([]);
-      return;
-    }
-
-    // do nothing if clicked NOT on our rectangles
-    if (!e.target.hasName('rect')) {
-      return;
-    }
-
-    // do we pressed shift or ctrl?
-    const metaPressed = e.evt.shiftKey || e.evt.ctrlKey || e.evt.metaKey;
-    const isSelected = selectionTr.nodes().indexOf(e.target) >= 0;
-
-    if (!metaPressed && !isSelected) {
-      // if no key pressed and the node is not selected
-      // select just one
-      selectionTr.nodes([e.target]);
-    } else if (metaPressed && isSelected) {
-      // if we pressed keys and node was selected
-      // we need to remove it from selection:
-      const nodes = selectionTr.nodes().slice(); // use slice to have new copy of array
-      // remove node from array
-      nodes.splice(nodes.indexOf(e.target), 1);
-      selectionTr.nodes(nodes);
-    } else if (metaPressed && !isSelected) {
-      // add the node into selection
-      const nodes = selectionTr.nodes().concat([e.target]);
-      selectionTr.nodes(nodes);
+      selectionTr.nodes(selected);
+      selectionTr.show();
     }
   });
-  // Selection Part
 
-  function deselectOtherComponents(currentTransformer) {
-    workingArea.getChildren(function (node) {
-      if (node.getClassName() === 'Transformer' && node !== currentTransformer) {
-        node.hide();
-        node.forceUpdate();
-      }
-    });
-  }
+  stage.on("click tap", function (e) {
+    console.log("click target event ", e.target.getClassName());
+    if (selectionRectangle.width() !== 0 || selectionRectangle.height() !== 0) {
+      return;
+    }
 
-  function deselectAllComponents() {
-    workingArea.getChildren(function (node) {
-      if (node.getClassName() === 'Transformer') {
-        node.hide();
-        node.forceUpdate();
-      }
-    });
-  }
-
-  stage.on('click', function (evt) {
-    var shape = evt.target;
-    if (shape.getClassName() == 'Stage') {
+    if (e.target.getClassName() == "Stage") {
       deselectAllComponents();
+      return;
     }
+    // // do we pressed shift or ctrl?
+    // const metaPressed = e.evt.shiftKey || e.evt.ctrlKey || e.evt.metaKey;
+    // const isSelected = selectionTr.nodes().indexOf(e.target) >= 0;
   });
 
+  // handle the toolbox tab
   $("body").delegate(".text-component", "click", function () {
     const index = parseInt($(this).data("index"));
     const component = textComponents[index];
-    var textNode = new Konva.Text({
+
+    let textNode = new Konva.Text({
       text: component.label,
       x: width / 2 - 100,
       y: (height - component.style.fontSize) / 2,
       fontSize: component.style.fontSize,
       fontFamily: component.style.fontFamily,
+      scaleX: 1,
+      scaleY: 1,
       draggable: true,
       width: 200,
       fill: component.style.color,
-      id: 'text-' + id
+      id: "text-" + id,
     });
+    shapeGroup.add(textNode);
 
-    nodeList.push(textNode);
+    console.log(textNode);
     id++;
 
-    workingArea.add(textNode);
-    var tr = new Konva.Transformer({
-      node: textNode,
-      boundBoxFunc: function (oldBox, newBox) {
-        newBox.width = Math.max(30, newBox.width);
-        return newBox;
-      },
-    });
+    handleTransformer(1);
+    selectionTr.nodes([textNode]);
+    selectionTr.show();
 
+    textNode.on("dragmove", function () {
+      selectionTr.show();
+      if (selectionTr.nodes().length < 2) {
+        const nodeX = this.x();
+        const nodeY = this.y();
+
+        handleTransformer(1);
+        selectionTr.nodes([this]);
+        selectionTr.x(nodeX);
+        selectionTr.y(nodeY);
+      } else {
+        handleTransformer(0);
+      }
+      layer.batchDraw(); //prevent redrawing too much
+    });
     textNode.on("transform", function () {
-      textNode.setAttrs({
-        width: textNode.width() * textNode.scaleX(),
-        height: textNode.height() * textNode.scaleY(),
-      });
-      var currentScale = textNode.scaleX();
-
-      textNode.fontSize(textNode.fontSize() * currentScale);
+      const activeAnchor = selectionTr.getActiveAnchor();
+      switch (activeAnchor) {
+        case "top-left":
+        case "top-right":
+        case "bottom-left":
+        case "bottom-right":
+          textNode.setAttrs({
+            width: this.width() * this.scaleX(),
+            fontSize: this.fontSize() * this.scaleX(),
+          });
+          break;
+        case "middle-left":
+        case "middle-right":
+          this.width(Math.max(200, this.width() * this.scaleX()));
+          break;
+        case "rotator":
+          break;
+      }
+      this.scaleX(1);
+      this.scaleY(1);
+      selectionTr.forceUpdate();
     });
 
-    tr.show();
+    textNode.on("click zxc", function (e) {
+      console.log("Text node is clicked ", this);
+      handleTransformer(1);
+      selectionTr.forceUpdate();
+      const isSelected = selectionTr.nodes().indexOf(e.target) >= 0;
+      if (!isSelected) {
+        deselectAllComponents();
+        selectionTr.nodes([this]);
+        selectionTr.show();
+      } else {
+        textNode.hide();
 
-    workingArea.add(tr);
+        let textPosition = textNode.absolutePosition();
+        let areaPosition = {
+          x: stage.container().offsetLeft + textPosition.x,
+          y: stage.container().offsetTop + textPosition.y,
+        };
 
-    deselectOtherComponents(tr);
+        let textarea = document.createElement("textarea");
+        document.body.appendChild(textarea);
 
-    textNode.on("click", function (e) {
-      textNode.show();
-      tr.show();
-
-      deselectOtherComponents(tr);
-    });
-    document.addEventListener('keydown', function(event) {
-      var keyCode = event.keyCode;
-      if (keyCode === 46 && tr.nodes().length > 0) {
-        tr.destroy();
-        textNode.destroy();
-      }
-    });
-
-    textNode.on("dblclick dbltap", function (e) {
-      textNode.hide();
-      tr.show();
-
-      var textPosition = textNode.absolutePosition();
-
-      var areaPosition = {
-        x: stage.container().offsetLeft + textPosition.x,
-        y: stage.container().offsetTop + textPosition.y,
-      };
-
-      var textarea = document.createElement("textarea");
-      document.body.appendChild(textarea);
-
-      textarea.value = textNode.text();
-      textarea.style.position = "absolute";
-      textarea.style.top = areaPosition.y + "px";
-      textarea.style.left = areaPosition.x + "px";
-      textarea.style.width = textNode.width() - textNode.padding() * 2 + "px";
-      textarea.style.height =
-        textNode.height() - textNode.padding() * 2 + 5 + "px";
-      textarea.style.fontSize = textNode.fontSize() + "px";
-      textarea.style.border = "none";
-      textarea.style.padding = "0px";
-      textarea.style.margin = "0px";
-      textarea.style.overflow = "hidden";
-      textarea.style.background = "none";
-      textarea.style.outline = "none";
-      textarea.style.resize = "none";
-      textarea.style.lineHeight = textNode.lineHeight();
-      textarea.style.fontFamily = textNode.fontFamily();
-      textarea.style.transformOrigin = "left top";
-      textarea.style.textAlign = textNode.align();
-      textarea.style.color = textNode.fill();
-      rotation = textNode.rotation();
-      var transform = "";
-      if (rotation) {
-        transform += "rotateZ(" + rotation + "deg)";
-      }
-
-      var px = 0;
-      var isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
-
-      if (isFirefox) {
-        px += 2 + Math.round(textNode.fontSize() / 20);
-      }
-      transform += "translateY(-" + px + "px)";
-
-      textarea.style.transform = transform;
-
-      // reset height
-      textarea.style.height = "auto";
-      textarea.style.height = textarea.scrollHeight + 3 + "px";
-
-      textarea.focus();
-
-      function removeTextarea() {
-        textarea.parentNode.removeChild(textarea);
-        window.removeEventListener("click", handleOutsideClick);
-        textNode.show();
-        tr.hide();
-        tr.forceUpdate();
-      }
-
-      function setTextareaWidth(newWidth) {
-        if (!newWidth) {
-          newWidth = textNode.placeholder.length * textNode.fontSize();
-        }
-
-        var isSafari = /^((?!chrome|android).)*safari/i.test(
-          navigator.userAgent
-        );
-        var isFirefox =
-          navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
-        if (isSafari || isFirefox) {
-          newWidth = Math.ceil(newWidth);
-        }
-
-        var isEdge = document.documentMode || /Edge/.test(navigator.userAgent);
-        if (isEdge) {
-          newWidth += 1;
-        }
-        textarea.style.width = newWidth + "px";
-      }
-
-      textarea.addEventListener("keydown", function (e) {
-        if (e.keyCode === 13 && !e.shiftKey) {
-          textNode.text(textarea.value);
-          removeTextarea();
-        }
-        if (e.keyCode === 27) {
-          removeTextarea();
-        }
-      });
-
-      textarea.addEventListener("keydown", function (e) {
-        scale = textNode.getAbsoluteScale().x;
-        setTextareaWidth(textNode.width() * scale);
-        textarea.style.height = "auto";
+        textarea.value = textNode.text();
+        textarea.style.position = "absolute";
+        textarea.style.top = areaPosition.y + "px";
+        textarea.style.left = areaPosition.x + "px";
+        textarea.style.width = textNode.width() - textNode.padding() * 2 + "px";
         textarea.style.height =
-          textarea.scrollHeight + textNode.fontSize() + "px";
-      });
-
-      textarea.addEventListener("input", function (e) {
-        textNode.height(textarea.offsetHeight);
-        tr.forceUpdate();
-      });
-
-      function handleOutsideClick(e) {
-        if (e.target !== textarea) {
-          textNode.text(textarea.value);
-          removeTextarea();
+          textNode.height() - textNode.padding() * 2 + 5 + "px";
+        textarea.style.fontSize = textNode.fontSize() + "px";
+        textarea.style.border = "none";
+        textarea.style.padding = "0px";
+        textarea.style.margin = "0px";
+        textarea.style.overflow = "hidden";
+        textarea.style.background = "none";
+        textarea.style.outline = "none";
+        textarea.style.resize = "none";
+        textarea.style.lineHeight = textNode.lineHeight();
+        textarea.style.fontFamily = textNode.fontFamily();
+        textarea.style.transformOrigin = "left top";
+        textarea.style.textAlign = textNode.align();
+        textarea.style.color = textNode.fill();
+        rotation = textNode.rotation();
+        let transform = "";
+        if (rotation) {
+          transform += "rotateZ(" + rotation + "deg)";
         }
-      }
-      setTimeout(() => {
-        window.addEventListener("click", handleOutsideClick);
-      });
-    });
-  });
 
-  $("body").delegate(".background-component img", "click", function () {
-    const index = parseInt($(this).data("index"));
-    const imgUrl = backgroundImages[index];
-    var container = stage.container();
-    container.style.backgroundImage = `url(${imgUrl})`;
-    container.style.backgroundSize = "cover";
-    container.style.backgroundRepeat = "no-repeat";
-    container.style.backgroundPosition = "center center";
+        let px = 0;
+        let isFirefox =
+          navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+
+        if (isFirefox) {
+          px += 2 + Math.round(textNode.fontSize() / 20);
+        }
+        transform += "translateY(-" + px + "px)";
+
+        textarea.style.transform = transform;
+        textarea.focus();
+
+        textarea.addEventListener("input", function (e) {
+          e.preventDefault();
+          textarea.style.height = "auto";
+          if (textarea.clientHeight >= textarea.scrollHeight) {
+            textarea.style.height =
+              textarea.scrollHeight - textNode.fontSize() + "px";
+          } else {
+            textarea.style.height = textarea.scrollHeight + "px";
+          }
+
+          textNode.text(textarea.value);
+          selectionTr.forceUpdate();
+        });
+
+        function handleOutsideClick(e) {
+          if (e.target !== textarea) {
+            removeTextarea();
+          }
+        }
+
+        function removeTextarea() {
+          textarea.parentNode.removeChild(textarea);
+          window.removeEventListener("click", handleOutsideClick);
+          textNode.show();
+          deselectAllComponents();
+        }
+
+        setTimeout(() => {
+          window.addEventListener("click", handleOutsideClick);
+        });
+      }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      const keyCode = event.keyCode;
+      if (keyCode === 46 && selectionTr.nodes().length > 0) {
+        let selectedNode = selectionTr.nodes()[0];
+        selectedNode.destroy();
+        selectionTr.nodes([]);
+      }
+    });
   });
 
   $("body").delegate(".photo-component img", "click", function () {
     const index = parseInt($(this).data("index"));
     const imgUrl = photos[index];
-    Konva.Image.fromURL(
-      imgUrl,
-      (img) => {
-        img.setAttrs({
-          x: 80,
-          y: 100,
-          name: 'image',
-          draggable: true,
-        });
-        workingArea.add(img);
 
-        const tr = new Konva.Transformer({
-          nodes: [img],
-          keepRatio: false,
-          boundBoxFunc: (oldBox, newBox) => {
-            if (newBox.width < 10 || newBox.height < 10) {
-              return oldBox;
-            }
-            return newBox;
-          },
-        });
+    deselectAllComponents();
 
-        workingArea.add(tr);
-        
-        deselectOtherComponents(tr);
+    let imageObj = new Image();
+    imageObj.src = imgUrl;
 
-        document.addEventListener('keydown', function(event) {
-          var keyCode = event.keyCode;
-          if (keyCode === 46 && tr.nodes().length > 0) {
-            tr.destroy();
-            img.destroy();
-          }
-        });
+    let imageNode = new Konva.Image({
+      x: 80,
+      y: 100,
+      image: imageObj,
+      draggable: true,
+    });
+    shapeGroup.add(imageNode);
 
-        img.on("click", function (e) {
-          img.show();
-          tr.show();
-    
-          deselectOtherComponents(tr);
-        });
+    handleTransformer(2);
+    selectionTr.nodes([imageNode]);
+    selectionTr.show();
 
-        img.on('transform', () => {
-          // reset scale on transform
-          img.setAttrs({
-            scaleX: 1,
-            scaleY: 1,
-            width: img.width() * img.scaleX(),
-            height: img.height() * img.scaleY(),
-          });
-        });
+    imageNode.on("dragmove", function () {
+      selectionTr.show();
+      if (selectionTr.nodes().length < 2) {
+        const nodeX = imageNode.x();
+        const nodeY = imageNode.y();
+
+        handleTransformer(2);
+        selectionTr.nodes([this]);
+        selectionTr.x(nodeX);
+        selectionTr.y(nodeY);
+      } else {
+        handleTransformer(0);
       }
-    );
+      layer.batchDraw(); //prevent redrawing too much
+    });
+
+    imageNode.on("transform", function () {});
+
+    imageNode.on("click touchend", function (e) {
+      console.log("image node is clicked ", this);
+      handleTransformer(2);
+      deselectAllComponents();
+      selectionTr.nodes([this]);
+      selectionTr.show();
+      imageNode.show();
+      selectionTr.forceUpdate();
+    });
+
+    document.addEventListener("keydown", function (e) {
+      const keyCode = e.keyCode;
+      if (keyCode === 46 && selectionTr.nodes().length > 0) {
+        let selectedNode = selectionTr.nodes()[0];
+        selectedNode.destroy();
+        selectionTr.nodes([]);
+      }
+    });
   });
+
+  $("body").delegate(".background-component img", "click", function () {
+    const index = parseInt($(this).data("index"));
+    const imgUrl = backgroundImages[index]; // from init-component file
+
+    let bgImageObj = new Image();
+    bgImageObj.src = imgUrl;
+    whiteRect.image(bgImageObj);
+  });
+
+  // pervent the default  browser zooming by mouse wheel
+  stage.container().addEventListener("wheel", function (e) {
+    if (e.shiftKey) {
+      return;
+    }
+    e.preventDefault();
+  });
+
+  function handleTransformer(index) {
+    // selectionnode : 0
+    // textnode : 1
+    // imagenode : 2
+    switch (index) {
+      case 0:
+        selectionTr.setAttrs({
+          enabledAnchors: [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right",
+          ],
+        });
+        break;
+      case 1:
+        selectionTr.setAttrs({
+          enabledAnchors: [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right",
+            "middle-left",
+            "middle-right",
+          ],
+        });
+        break;
+      case 2:
+        selectionTr.setAttrs({
+          enabledAnchors: [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right",
+            "middle-left",
+            "middle-right",
+            "top-center",
+            "bottom-center",
+          ],
+        });
+        break;
+    }
+  }
+
+  function deselectAllComponents() {
+    selected = [];
+    selectionTr.hide();
+    selectionTr.nodes([]);
+    selectionTr.forceUpdate();
+  }
 });
