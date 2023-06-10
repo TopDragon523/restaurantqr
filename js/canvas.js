@@ -3,6 +3,7 @@ $(function () {
   let nodeList = { Text: 1, Image: 2 };
   let width = $("#stage").width();
   let height = $("#stage").height();
+  let x1, y1, x2, y2;
   const paper = { width: 499, height: 709 };
 
   // create stage
@@ -58,10 +59,18 @@ $(function () {
   });
 
   let selectionTr = new Konva.Transformer({
+    borderStroke: "#00a1ff",
+    borderStrokeWidth: 2,
+    anchorStroke: "#00a1ff",
+    anchorStrokeWidth: 2,
     rotationSnaps: [0, 45, 90, 135, 180, -45, -90, -135],
   });
 
   let selectionRectangle = new Konva.Rect({
+    x: -1,
+    y: -1,
+    width: 0,
+    height: 0,
     fill: "#9ad1e7",
     stroke: "#1071ea",
     opacity: 0.5,
@@ -102,12 +111,24 @@ $(function () {
     x2 = stage.getPointerPosition().x;
     y2 = stage.getPointerPosition().y;
 
+    console.log("aaaaaaaa", x2, y2);
+
     selectionRectangle.setAttrs({
       x: Math.min(x1, x2),
       y: Math.min(y1, y2),
       width: Math.abs(x2 - x1),
       height: Math.abs(y2 - y1),
     });
+    // // inint rectanlge when the cursor reach edge of stage
+    // if (x2 < 1 || x2 > stage.width() - 1 || y2 < 1 || y2 > stage.height() - 1) {
+    //   setTimeout(() => {
+    //     selectionRectangle.visible(false);
+    //   });
+    //   selectionRectangle.x(-1);
+    //   selectionRectangle.y(-1);
+    //   return;
+    // }
+    layer.batchDraw();
   });
 
   stage.on("mouseup touchend", (e) => {
@@ -122,21 +143,27 @@ $(function () {
     });
 
     let shapes = shapeGroup.getChildren();
-
     let box = selectionRectangle.getClientRect();
 
-    let selected = shapes.filter((shape) =>
-      Konva.Util.haveIntersection(box, shape.getClientRect())
-    );
+    // reset selectioni rectangle
+    selectionRectangle.x(-1);
+    selectionRectangle.y(-1);
 
-    if (selected.length === 1) {
-      const nodeType = selected[0].getClassName();
-      handleTransformer(nodeList[nodeType]);
-    } else {
-      handleTransformer(0);
+    // only check selected  shapes  when mousemove event only
+    if (box.x !== -2 && box.y !== -2) {
+      let selected = shapes.filter((shape) =>
+        Konva.Util.haveIntersection(box, shape.getClientRect())
+      );
+
+      if (selected.length === 1) {
+        const nodeType = selected[0].getClassName();
+        handleTransformer(nodeList[nodeType]);
+      } else {
+        handleTransformer(0);
+      }
+      selectionTr.nodes(selected);
+      selectionTr.show();
     }
-    selectionTr.nodes(selected);
-    selectionTr.show();
   });
 
   stage.on("click tap", function (e) {
@@ -152,25 +179,6 @@ $(function () {
     // // do we pressed shift or ctrl?
     // const metaPressed = e.evt.shiftKey || e.evt.ctrlKey || e.evt.metaKey;
     // const isSelected = selectionTr.nodes().indexOf(e.target) >= 0;
-
-    // if (!metaPressed && !isSelected) {
-    //   // if no key pressed and the node is not selected
-    //   // select just one
-    //   console.log("is selected this target ", isSelected);
-    //   deselectAllComponents();
-    //   selectionTr.nodes([e.target]);
-    // } else if (metaPressed && isSelected) {
-    //   // if we pressed keys and node was selected
-    //   // we need to remove it from selection:
-    //   const nodes = selectionTr.nodes().slice(); // use slice to have new copy of array
-    //   // remove node from array
-    //   nodes.splice(nodes.indexOf(e.target), 1);
-    //   selectionTr.nodes(nodes);
-    // } else if (metaPressed && !isSelected) {
-    //   // add the node into selection
-    //   const nodes = selectionTr.nodes().concat([e.target]);
-    //   selectionTr.nodes(nodes);
-    // }
   });
 
   // handle the toolbox tab
@@ -200,17 +208,22 @@ $(function () {
     selectionTr.nodes([textNode]);
     selectionTr.show();
 
-    // textNode.on("dragmove", function () {
-    //   selectionTr.nodes([this]);
-    //   // if (selectionTr.nodes().indexOf(this) > -1) {
-    //   //   textTr.hide();
-    //   // } else {
-    //   selectionTr.show();
-    //   // }
-    // });
+    textNode.on("dragmove", function () {
+      selectionTr.show();
+      if (selectionTr.nodes().length < 2) {
+        const nodeX = this.x();
+        const nodeY = this.y();
 
+        handleTransformer(1);
+        selectionTr.nodes([this]);
+        selectionTr.x(nodeX);
+        selectionTr.y(nodeY);
+      } else {
+        handleTransformer(0);
+      }
+      layer.batchDraw(); //prevent redrawing too much
+    });
     textNode.on("transform", function () {
-      console.log("Selected  active anchor is ", selectionTr.getActiveAnchor());
       const activeAnchor = selectionTr.getActiveAnchor();
       switch (activeAnchor) {
         case "top-left":
@@ -234,15 +247,15 @@ $(function () {
       selectionTr.forceUpdate();
     });
 
-    textNode.on("click touchend", function (e) {
+    textNode.on("click zxc", function (e) {
       console.log("Text node is clicked ", this);
       handleTransformer(1);
-      selectionTr.show();
       selectionTr.forceUpdate();
-
       const isSelected = selectionTr.nodes().indexOf(e.target) >= 0;
       if (!isSelected) {
+        deselectAllComponents();
         selectionTr.nodes([this]);
+        selectionTr.show();
       } else {
         textNode.hide();
 
@@ -314,7 +327,6 @@ $(function () {
         }
 
         function removeTextarea() {
-          console.log("aaaaaaaaaaaaaaaa");
           textarea.parentNode.removeChild(textarea);
           window.removeEventListener("click", handleOutsideClick);
           textNode.show();
@@ -358,29 +370,23 @@ $(function () {
     selectionTr.nodes([imageNode]);
     selectionTr.show();
 
-    // deselectAllComponents(tr);
-    // imageNode.on("dragmove", function () {
-    //   selectionTr.nodes([this]);
-    //   // if (selectionTr.nodes().indexOf(this) > -1) {
-    //   //   selectionTr.hide();
-    //   // } else {
-    //   selectionTr.show();
-    //   // }
-    // });
+    imageNode.on("dragmove", function () {
+      selectionTr.show();
+      if (selectionTr.nodes().length < 2) {
+        const nodeX = imageNode.x();
+        const nodeY = imageNode.y();
 
-    imageNode.on("transform", function () {
-      console.log(
-        "Image transformer active anchor is ",
-        selectionTr.getActiveAnchor()
-      );
-      // reset scale on transform
-      imageNode.setAttrs({
-        scaleX: 1,
-        scaleY: 1,
-        width: imageNode.width() * imageNode.scaleX(),
-        height: imageNode.height() * imageNode.scaleY(),
-      });
+        handleTransformer(2);
+        selectionTr.nodes([this]);
+        selectionTr.x(nodeX);
+        selectionTr.y(nodeY);
+      } else {
+        handleTransformer(0);
+      }
+      layer.batchDraw(); //prevent redrawing too much
     });
+
+    imageNode.on("transform", function () {});
 
     imageNode.on("click touchend", function (e) {
       console.log("image node is clicked ", this);
@@ -464,7 +470,6 @@ $(function () {
   }
 
   function deselectAllComponents() {
-    console.log("this is desel");
     selected = [];
     selectionTr.hide();
     selectionTr.nodes([]);
