@@ -4,6 +4,26 @@ if (!isset($_SESSION["username"]) || !isset($_SESSION["email"])) {
 	header("location: login.php");
 	exit();
 }
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	include "db.php";
+	$data  = addslashes($_POST["data"]);
+
+	$query = "INSERT INTO templates (thumbnail, save_stage_as_json, createdAt) 
+	VALUES ('" . "thumbnail" . "', '" . $data .  "', NOW());";
+
+	if (mysqli_query($conn, $query)) {
+		$result  = array("status" => true, "message" => "Successfully saved!");
+		echo json_encode($result);
+		die;
+	} else {
+		$result  = array("status" => false, "message" => mysqli_error($conn));
+		echo json_encode($result);
+		die;
+	}
+
+	mysqli_close($conn);
+}
 ?>
 
 <?php
@@ -589,6 +609,11 @@ include("header.php");
 					</div>
 
 					<ul class="navbar-nav header-right">
+						<li id="export" class="nav-item dropdown notification_dropdown">
+							<div class="btn btn-primary header-info nav-link" role="button">
+								<span>Export</span>
+							</div>
+						</li>
 						<li class="nav-item dropdown notification_dropdown">
 							<a class="nav-link dz-fullscreen primary" href="#">
 								<svg id="Capa_1" enable-background="new 0 0 482.239 482.239" height="22" viewBox="0 0 482.239 482.239" width="22" xmlns="http://www.w3.org/2000/svg">

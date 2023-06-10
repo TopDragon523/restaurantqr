@@ -15,7 +15,7 @@
     border: 2px solid transparent;
 }
 
-.text-component:hover {
+.demo-component:hover, .text-component:hover, .photo-component img:hover, .background-component img:hover {
     border: 2px solid var(--primary);
 }
 
