@@ -1,4 +1,17 @@
-var textComponents = [
+let deoms = [];
+$.ajax({
+  url: "load.php",
+  type: "GET",
+  success: function (response) {
+    console.log("All templates are fetched  ", JSON.parse(response));
+    deoms = [...JSON.parse(response)];
+  },
+  error: function (xhr, status, error) {
+    console.log("Fetching templates error ", error);
+  },
+});
+
+let textComponents = [
   {
     type: "text",
     label: "Heading 1",
@@ -37,7 +50,7 @@ var textComponents = [
   },
 ];
 
-var backgroundImages = [
+let backgroundImages = [
   "https://images.unsplash.com/photo-1604079628040-94301bb21b91?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMTY5OTZ8MHwxfHNlYXJjaHwyfHxncmFkaWVudHxlbnwwfHx8fDE2ODU4MTUwOTR8MA&ixlib=rb-4.0.3&q=80&w=400",
   "https://images.unsplash.com/photo-1604076850742-4c7221f3101b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMTY5OTZ8MHwxfHNlYXJjaHw0fHxncmFkaWVudHxlbnwwfHx8fDE2ODU4MTUwOTR8MA&ixlib=rb-4.0.3&q=80&w=400",
   "https://images.unsplash.com/photo-1569982175971-d92b01cf8694?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMTY5OTZ8MHwxfHNlYXJjaHw3fHxncmFkaWVudHxlbnwwfHx8fDE2ODU4MTUwOTR8MA&ixlib=rb-4.0.3&q=80&w=400",
@@ -50,7 +63,7 @@ var backgroundImages = [
   "https://images.unsplash.com/photo-1685633224810-bd23d2b0c699?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMTY5OTZ8MHwxfGFsbHw3NHx8fHx8fDJ8fDE2ODU5MDE2Mjl8&ixlib=rb-4.0.3&q=80&w=400",
 ];
 
-var photos = [
+let photos = [
   "https://images.unsplash.com/photo-1682685797898-6d7587974771?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMTY5OTZ8MXwxfGFsbHwxfHx8fHx8Mnx8MTY4NTkwMzQ5MXw&ixlib=rb-4.0.3&q=80&w=400",
   "https://images.unsplash.com/photo-1609251520181-a914221b52b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMTY5OTZ8MHwxfGFsbHwzfHx8fHx8Mnx8MTY4NTkwMzQ5MXw&ixlib=rb-4.0.3&q=80&w=400",
   "https://images.unsplash.com/photo-1685728399140-5650bbcfc015?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMTY5OTZ8MHwxfGFsbHwyfHx8fHx8Mnx8MTY4NTkwMzQ5MXw&ixlib=rb-4.0.3&q=80&w=400",

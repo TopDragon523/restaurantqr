@@ -1,9 +1,9 @@
 $(function () {
   let id = 0;
+  let x1, y1, x2, y2;
   let nodeList = { Text: 1, Image: 2 };
   let width = $("#stage").width();
   let height = $("#stage").height();
-  let x1, y1, x2, y2;
   const paper = { width: 499, height: 709 };
 
   // create stage
@@ -13,9 +13,10 @@ $(function () {
     height,
   });
 
-  // create three layers
-  let layer = new Konva.Layer({ id: "layer", listening: true });
+  // create layers
+  let layer = new Konva.Layer({ listening: true });
 
+  // create white rectangle at most bootom of layer
   let whiteRect = new Konva.Image({
     x: width / 2 - paper.width / 2,
     y: height / 2 - paper.height / 2,
@@ -25,9 +26,11 @@ $(function () {
     listening: false,
   });
 
+  // create the group including all shapes
   let shapeGroup = new Konva.Group();
 
-  var maskRect = new Konva.Shape({
+  //create mask rectangle with rectanlge hole
+  let maskRect = new Konva.Shape({
     x: 0,
     y: 0,
     listening: false,
@@ -58,6 +61,7 @@ $(function () {
     opacity: 0.8,
   });
 
+  // create selection transformer
   let selectionTr = new Konva.Transformer({
     borderStroke: "#00a1ff",
     borderStrokeWidth: 2,
@@ -66,6 +70,7 @@ $(function () {
     rotationSnaps: [0, 45, 90, 135, 180, -45, -90, -135],
   });
 
+  // create rectangle to select shapes
   let selectionRectangle = new Konva.Rect({
     x: -1,
     y: -1,
@@ -76,6 +81,7 @@ $(function () {
     opacity: 0.5,
     visible: false,
   });
+
   // set ordering layer
   stage.add(layer);
   layer.add(whiteRect);
@@ -85,7 +91,6 @@ $(function () {
   layer.add(selectionTr);
 
   // clicks should select/deselect shapes
-
   stage.on("mousedown touchstart", (e) => {
     // do nothing if we mousedown on any shape
     if (e.target !== stage) {
@@ -110,8 +115,6 @@ $(function () {
     e.evt.preventDefault();
     x2 = stage.getPointerPosition().x;
     y2 = stage.getPointerPosition().y;
-
-    console.log("aaaaaaaa", x2, y2);
 
     selectionRectangle.setAttrs({
       x: Math.min(x1, x2),
@@ -166,7 +169,7 @@ $(function () {
     }
   });
 
-  stage.on("click tap", function (e) {
+  stage.on("click touchstart", function (e) {
     console.log("click target event ", e.target.getClassName());
     if (selectionRectangle.width() !== 0 || selectionRectangle.height() !== 0) {
       return;
@@ -182,6 +185,40 @@ $(function () {
   });
 
   // handle the toolbox tab
+  $("body").delegate(".demo-component", "click", function () {
+    let savedStage = $(this).data("config");
+
+    initStage();
+
+    savedStage.shapeGroup.forEach((node) => {
+      switch (node.className) {
+        case "Text":
+          let textNode = Konva.Node.create(JSON.stringify(node), shapeGroup);
+          createTextNode(textNode);
+          break;
+        case "Image":
+          let imageObj = new Image();
+          imageObj.src = node.src;
+          let imageNode = new Konva.Image({
+            ...node.attrs,
+            image: imageObj,
+          });
+          createImageNode(imageNode);
+          break;
+        default:
+          break;
+      }
+    });
+    if (
+      savedStage.backgroundUrl !== null &&
+      savedStage.backgroundUrl !== undefined
+    ) {
+      let bgImageObj = new Image();
+      bgImageObj.src = savedStage.backgroundUrl;
+      whiteRect.image(bgImageObj);
+    }
+  });
+
   $("body").delegate(".text-component", "click", function () {
     const index = parseInt($(this).data("index"));
     const component = textComponents[index];
@@ -199,7 +236,6 @@ $(function () {
       fill: component.style.color,
       id: "text-" + id,
     });
-    shapeGroup.add(textNode);
 
     console.log(textNode);
     id++;
@@ -208,7 +244,156 @@ $(function () {
     selectionTr.nodes([textNode]);
     selectionTr.show();
 
-    textNode.on("dragmove", function () {
+    createTextNode(textNode);
+  });
+
+  $("body").delegate(".photo-component img", "click", function () {
+    const index = parseInt($(this).data("index"));
+    const imgUrl = photos[index];
+
+    let imageObj = new Image();
+    imageObj.src = imgUrl;
+
+    let imageNode = new Konva.Image({
+      x: 80,
+      y: 100,
+      image: imageObj,
+      draggable: true,
+    });
+
+    handleTransformer(2);
+    selectionTr.nodes([imageNode]);
+    selectionTr.show();
+
+    createImageNode(imageNode);
+  });
+
+  $("body").delegate(".background-component img", "click", function () {
+    const index = parseInt($(this).data("index"));
+    const imgUrl = backgroundImages[index]; // from init-component file
+
+    let bgImageObj = new Image();
+    bgImageObj.src = imgUrl;
+    whiteRect.image(bgImageObj);
+  });
+
+  // save stage as json file on db
+  $("body").delegate("#export", "click", function () {
+    let data = { backgroundUrl: undefined, shapeGroup: [] };
+
+    // save all nodes on shape group
+    shapeGroup.getChildren(function (node) {
+      switch (node.getClassName()) {
+        case "Text":
+          delete node.attrs.container;
+          data.shapeGroup.push({ attrs: node.attrs, className: "Text" });
+          break;
+        case "Image":
+          data.shapeGroup.push({
+            attrs: node.attrs,
+            src: node.image().src,
+            className: "Image",
+          });
+          break;
+        default:
+          break;
+      }
+    });
+
+    //save background iamge
+    if (whiteRect.image() !== null && whiteRect.image() !== undefined) {
+      data.backgroundUrl = whiteRect.image().src;
+    }
+
+    //save stage on db
+    $.ajax({
+      url: "dashboard.php",
+      type: "POST",
+      dataType: "JSON",
+      data: { data: JSON.stringify(data) },
+      success: function (response) {
+        console.log("saved stage is ", response);
+      },
+      error: function (xhr, status, error) {
+        console.log("Save stage on db error ", error);
+      },
+    });
+  });
+
+  // pervent the default  browser zooming by mouse wheel
+  stage.container().addEventListener("wheel", function (e) {
+    if (e.shiftKey) {
+      return;
+    }
+    e.preventDefault();
+  });
+
+  // remove selected  nodes
+  document.addEventListener("keydown", function (event) {
+    const keyCode = event.keyCode;
+    if (keyCode === 46 && selectionTr.nodes().length > 0) {
+      selectionTr.nodes().map(function (node) {
+        node.destroy();
+      });
+      selectionTr.hide();
+    }
+  });
+
+  function handleTransformer(index) {
+    // selectionnode : 0
+    // textnode : 1
+    // imagenode : 2
+    switch (index) {
+      case 0:
+        selectionTr.setAttrs({
+          enabledAnchors: [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right",
+          ],
+        });
+        break;
+      case 1:
+        selectionTr.setAttrs({
+          enabledAnchors: [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right",
+            "middle-left",
+            "middle-right",
+          ],
+        });
+        break;
+      case 2:
+        selectionTr.setAttrs({
+          enabledAnchors: [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right",
+            "middle-left",
+            "middle-right",
+            "top-center",
+            "bottom-center",
+          ],
+        });
+        break;
+    }
+  }
+
+  function deselectAllComponents() {
+    selected = [];
+    selectionTr.hide();
+    selectionTr.nodes([]);
+    selectionTr.forceUpdate();
+  }
+
+  function createTextNode(textNode) {
+    shapeGroup.add(textNode);
+
+    textNode.on("dragmove touchmove", function () {
       selectionTr.show();
       if (selectionTr.nodes().length < 2) {
         const nodeX = this.x();
@@ -247,7 +432,7 @@ $(function () {
       selectionTr.forceUpdate();
     });
 
-    textNode.on("click zxc", function (e) {
+    textNode.on("click touchstart", function (e) {
       console.log("Text node is clicked ", this);
       handleTransformer(1);
       selectionTr.forceUpdate();
@@ -338,37 +523,10 @@ $(function () {
         });
       }
     });
+  }
 
-    document.addEventListener("keydown", function (event) {
-      const keyCode = event.keyCode;
-      if (keyCode === 46 && selectionTr.nodes().length > 0) {
-        let selectedNode = selectionTr.nodes()[0];
-        selectedNode.destroy();
-        selectionTr.nodes([]);
-      }
-    });
-  });
-
-  $("body").delegate(".photo-component img", "click", function () {
-    const index = parseInt($(this).data("index"));
-    const imgUrl = photos[index];
-
-    deselectAllComponents();
-
-    let imageObj = new Image();
-    imageObj.src = imgUrl;
-
-    let imageNode = new Konva.Image({
-      x: 80,
-      y: 100,
-      image: imageObj,
-      draggable: true,
-    });
+  function createImageNode(imageNode) {
     shapeGroup.add(imageNode);
-
-    handleTransformer(2);
-    selectionTr.nodes([imageNode]);
-    selectionTr.show();
 
     imageNode.on("dragmove", function () {
       selectionTr.show();
@@ -397,82 +555,9 @@ $(function () {
       imageNode.show();
       selectionTr.forceUpdate();
     });
-
-    document.addEventListener("keydown", function (e) {
-      const keyCode = e.keyCode;
-      if (keyCode === 46 && selectionTr.nodes().length > 0) {
-        let selectedNode = selectionTr.nodes()[0];
-        selectedNode.destroy();
-        selectionTr.nodes([]);
-      }
-    });
-  });
-
-  $("body").delegate(".background-component img", "click", function () {
-    const index = parseInt($(this).data("index"));
-    const imgUrl = backgroundImages[index]; // from init-component file
-
-    let bgImageObj = new Image();
-    bgImageObj.src = imgUrl;
-    whiteRect.image(bgImageObj);
-  });
-
-  // pervent the default  browser zooming by mouse wheel
-  stage.container().addEventListener("wheel", function (e) {
-    if (e.shiftKey) {
-      return;
-    }
-    e.preventDefault();
-  });
-
-  function handleTransformer(index) {
-    // selectionnode : 0
-    // textnode : 1
-    // imagenode : 2
-    switch (index) {
-      case 0:
-        selectionTr.setAttrs({
-          enabledAnchors: [
-            "top-left",
-            "top-right",
-            "bottom-left",
-            "bottom-right",
-          ],
-        });
-        break;
-      case 1:
-        selectionTr.setAttrs({
-          enabledAnchors: [
-            "top-left",
-            "top-right",
-            "bottom-left",
-            "bottom-right",
-            "middle-left",
-            "middle-right",
-          ],
-        });
-        break;
-      case 2:
-        selectionTr.setAttrs({
-          enabledAnchors: [
-            "top-left",
-            "top-right",
-            "bottom-left",
-            "bottom-right",
-            "middle-left",
-            "middle-right",
-            "top-center",
-            "bottom-center",
-          ],
-        });
-        break;
-    }
   }
 
-  function deselectAllComponents() {
-    selected = [];
-    selectionTr.hide();
-    selectionTr.nodes([]);
-    selectionTr.forceUpdate();
+  function initStage() {
+    shapeGroup.destroyChildren();
   }
 });
