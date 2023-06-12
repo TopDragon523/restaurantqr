@@ -4,26 +4,6 @@ if (!isset($_SESSION["username"]) || !isset($_SESSION["email"])) {
 	header("location: login.php");
 	exit();
 }
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-	include "db.php";
-	$data  = addslashes($_POST["data"]);
-
-	$query = "INSERT INTO templates (thumbnail, save_stage_as_json, createdAt) 
-	VALUES ('" . "thumbnail" . "', '" . $data .  "', NOW());";
-
-	if (mysqli_query($conn, $query)) {
-		$result  = array("status" => true, "message" => "Successfully saved!");
-		echo json_encode($result);
-		die;
-	} else {
-		$result  = array("status" => false, "message" => mysqli_error($conn));
-		echo json_encode($result);
-		die;
-	}
-
-	mysqli_close($conn);
-}
 ?>
 
 <?php
@@ -715,35 +695,25 @@ include("header.php");
 							</div>
 						</li>
 						<li class="nav-item dropdown header-profile">
-							<a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
-								<div class="header-info">
-									<span>Hello, <strong>Samuel</strong></span>
+							<div class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
+								<div class="btn btn-primary">
+									<span>Download</span>
 								</div>
-								<img src="images/profile/pic1.jpg" width="20" alt="">
-							</a>
+								<!-- <img src="images/profile/pic1.jpg" width="20" alt=""> -->
+							</div>
 							<div class="dropdown-menu dropdown-menu-right">
-								<a href="./app-profile.html" class="dropdown-item ai-icon">
-									<svg id="icon-user1" xmlns="http://www.w3.org/2000/svg" class="text-primary" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-										<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-										<circle cx="12" cy="7" r="4"></circle>
+								<div id="saveimage" class="dropdown-item ai-icon">
+									<svg data-icon="media" width="16" height="16" viewBox="0 0 16 16" role="img">
+										<path d="M11.99 6.99c.55 0 1-.45 1-1s-.45-1-1-1-1 .45-1 1 .45 1 1 1zm3-5h-14c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-10c0-.55-.45-1-1-1zm-1 9l-5-3-1 2-3-4-3 5v-7h12v7z" fill-rule="evenodd"></path>
 									</svg>
-									<span class="ms-2">Profile </span>
-								</a>
-								<a href="./email-inbox.html" class="dropdown-item ai-icon">
-									<svg id="icon-inbox" xmlns="http://www.w3.org/2000/svg" class="text-success" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-										<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-										<polyline points="22,6 12,13 2,6"></polyline>
+									<span class="ms-2">Save as image </span>
+								</div>
+								<div id="savepdf" href="./email-inbox.html" class="dropdown-item ai-icon">
+									<svg data-icon="document" width="16" height="16" viewBox="0 0 16 16" role="img">
+										<path d="M9 0H3c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V5L9 0zm3 14H4V2h4v4h4v8z" fill-rule="evenodd"></path>
 									</svg>
-									<span class="ms-2">Inbox </span>
-								</a>
-								<a href="logout.php" class="dropdown-item ai-icon">
-									<svg id="icon-logout" xmlns="http://www.w3.org/2000/svg" class="text-danger" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-										<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-										<polyline points="16 17 21 12 16 7"></polyline>
-										<line x1="21" y1="12" x2="9" y2="12"></line>
-									</svg>
-									<span class="ms-2">Logout </span>
-								</a>
+									<span class="ms-2">Save as PDF </span>
+								</div>
 							</div>
 						</li>
 					</ul>

@@ -35,6 +35,8 @@
 		<script src="https://unpkg.com/konva@9.2.0/konva.min.js"></script>
 		<script src="js/canvas.js"></script>
 
+		<!-- handl pdf file and download -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
 		</body>
 
 		</html>
