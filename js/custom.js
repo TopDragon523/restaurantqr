@@ -79,19 +79,14 @@ var Davur = (function () {
             $demoItemWrapper.css({
               padding: "1rem 2rem",
             });
-            const $demoItem = $("<div>");
+            const $demoItem = $("<img>");
             $demoItem.attr("class", "demo-component");
             $demoItem.attr("data-index", item.id);
+            $demoItem.attr("src", item.thumbnail);
             $demoItem.attr("data-config", item.save_stage_as_json);
             $demoItem.css({
               width: "100%",
-              background: "lightblue",
-              padding: "8rem 2rem",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "default",
-              borderRadius: "1rem",
+              borderRadius: 10,
             });
 
             $demoItem.html(item.thumbnail);

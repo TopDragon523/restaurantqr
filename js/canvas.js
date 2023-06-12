@@ -198,6 +198,7 @@ $(function () {
           break;
         case "Image":
           let imageObj = new Image();
+          imageObj.setAttribute("crossOrigin", "anonymous");
           imageObj.src = node.src;
           let imageNode = new Konva.Image({
             ...node.attrs,
@@ -214,6 +215,7 @@ $(function () {
       savedStage.backgroundUrl !== undefined
     ) {
       let bgImageObj = new Image();
+      bgImageObj.setAttribute("crossOrigin", "anonymous");
       bgImageObj.src = savedStage.backgroundUrl;
       whiteRect.image(bgImageObj);
     }
@@ -252,6 +254,7 @@ $(function () {
     const imgUrl = photos[index];
 
     let imageObj = new Image();
+    imageObj.setAttribute("crossOrigin", "anonymous");
     imageObj.src = imgUrl;
 
     let imageNode = new Konva.Image({
@@ -273,13 +276,19 @@ $(function () {
     const imgUrl = backgroundImages[index]; // from init-component file
 
     let bgImageObj = new Image();
+    bgImageObj.setAttribute("crossOrigin", "anonymous");
     bgImageObj.src = imgUrl;
     whiteRect.image(bgImageObj);
   });
 
   // save stage as json file on db
   $("body").delegate("#export", "click", function () {
-    let data = { backgroundUrl: undefined, shapeGroup: [] };
+    let data = {
+      stage: { width, height },
+      paper,
+      backgroundUrl: undefined,
+      shapeGroup: [],
+    };
 
     // save all nodes on shape group
     shapeGroup.getChildren(function (node) {
@@ -305,12 +314,22 @@ $(function () {
       data.backgroundUrl = whiteRect.image().src;
     }
 
+    // download  image
+    let dataUrl = stage.toDataURL({
+      x: width / 2 - paper.width / 2,
+      y: height / 2 - paper.height / 2,
+      width: paper.width,
+      height: paper.height,
+      imageSmoothingEnabled: true,
+    });
+    console.log("saved data is ", dataUrl);
+
     //save stage on db
     $.ajax({
-      url: "dashboard.php",
+      url: "savetemplate.php",
       type: "POST",
       dataType: "JSON",
-      data: { data: JSON.stringify(data) },
+      data: { data: JSON.stringify(data), thumbnail: dataUrl },
       success: function (response) {
         console.log("saved stage is ", response);
       },
@@ -318,6 +337,16 @@ $(function () {
         console.log("Save stage on db error ", error);
       },
     });
+  });
+
+  // save as image
+  $("body").delegate("#saveimage", "click", function () {
+    saveAsImage();
+  });
+
+  // save as pdf file
+  $("body").delegate("#savepdf", "click", function () {
+    saveAsPDF();
   });
 
   // pervent the default  browser zooming by mouse wheel
@@ -559,5 +588,40 @@ $(function () {
 
   function initStage() {
     shapeGroup.destroyChildren();
+    whiteRect.setAttrs({ image: null });
+  }
+
+  function saveAsImage() {
+    // download  image
+    let dataUrl = stage.toDataURL({
+      x: width / 2 - paper.width / 2,
+      y: height / 2 - paper.height / 2,
+      width: paper.width,
+      height: paper.height,
+      imageSmoothingEnabled: true,
+    });
+
+    let link = document.createElement("a");
+    link.download = "stage_" + new Date() + ".png";
+    link.href = dataUrl;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    delete link;
+  }
+
+  function saveAsPDF() {
+    let dataUrl = stage.toDataURL({
+      x: width / 2 - paper.width / 2,
+      y: height / 2 - paper.height / 2,
+      width: paper.width,
+      height: paper.height,
+      imageSmoothingEnabled: true,
+    });
+
+    // download pdf file
+    let pdf = new jsPDF("p", "px", [paper.width, paper.height]);
+    pdf.addImage(dataUrl, "JPG", 0, 0, paper.width, paper.height);
+    pdf.save(`stage-${new Date()}.pdf`);
   }
 });
