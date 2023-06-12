@@ -22,6 +22,7 @@ $(function () {
     y: height / 2 - paper.height / 2,
     width: paper.width,
     height: paper.height,
+    fill: "white",
     image: null,
     listening: false,
   });
@@ -37,7 +38,12 @@ $(function () {
     sceneFunc: function (context) {
       context.beginPath();
       context.rect(0, 0, width, height);
-
+      console.log(
+        width / 2 - paper.width / 2,
+        height / 2 - paper.height / 2,
+        width / 2 + paper.width / 2,
+        height / 2 + paper.height / 2
+      );
       context.moveTo(
         width / 2 - paper.width / 2,
         height / 2 - paper.height / 2

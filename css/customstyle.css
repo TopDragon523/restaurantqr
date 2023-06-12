@@ -12125,7 +12125,7 @@ a {
   height: 100%;
 }
 .content-body #stage {
-  width: calc(1000vw - 22rem);
+  width: calc(100vw - 5rem);
   height: calc(100vh - 5rem);
   display: flex;
 }

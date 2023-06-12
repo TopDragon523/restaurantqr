@@ -86,6 +86,7 @@ var Davur = (function () {
             $demoItem.attr("data-config", item.save_stage_as_json);
             $demoItem.css({
               width: "100%",
+              boxShadow: "0px 0px 14px lightgrey",
               borderRadius: 10,
             });
 
