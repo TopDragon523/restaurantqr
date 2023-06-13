@@ -15194,7 +15194,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   }
   [data-sidebar-style=mini] .deznav .slimScrollDiv,
 [data-sidebar-style=mini] .deznav .deznav-scroll {
-    overflow: visible !important;
+    overflow: scroll !important;
   }
   [data-sidebar-style=mini] .deznav .nav-user {
     padding: 11px;
