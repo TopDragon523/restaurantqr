@@ -1,23 +1,29 @@
 <?php
 include "db.php";
 
-$query = "SELECT * FROM templates";
+$tabs = array("photos", "bgimages", "texts", "templates");
+global $resources;
+$resources = array();
 
-$result = mysqli_query($conn, $query);
-if ($result) {
-    if (mysqli_num_rows($result) > 0) {
 
-        $templates = mysqli_fetch_all($result, MYSQLI_ASSOC);
+foreach ($tabs  as $tab) {
+    $query = "SELECT * FROM " . $tab . " WHERE is_free = 1";
 
-        echo (json_encode($templates));
-        die;
+    $result = mysqli_query($conn, $query);
+    if ($result) {
+        if (mysqli_num_rows($result) > 0) {
+
+            $table = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+            $resources[$tab] = $table;
+        } else {
+            $resources[$tab] = array();
+        }
     } else {
-        $result = array("status" => false, "message" => "Email or password is incorrect");
-        echo (json_encode($result));
-        die;
+        die('Query failed');
     }
-} else {
-    die('Query failed');
 }
+
+echo (json_encode($resources));
 
 mysqli_close($conn);

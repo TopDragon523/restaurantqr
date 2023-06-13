@@ -15,8 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $filename         = $uploadpath . uniqid() . '.png';
     file_put_contents($filename, $imagebase64);
 
-    $query = "INSERT INTO templates (thumbnail, save_stage_as_json, createdAt) 
-	VALUES ('" . $filename . "', '" . $data .  "', NOW());";
+    $query = "INSERT INTO templates (thumbnail, save_stage_as_json, is_free, createdAt) 
+	VALUES ('" . $filename . "', '" . $data .  "', 1, NOW());";
 
     if (mysqli_query($conn, $query)) {
         $result  = array("status" => true, "message" => "Successfully saved!");

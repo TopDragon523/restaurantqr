@@ -214,7 +214,7 @@ $(function () {
   });
 
   // handle the toolbox tab
-  $("body").delegate(".demo-component", "click", function () {
+  $("body").delegate(".demo-component img", "click", function () {
     let savedStage = $(this).data("config");
 
     initStage();
@@ -253,19 +253,21 @@ $(function () {
 
   $("body").delegate(".text-component", "click", function () {
     const index = parseInt($(this).data("index"));
-    const component = textComponents[index];
+    const component = textComponents.filter(function (item) {
+      return item.id === index;
+    });
 
     let textNode = new Konva.Text({
-      text: component.label,
+      text: component[0].label,
       x: (paper.width / 2 - 100) * relativeScale,
-      y: (paper.height / 2 - component.style.fontSize) * relativeScale,
-      fontSize: component.style.fontSize * relativeScale,
-      fontFamily: component.style.fontFamily,
+      y: (paper.height / 2 - component[0].fontSize) * relativeScale,
+      fontSize: component[0].fontSize * relativeScale,
+      fontFamily: component[0].fontFamily,
       scaleX: 1,
       scaleY: 1,
       draggable: true,
       width: 200,
-      fill: component.style.color,
+      fill: component[0].color,
     });
 
     handleTransformer(1);
@@ -277,13 +279,15 @@ $(function () {
 
   $("body").delegate(".photo-component img", "click", function () {
     const index = parseInt($(this).data("index"));
-    const imgUrl = photos[index];
+    const img = photos.filter(function (item) {
+      return item.id === index;
+    });
 
     let imageObj = new Image();
     imageObj.setAttribute("crossOrigin", "anonymous");
-    imageObj.src = imgUrl;
-    imageObj.width = 400;
-    imageObj.height = 600;
+    imageObj.src = img[0].url;
+    imageObj.width = img[0].width;
+    imageObj.height = img[0].height;
 
     let imageNode = new Konva.Image({
       x: 80,
@@ -301,11 +305,13 @@ $(function () {
 
   $("body").delegate(".background-component img", "click", function () {
     const index = parseInt($(this).data("index"));
-    const imgUrl = backgroundImages[index]; // from init-component file
+    const img = backgroundImages.filter(function (item) {
+      return item.id == index;
+    }); // from init-component file
 
     let bgImageObj = new Image();
     bgImageObj.setAttribute("crossOrigin", "anonymous");
-    bgImageObj.src = imgUrl;
+    bgImageObj.src = img[0].url;
     whiteRect.image(bgImageObj);
   });
 
@@ -623,6 +629,7 @@ $(function () {
   }
 
   function initStage() {
+    selectionTr.hide();
     shapeGroup.destroyChildren();
     whiteRect.setAttrs({ image: null });
   }

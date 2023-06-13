@@ -75,33 +75,28 @@ var Davur = (function () {
         case "demo":
           clearLeftPanel();
           deoms.map(function (item) {
-            const $demoItemWrapper = $("<div>");
-            $demoItemWrapper.css({
-              padding: "1rem 2rem",
-            });
+            const $demoItemContainer = $("<div>");
             const $demoItem = $("<img>");
-            $demoItem.attr("class", "demo-component");
+            $demoItemContainer.attr("class", "demo-component");
             $demoItem.attr("data-index", item.id);
             $demoItem.attr("src", item.thumbnail);
             $demoItem.attr("data-config", item.save_stage_as_json);
-            $demoItem.css({
-              width: "100%",
-              boxShadow: "0px 0px 14px lightgrey",
-              borderRadius: 10,
-            });
 
-            $demoItem.html(item.thumbnail);
-            $demoItem.appendTo($demoItemWrapper);
-            $demoItemWrapper.appendTo("div.deznav .deznav-scroll");
+            $demoItem.appendTo($demoItemContainer);
+            $demoItemContainer.appendTo("div.deznav .deznav-scroll");
           });
           break;
         case "text":
           clearLeftPanel();
-          textComponents.map(function (item, index) {
+          textComponents.map(function (item) {
             const $textItem = $("<div>");
             $textItem.attr("class", "text-component");
-            $textItem.attr("data-index", index);
-            $textItem.css(item.style);
+            $textItem.attr("data-index", item.id);
+            $textItem.css({
+              color: item.color,
+              fontSize: item.fontSize,
+              fontFamily: item.fontFamily,
+            });
 
             $textItem.html(item.label);
             $textItem.appendTo("div.deznav .deznav-scroll");
@@ -109,26 +104,26 @@ var Davur = (function () {
           break;
         case "photo":
           clearLeftPanel();
-          photos.map(function (item, index) {
+          photos.map(function (item) {
             const $photoContainer = $("<div>");
             const $photoItem = $("<img>");
             $photoContainer.attr("class", "photo-component");
-            $photoItem.attr("data-index", index);
+            $photoItem.attr("data-index", item.id);
 
-            $photoItem.attr("src", item);
+            $photoItem.attr("src", item.url);
             $photoItem.appendTo($photoContainer);
             $photoContainer.appendTo("div.deznav .deznav-scroll");
           });
           break;
         case "background":
           clearLeftPanel();
-          backgroundImages.map(function (item, index) {
+          backgroundImages.map(function (item) {
             const $backgroundContainer = $("<div>");
             const $backgroundItem = $("<img>");
             $backgroundContainer.attr("class", "background-component");
-            $backgroundItem.attr("data-index", index);
+            $backgroundItem.attr("data-index", item.id);
 
-            $backgroundItem.attr("src", item);
+            $backgroundItem.attr("src", item.url);
             $backgroundItem.appendTo($backgroundContainer);
             $backgroundContainer.appendTo("div.deznav .deznav-scroll");
           });
