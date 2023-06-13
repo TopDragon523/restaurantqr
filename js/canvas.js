@@ -1,11 +1,27 @@
 $(function () {
-  let id = 0;
+  const paper = { width: 499, height: 709 };
   let x1, y1, x2, y2;
   let nodeList = { Text: 1, Image: 2 };
   let width = $("#stage").width();
   let height = $("#stage").height();
-  const paper = { width: 499, height: 709 };
+  let screenScale = { x: 1, y: 1 };
+  let relativeScaleTemp = Math.max(
+    Math.max(paper.width / width, 1),
+    Math.max(paper.height / height, 1)
+  );
+  let relativeScale = 1;
 
+  if (relativeScaleTemp > 1) {
+    if (paper.width / width > paper.height / height) {
+      relativeScale = width / paper.width;
+    } else {
+      relativeScale = height / paper.height;
+    }
+  } else {
+    relativeScale = relativeScale;
+  }
+
+  console.log(width, height);
   // create stage
   let stage = new Konva.Stage({
     container: "stage",
@@ -18,16 +34,22 @@ $(function () {
 
   // create white rectangle at most bootom of layer
   let whiteRect = new Konva.Image({
-    x: width / 2 - paper.width / 2,
-    y: height / 2 - paper.height / 2,
-    width: paper.width,
-    height: paper.height,
+    x: (width * screenScale.x) / 2 - (paper.width * relativeScale) / 2,
+    y: (height * screenScale.y) / 2 - (paper.height * relativeScale) / 2,
+    width: paper.width * relativeScale,
+    height: paper.height * relativeScale,
+    fill: "white",
     image: null,
     listening: false,
   });
 
   // create the group including all shapes
-  let shapeGroup = new Konva.Group();
+  let shapeGroup = new Konva.Group({
+    x: width / 2 - (paper.width * relativeScale) / 2,
+    y: height / 2 - (paper.height * relativeScale) / 2,
+    width: paper.width * relativeScale,
+    height: paper.height * relativeScale,
+  });
 
   //create mask rectangle with rectanlge hole
   let maskRect = new Konva.Shape({
@@ -35,24 +57,31 @@ $(function () {
     y: 0,
     listening: false,
     sceneFunc: function (context) {
+      let scaledWidth = width * screenScale.x;
+      let scaledHeight = height * screenScale.y;
+      let scaledPaper = {
+        width: paper.width * relativeScale,
+        height: paper.height * relativeScale,
+      };
+
       context.beginPath();
-      context.rect(0, 0, width, height);
+      context.rect(0, 0, scaledWidth, scaledHeight);
 
       context.moveTo(
-        width / 2 - paper.width / 2,
-        height / 2 - paper.height / 2
+        scaledWidth / 2 - scaledPaper.width / 2,
+        scaledHeight / 2 - scaledPaper.height / 2
       );
       context.lineTo(
-        width / 2 - paper.width / 2,
-        height / 2 + paper.height / 2
+        scaledWidth / 2 - scaledPaper.width / 2,
+        scaledHeight / 2 + scaledPaper.height / 2
       );
       context.lineTo(
-        width / 2 + paper.width / 2,
-        height / 2 + paper.height / 2
+        scaledWidth / 2 + scaledPaper.width / 2,
+        scaledHeight / 2 + scaledPaper.height / 2
       );
       context.lineTo(
-        width / 2 + paper.width / 2,
-        height / 2 - paper.height / 2
+        scaledWidth / 2 + scaledPaper.width / 2,
+        scaledHeight / 2 - scaledPaper.height / 2
       );
       context.closePath();
       context.fillStrokeShape(this);
@@ -185,7 +214,7 @@ $(function () {
   });
 
   // handle the toolbox tab
-  $("body").delegate(".demo-component", "click", function () {
+  $("body").delegate(".demo-component img", "click", function () {
     let savedStage = $(this).data("config");
 
     initStage();
@@ -219,28 +248,27 @@ $(function () {
       bgImageObj.src = savedStage.backgroundUrl;
       whiteRect.image(bgImageObj);
     }
+    layer.batchDraw();
   });
 
   $("body").delegate(".text-component", "click", function () {
     const index = parseInt($(this).data("index"));
-    const component = textComponents[index];
+    const component = textComponents.filter(function (item) {
+      return item.id === index;
+    });
 
     let textNode = new Konva.Text({
-      text: component.label,
-      x: width / 2 - 100,
-      y: (height - component.style.fontSize) / 2,
-      fontSize: component.style.fontSize,
-      fontFamily: component.style.fontFamily,
+      text: component[0].label,
+      x: (paper.width / 2 - 100) * relativeScale,
+      y: (paper.height / 2 - component[0].fontSize) * relativeScale,
+      fontSize: component[0].fontSize * relativeScale,
+      fontFamily: component[0].fontFamily,
       scaleX: 1,
       scaleY: 1,
       draggable: true,
       width: 200,
-      fill: component.style.color,
-      id: "text-" + id,
+      fill: component[0].color,
     });
-
-    console.log(textNode);
-    id++;
 
     handleTransformer(1);
     selectionTr.nodes([textNode]);
@@ -251,11 +279,15 @@ $(function () {
 
   $("body").delegate(".photo-component img", "click", function () {
     const index = parseInt($(this).data("index"));
-    const imgUrl = photos[index];
+    const img = photos.filter(function (item) {
+      return item.id === index;
+    });
 
     let imageObj = new Image();
     imageObj.setAttribute("crossOrigin", "anonymous");
-    imageObj.src = imgUrl;
+    imageObj.src = img[0].url;
+    imageObj.width = img[0].width;
+    imageObj.height = img[0].height;
 
     let imageNode = new Konva.Image({
       x: 80,
@@ -273,14 +305,24 @@ $(function () {
 
   $("body").delegate(".background-component img", "click", function () {
     const index = parseInt($(this).data("index"));
-    const imgUrl = backgroundImages[index]; // from init-component file
+    const img = backgroundImages.filter(function (item) {
+      return item.id == index;
+    }); // from init-component file
 
     let bgImageObj = new Image();
     bgImageObj.setAttribute("crossOrigin", "anonymous");
-    bgImageObj.src = imgUrl;
+    bgImageObj.src = img[0].url;
     whiteRect.image(bgImageObj);
   });
 
+  // refresh canvas
+  $("body").delegate("#refresh", "click", function () {
+    redraw();
+  });
+
+  $(window).on("resize", function () {
+    redraw();
+  });
   // save stage as json file on db
   $("body").delegate("#export", "click", function () {
     let data = {
@@ -316,10 +358,10 @@ $(function () {
 
     // download  image
     let dataUrl = stage.toDataURL({
-      x: width / 2 - paper.width / 2,
-      y: height / 2 - paper.height / 2,
-      width: paper.width,
-      height: paper.height,
+      x: (width * screenScale.x) / 2 - (paper.width * relativeScale) / 2,
+      y: (height * screenScale.y) / 2 - (paper.height * relativeScale) / 2,
+      width: paper.width * relativeScale,
+      height: paper.height * relativeScale,
       imageSmoothingEnabled: true,
     });
     console.log("saved data is ", dataUrl);
@@ -587,6 +629,7 @@ $(function () {
   }
 
   function initStage() {
+    selectionTr.hide();
     shapeGroup.destroyChildren();
     whiteRect.setAttrs({ image: null });
   }
@@ -594,10 +637,10 @@ $(function () {
   function saveAsImage() {
     // download  image
     let dataUrl = stage.toDataURL({
-      x: width / 2 - paper.width / 2,
-      y: height / 2 - paper.height / 2,
-      width: paper.width,
-      height: paper.height,
+      x: (width * screenScale.x) / 2 - (paper.width * relativeScale) / 2,
+      y: (height * screenScale.y) / 2 - (paper.height * relativeScale) / 2,
+      width: paper.width * relativeScale,
+      height: paper.height * relativeScale,
       imageSmoothingEnabled: true,
     });
 
@@ -612,10 +655,10 @@ $(function () {
 
   function saveAsPDF() {
     let dataUrl = stage.toDataURL({
-      x: width / 2 - paper.width / 2,
-      y: height / 2 - paper.height / 2,
-      width: paper.width,
-      height: paper.height,
+      x: (width * screenScale.x) / 2 - (paper.width * relativeScale) / 2,
+      y: (height * screenScale.y) / 2 - (paper.height * relativeScale) / 2,
+      width: paper.width * relativeScale,
+      height: paper.height * relativeScale,
       imageSmoothingEnabled: true,
     });
 
@@ -624,4 +667,51 @@ $(function () {
     pdf.addImage(dataUrl, "JPG", 0, 0, paper.width, paper.height);
     pdf.save(`stage-${new Date()}.pdf`);
   }
+
+  function redraw() {
+    const newWidth = parseInt($("#stage").css("width"));
+    const newHeight = parseInt($("#stage").css("height"));
+
+    screenScale = { x: newWidth / width, y: newHeight / height };
+    relativeScaleTemp = Math.max(
+      Math.max(paper.width / newWidth, 1),
+      Math.max(paper.height / newHeight, 1)
+    );
+
+    if (relativeScaleTemp > 1) {
+      if (paper.width / newWidth > paper.height / newHeight) {
+        relativeScale = newWidth / paper.width;
+      } else {
+        relativeScale = newHeight / paper.height;
+      }
+    } else {
+      relativeScale = relativeScale;
+    }
+
+    paperScale = { x: relativeScale, y: relativeScale };
+
+    stage.width(newWidth);
+    stage.height(newHeight);
+
+    // whiteRect.scale({ x: scaleX, y: scaleY });
+    whiteRect.setAttrs({
+      x: (width * screenScale.x) / 2 - (paper.width * relativeScale) / 2,
+      y: (height * screenScale.y) / 2 - (paper.height * relativeScale) / 2,
+      width: paper.width * relativeScale,
+      height: paper.height * relativeScale,
+    });
+
+    // change the absolute position on group9
+    shapeGroup.x(newWidth / 2 - (paper.width * relativeScale) / 2);
+    shapeGroup.y(newHeight / 2 - (paper.height * relativeScale) / 2);
+    shapeGroup.width(paper.width * relativeScale);
+    shapeGroup.height(paper.height * relativeScale);
+    shapeGroup.scale(paperScale);
+
+    layer.batchDraw();
+    // stage.batchDraw();
+  }
+  function undo() {}
+
+  function redo() {}
 });

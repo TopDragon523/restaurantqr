@@ -12125,7 +12125,7 @@ a {
   height: 100%;
 }
 .content-body #stage {
-  width: calc(1000vw - 22rem);
+  width: calc(100vw - 5rem);
   height: calc(100vh - 5rem);
   display: flex;
 }
@@ -15194,7 +15194,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   }
   [data-sidebar-style=mini] .deznav .slimScrollDiv,
 [data-sidebar-style=mini] .deznav .deznav-scroll {
-    overflow: visible !important;
+    overflow: scroll !important;
   }
   [data-sidebar-style=mini] .deznav .nav-user {
     padding: 11px;

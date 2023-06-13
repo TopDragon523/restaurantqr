@@ -589,8 +589,13 @@ include("header.php");
 					</div>
 
 					<ul class="navbar-nav header-right">
+						<li id="refresh" class="nav-item dropdown notification_dropdown">
+							<div class="btn btn-outline-success" role="button">
+								<span>Refresh</span>
+							</div>
+						</li>
 						<li id="export" class="nav-item dropdown notification_dropdown">
-							<div class="btn btn-primary header-info nav-link" role="button">
+							<div class="btn btn-outline-primary" role="button">
 								<span>Export</span>
 							</div>
 						</li>
