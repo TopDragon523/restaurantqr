@@ -63,6 +63,11 @@
 		// }
 		
 	}
+	.content-body {
+		#stage {
+			width: calc(100vw - 5rem) !important;
+		}
+	}
 	.menu-toggle {
         // .nav-header {
         //     width: 0;
@@ -247,6 +252,9 @@
         }
         .content-body {
             margin-left: 5rem;
+			#stage{
+				width : calc(100vw - 5rem)!important;
+			}
             @at-root [direction="rtl"]#{&} {
                 margin-right: 5rem;
                 margin-left: auto;

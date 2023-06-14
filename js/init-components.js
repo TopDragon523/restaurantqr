@@ -10,7 +10,10 @@ $.ajax({
     let resoures = JSON.parse(response);
 
     console.log("All templates are fetched  ", JSON.parse(response));
-    deoms = resoures.templates;
+    deoms = resoures.templates.map(function (item) {
+      item.id = parseInt(item.id);
+      return item;
+    });
 
     textComponents = resoures.texts.map(function (item) {
       item.id = parseInt(item.id);

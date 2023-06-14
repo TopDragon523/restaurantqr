@@ -32,7 +32,6 @@ body {
 	}
    
 }
-
 p {
     line-height: 1.8;
 }
@@ -96,7 +95,7 @@ a {
 .content-body {
 	height: 100%;
 	#stage {
-		width : calc(100vw - 5rem);
+		width : calc(100vw - 22rem);
 		height: calc(100vh - 5rem);
 		display: flex;
 	}

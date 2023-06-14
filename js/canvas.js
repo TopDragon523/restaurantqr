@@ -442,6 +442,10 @@ $(function () {
     }
   });
 
+  $("body").delegate(".tool-tab", "click", function () {
+    redraw();
+  });
+
   function handleTransformer(index) {
     // selectionnode : 0
     // textnode : 1

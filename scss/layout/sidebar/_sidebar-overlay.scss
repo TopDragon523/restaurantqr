@@ -8,6 +8,9 @@
     }
     .content-body {
         margin-left: 5rem;
+        #stage {
+            width: calc(100vw - 5rem) !important;
+        }
     }
     .nav-header {
         position: absolute;
