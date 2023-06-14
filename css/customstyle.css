@@ -12125,7 +12125,7 @@ a {
   height: 100%;
 }
 .content-body #stage {
-  width: calc(100vw - 5rem);
+  width: calc(100vw - 22rem);
   height: calc(100vh - 5rem);
   display: flex;
 }
@@ -14977,6 +14977,9 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 The smaller device rules always should write below the bigger device rules
 Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Component
 */
+[data-sidebar-style=mini][data-layout=vertical] .content-body #stage {
+  width: calc(100vw - 5rem) !important;
+}
 [data-sidebar-style=mini][data-layout=vertical] .menu-toggle .copyright,
 [data-sidebar-style=mini][data-layout=vertical] .menu-toggle .add-menu-sidebar {
   display: none;
@@ -15117,6 +15120,9 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 }
 [data-sidebar-style=mini][data-layout=vertical] .menu-toggle .content-body {
   margin-left: 5rem;
+}
+[data-sidebar-style=mini][data-layout=vertical] .menu-toggle .content-body #stage {
+  width: calc(100vw - 5rem) !important;
 }
 [direction=rtl][data-sidebar-style=mini][data-layout=vertical] .menu-toggle .content-body {
   margin-right: 5rem;
@@ -15404,6 +15410,9 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 
 [data-sidebar-style=overlay] .content-body {
   margin-left: 5rem;
+}
+[data-sidebar-style=overlay] .content-body #stage {
+  width: calc(100vw - 5rem) !important;
 }
 [data-sidebar-style=overlay] .nav-header {
   position: absolute;

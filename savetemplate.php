@@ -19,7 +19,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	VALUES ('" . $filename . "', '" . $data .  "', 1, NOW());";
 
     if (mysqli_query($conn, $query)) {
-        $result  = array("status" => true, "message" => "Successfully saved!");
+        $last_id = mysqli_insert_id($conn);
+
+        $select_query  = "SELECT *  from  templates WHERE id = $last_id";
+        $select_result = mysqli_query($conn, $select_query);
+
+        $inserted_record = mysqli_fetch_assoc($select_result);
+        $result  = array("status" => true, "newDemo" => $inserted_record, "message" => "Successfully saved!");
         echo json_encode($result);
         die;
     } else {

@@ -364,7 +364,6 @@ $(function () {
       height: paper.height * relativeScale,
       imageSmoothingEnabled: true,
     });
-    console.log("saved data is ", dataUrl);
 
     //save stage on db
     $.ajax({
@@ -373,7 +372,40 @@ $(function () {
       dataType: "JSON",
       data: { data: JSON.stringify(data), thumbnail: dataUrl },
       success: function (response) {
-        console.log("saved stage is ", response);
+        console.log(
+          "saved stage is ",
+          // JSON.parse(response)
+          response.newDemo
+        );
+
+        let newDemo = response.newDemo;
+
+        deoms.push({
+          id: JSON.parse(newDemo.id),
+          createdAt: newDemo.createdAt,
+          if_free: newDemo.is_free,
+          save_stage_as_json: newDemo.save_stage_as_json,
+          thumbnail: newDemo.thumbnail,
+        });
+
+        let currentTab = $(".left-panel")
+          .find("div.tool-tab.active")
+          .first()
+          .text()
+          .trim()
+          .toLowerCase();
+        console.log(currentTab);
+        if (currentTab === "demo") {
+          const $demoItemContainer = $("<div>");
+          const $demoItem = $("<img>");
+          $demoItemContainer.attr("class", "demo-component");
+          $demoItem.attr("data-index", parseInt(newDemo.id));
+          $demoItem.attr("src", newDemo.thumbnail);
+          $demoItem.attr("data-config", newDemo.save_stage_as_json);
+
+          $demoItem.appendTo($demoItemContainer);
+          $demoItemContainer.appendTo("div.deznav .deznav-scroll");
+        }
       },
       error: function (xhr, status, error) {
         console.log("Save stage on db error ", error);
@@ -408,6 +440,10 @@ $(function () {
       });
       selectionTr.hide();
     }
+  });
+
+  $("body").delegate(".tool-tab", "click", function () {
+    redraw();
   });
 
   function handleTransformer(index) {
