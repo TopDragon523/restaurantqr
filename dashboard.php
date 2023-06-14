@@ -702,7 +702,16 @@ include("header.php");
 						<li class="nav-item dropdown header-profile">
 							<div class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
 								<div class="btn btn-primary">
-									<span>Download</span>
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20.444 21.298" class="my-files-file__round-button--icon">
+										<g data-name="Group 3406" fill="none" stroke-linecap="round" stroke-width="2">
+											<g data-name="Group 3405" stroke="#ffffff">
+												<path data-name="Path 8173" d="M4.927 14.821l5.063 5.063 5.063-5.063"></path>
+												<path data-name="Path 8174" d="M9.969 7.666v11.658"></path>
+											</g>
+											<path data-name="Path 8188" d="M1 10.655V2.871a2.373 2.373 0 012.244-1.835h13.654a2.081 2.081 0 012.53 2.165c.034 2.6 0 7.454 0 7.454" stroke="#ffffff"></path>
+										</g>
+									</svg>
+									<span>Save</span>
 								</div>
 								<!-- <img src="images/profile/pic1.jpg" width="20" alt=""> -->
 							</div>
@@ -713,13 +722,13 @@ include("header.php");
 									</svg>
 									<span class="ms-2">Save as image </span>
 								</div>
-								<div id="savepdf" href="./email-inbox.html" class="dropdown-item ai-icon">
+								<div id="savepdf" class="dropdown-item ai-icon">
 									<svg data-icon="document" width="16" height="16" viewBox="0 0 16 16" role="img">
 										<path d="M9 0H3c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V5L9 0zm3 14H4V2h4v4h4v8z" fill-rule="evenodd"></path>
 									</svg>
 									<span class="ms-2">Save as PDF </span>
 								</div>
-								<div id="savepdf" href="./email-inbox.html" class="dropdown-item ai-icon">
+								<div id="saveqr" class="dropdown-item ai-icon" type="button" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
 									<svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
 										<path d="M5.88462 0H0.653846C0.292737 0 0 0.281895 0 0.62963V5.66667C0 6.0144 0.292737 6.2963 0.653846 6.2963H5.88462C6.24572 6.2963 6.53846 6.0144 6.53846 5.66667V0.62963C6.53846 0.281895 6.24572 0 5.88462 0Z" fill="#293745" />
 										<path d="M16.3456 0H11.1148C10.7537 0 10.4609 0.281895 10.4609 0.62963V5.66667C10.4609 6.0144 10.7537 6.2963 11.1148 6.2963H16.3456C16.7067 6.2963 16.9994 6.0144 16.9994 5.66667V0.62963C16.9994 0.281895 16.7067 0 16.3456 0Z" fill="#293745" />
@@ -820,16 +829,30 @@ include("header.php");
 
 	<!--**********************************Content body start***********************************-->
 	<div class="content-body">
-		<!-- row -->
-		<div id="stage">
-			<!-- <div id="container">
-			</div> -->
-		</div>
-		<!--**********************************Content body end***********************************-->
-
+		<div id="stage"> </div>
 	</div>
 	<!--**********************************Content body end***********************************-->
 
+	<!-- Modal -->
+	<div class="modal fade" id="exampleModalCenter">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Download QR ocde for your menu</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal">
+					</button>
+				</div>
+				<div class="modal-body">
+					<div id="qrcode" class="d-flex flex-column justify-content-center w-100"></div>
+					<!-- <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p> -->
+				</div>
+				<div class="modal-footer">
+					<!-- <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button> -->
+					<button id="downloadqr" type="button" class="btn btn-primary">Download</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	<?php
 	include("footer.php");
 	?>

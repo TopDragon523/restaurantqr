@@ -12,10 +12,12 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
 			session_regenerate_id();
 			$user = mysqli_fetch_assoc($result);
 
+			$id = $user['id'];
+
 			$_SESSION["username"] = $user['username'];
 			$_SESSION["email"] = $user['email'];
+			$_SESSION['userid'] = $id;
 
-			$id = $user['id'];
 			$setLastLoginQuery = "UPDATE users SET lastLoginAt=Now() WHERE id=" . $user["id"];
 			mysqli_query($conn, $setLastLoginQuery);
 
@@ -30,6 +32,7 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
 	} else {
 		die('Query failed');
 	}
+	mysqli_close($conn);
 }
 ?>
 <!DOCTYPE html>
