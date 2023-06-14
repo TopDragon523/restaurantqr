@@ -325,45 +325,9 @@ $(function () {
   });
   // save stage as json file on db
   $("body").delegate("#export", "click", function () {
-    let data = {
-      stage: { width, height },
-      paper,
-      backgroundUrl: undefined,
-      shapeGroup: [],
-    };
-
-    // save all nodes on shape group
-    shapeGroup.getChildren(function (node) {
-      switch (node.getClassName()) {
-        case "Text":
-          delete node.attrs.container;
-          data.shapeGroup.push({ attrs: node.attrs, className: "Text" });
-          break;
-        case "Image":
-          data.shapeGroup.push({
-            attrs: node.attrs,
-            src: node.image().src,
-            className: "Image",
-          });
-          break;
-        default:
-          break;
-      }
-    });
-
-    //save background iamge
-    if (whiteRect.image() !== null && whiteRect.image() !== undefined) {
-      data.backgroundUrl = whiteRect.image().src;
-    }
-
-    // download  image
-    let dataUrl = stage.toDataURL({
-      x: (width * screenScale.x) / 2 - (paper.width * relativeScale) / 2,
-      y: (height * screenScale.y) / 2 - (paper.height * relativeScale) / 2,
-      width: paper.width * relativeScale,
-      height: paper.height * relativeScale,
-      imageSmoothingEnabled: true,
-    });
+    // get current status and thumbnail image
+    let data = getCurrentStatusJson();
+    let dataUrl = getThumbnail();
 
     //save stage on db
     $.ajax({
@@ -394,7 +358,7 @@ $(function () {
           .text()
           .trim()
           .toLowerCase();
-        console.log(currentTab);
+
         if (currentTab === "demo") {
           const $demoItemContainer = $("<div>");
           const $demoItem = $("<img>");
@@ -421,6 +385,17 @@ $(function () {
   // save as pdf file
   $("body").delegate("#savepdf", "click", function () {
     saveAsPDF();
+  });
+
+  // save as  qrcode
+  $("body").delegate("#saveqr", "click", function () {
+    const sn = generateToken(8);
+    generateQR(`http://localhost/restaurantqr/guest.php?id=${sn}`);
+  });
+
+  // save as  qrcode
+  $("body").delegate("#downloadqr", "click", function () {
+    saveAsQR();
   });
 
   // pervent the default  browser zooming by mouse wheel
@@ -704,6 +679,48 @@ $(function () {
     pdf.save(`stage-${new Date()}.pdf`);
   }
 
+  function saveAsQR() {
+    // get current status and thumbnail image
+    let data = getCurrentStatusJson();
+    let dataUrl = getThumbnail();
+    let qrUrl = $("#qrcode img").attr("src");
+
+    const sn = $("#qrcode").attr("title").split("?")[1];
+    const qrWidth = parseInt($("#qrcode canvas").attr("width"));
+    const qrHeight = parseInt($("#qrcode canvas").attr("height"));
+    const centerXInPx = paper.width / 2 - qrWidth / 2;
+    const centerYInPx = paper.height / 2 - qrHeight / 2;
+
+    //save stage on db
+    $.ajax({
+      url: "saveqrcode.php",
+      type: "POST",
+      dataType: "JSON",
+      data: { data: JSON.stringify(data), thumbnail: dataUrl, sn },
+      success: function (response) {
+        // download pdf include qrcode file
+        let pdf = new jsPDF("p", "px", [paper.width, paper.height]);
+        pdf.addImage(qrUrl, "JPG", centerXInPx, centerYInPx, qrWidth, qrHeight);
+        pdf.save(`stage-${new Date()}.pdf`);
+      },
+      error: function (xhr, status, error) {
+        console.log("Save stage on db error ", error);
+      },
+    });
+  }
+
+  function generateQR(content) {
+    $("#qrcode").html("");
+    let qr = new QRCode("qrcode", {
+      text: content,
+      width: 256,
+      height: 256,
+      colorDark: "#000000",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H,
+    });
+  }
+
   function redraw() {
     const newWidth = parseInt($("#stage").css("width"));
     const newHeight = parseInt($("#stage").css("height"));
@@ -747,6 +764,65 @@ $(function () {
     layer.batchDraw();
     // stage.batchDraw();
   }
+
+  function generateToken(length) {
+    var chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var token = "";
+    for (var i = 0; i < length; i++) {
+      token += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return token;
+  }
+
+  function getCurrentStatusJson() {
+    let data = {
+      stage: { width, height },
+      paper,
+      backgroundUrl: undefined,
+      shapeGroup: [],
+    };
+
+    // save all nodes on shape group
+    shapeGroup.getChildren(function (node) {
+      switch (node.getClassName()) {
+        case "Text":
+          delete node.attrs.container;
+          data.shapeGroup.push({ attrs: node.attrs, className: "Text" });
+          break;
+        case "Image":
+          data.shapeGroup.push({
+            attrs: node.attrs,
+            src: node.image().src,
+            className: "Image",
+          });
+          break;
+        default:
+          break;
+      }
+    });
+
+    //save background iamge
+    if (whiteRect.image() !== null && whiteRect.image() !== undefined) {
+      data.backgroundUrl = whiteRect.image().src;
+    }
+
+    return data;
+  }
+
+  function getThumbnail() {
+    // download  thumbnail image
+    let dataUrl = stage.toDataURL({
+      x: (width * screenScale.x) / 2 - (paper.width * relativeScale) / 2,
+      y: (height * screenScale.y) / 2 - (paper.height * relativeScale) / 2,
+      width: paper.width * relativeScale,
+      height: paper.height * relativeScale,
+      imageSmoothingEnabled: true,
+    });
+
+    return dataUrl;
+  }
+
   function undo() {}
 
   function redo() {}
