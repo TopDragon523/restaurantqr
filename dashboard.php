@@ -589,25 +589,10 @@ include("header.php");
 					</div>
 
 					<ul class="navbar-nav header-right">
-						<li id="refresh" class="nav-item dropdown notification_dropdown">
-							<div class="btn btn-outline-success" role="button">
-								<span>Refresh</span>
-							</div>
-						</li>
-						<li id="export" class="nav-item dropdown notification_dropdown">
+						<li id="savetemplate" class="nav-item dropdown notification_dropdown">
 							<div class="btn btn-outline-primary" role="button">
-								<span>Export</span>
+								<span>Export Template</span>
 							</div>
-						</li>
-						<li class="nav-item dropdown notification_dropdown">
-							<a class="nav-link dz-fullscreen primary" href="#">
-								<svg id="Capa_1" enable-background="new 0 0 482.239 482.239" height="22" viewBox="0 0 482.239 482.239" width="22" xmlns="http://www.w3.org/2000/svg">
-									<path d="m0 17.223v120.56h34.446v-103.337h103.337v-34.446h-120.56c-9.52 0-17.223 7.703-17.223 17.223z" fill="" />
-									<path d="m465.016 0h-120.56v34.446h103.337v103.337h34.446v-120.56c0-9.52-7.703-17.223-17.223-17.223z" fill="" />
-									<path d="m447.793 447.793h-103.337v34.446h120.56c9.52 0 17.223-7.703 17.223-17.223v-120.56h-34.446z" fill="" />
-									<path d="m34.446 344.456h-34.446v120.56c0 9.52 7.703 17.223 17.223 17.223h120.56v-34.446h-103.337z" fill="" />
-								</svg>
-							</a>
 						</li>
 						<li class="nav-item dropdown notification_dropdown">
 							<a class="nav-link bell bell-link primary" href="#">
@@ -790,6 +775,12 @@ include("header.php");
 	<!--**********************************Sidebar start***********************************-->
 	<div class="deznav">
 		<div class="left-panel">
+			<div class="tool-tab" data-tab="demo">
+				<div class="d-flex flex-column justify-content-center align-items-center">
+					<i class="lni lni-library"></i>
+					<span>Project</span>
+				</div>
+			</div>
 			<div class="tool-tab" data-tab="demo">
 				<div class="d-flex flex-column justify-content-center align-items-center">
 					<i class="lni lni-layout"></i>

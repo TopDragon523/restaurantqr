@@ -72,9 +72,23 @@ var Davur = (function () {
         .toLowerCase();
 
       switch (tabName) {
+        case "project":
+          clearLeftPanel();
+          projects.map(function (item) {
+            const $demoItemContainer = $("<div>");
+            const $demoItem = $("<img>");
+            $demoItemContainer.attr("class", "project-component");
+            $demoItem.attr("data-index", item.id);
+            $demoItem.attr("src", item.thumbnail);
+            $demoItem.attr("data-config", item.save_stage_as_json);
+
+            $demoItem.appendTo($demoItemContainer);
+            $demoItemContainer.appendTo("div.deznav .deznav-scroll");
+          });
+          break;
         case "demo":
           clearLeftPanel();
-          deoms.map(function (item) {
+          demos.map(function (item) {
             const $demoItemContainer = $("<div>");
             const $demoItem = $("<img>");
             $demoItemContainer.attr("class", "demo-component");
