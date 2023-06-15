@@ -1,7 +1,9 @@
-let deoms = [];
+let projects = [];
+let demos = [];
 let textComponents = [];
 let backgroundImages = [];
 let photos = [];
+let templateId = 0;
 
 $.ajax({
   url: "load.php",
@@ -10,7 +12,13 @@ $.ajax({
     let resoures = JSON.parse(response);
 
     console.log("All templates are fetched  ", JSON.parse(response));
-    deoms = resoures.templates.map(function (item) {
+    projects = resoures.projects.map(function (item) {
+      item.id = parseInt(item.id);
+      item.createdBy = parseInt(item.createdBy);
+      return item;
+    });
+
+    demos = resoures.templates.map(function (item) {
       item.id = parseInt(item.id);
       return item;
     });

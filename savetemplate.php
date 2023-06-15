@@ -3,7 +3,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     include "db.php";
     $data  = addslashes($_POST["data"]);
     $thumbnail = $_POST['thumbnail'];
-    // var_dump($_POST['thumbnail']); die;
 
     // upload template thumbnail
     $base64string = $thumbnail;

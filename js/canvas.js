@@ -1,6 +1,7 @@
 $(function () {
   const paper = { width: 499, height: 709 };
   let x1, y1, x2, y2;
+  let templateId = demos[0].id;
   let nodeList = { Text: 1, Image: 2 };
   let width = $("#stage").width();
   let height = $("#stage").height();
@@ -214,9 +215,45 @@ $(function () {
   });
 
   // handle the toolbox tab
+  $("body").delegate(".project-component img", "click", function () {
+    let savedStage = $(this).data("config");
+    initStage();
+
+    savedStage.shapeGroup.forEach((node) => {
+      switch (node.className) {
+        case "Text":
+          let textNode = Konva.Node.create(JSON.stringify(node), shapeGroup);
+          createTextNode(textNode);
+          break;
+        case "Image":
+          let imageObj = new Image();
+          imageObj.setAttribute("crossOrigin", "anonymous");
+          imageObj.src = node.src;
+          let imageNode = new Konva.Image({
+            ...node.attrs,
+            image: imageObj,
+          });
+          createImageNode(imageNode);
+          break;
+        default:
+          break;
+      }
+    });
+    if (
+      savedStage.backgroundUrl !== null &&
+      savedStage.backgroundUrl !== undefined
+    ) {
+      let bgImageObj = new Image();
+      bgImageObj.setAttribute("crossOrigin", "anonymous");
+      bgImageObj.src = savedStage.backgroundUrl;
+      whiteRect.image(bgImageObj);
+    }
+    layer.batchDraw();
+  });
+
   $("body").delegate(".demo-component img", "click", function () {
     let savedStage = $(this).data("config");
-
+    templateId = $(this).data("index");
     initStage();
 
     savedStage.shapeGroup.forEach((node) => {
@@ -315,66 +352,14 @@ $(function () {
     whiteRect.image(bgImageObj);
   });
 
-  // refresh canvas
-  $("body").delegate("#refresh", "click", function () {
-    redraw();
-  });
-
+  // resize window screen
   $(window).on("resize", function () {
     redraw();
   });
-  // save stage as json file on db
-  $("body").delegate("#export", "click", function () {
-    // get current status and thumbnail image
-    let data = getCurrentStatusJson();
-    let dataUrl = getThumbnail();
 
-    //save stage on db
-    $.ajax({
-      url: "savetemplate.php",
-      type: "POST",
-      dataType: "JSON",
-      data: { data: JSON.stringify(data), thumbnail: dataUrl },
-      success: function (response) {
-        console.log(
-          "saved stage is ",
-          // JSON.parse(response)
-          response.newDemo
-        );
-
-        let newDemo = response.newDemo;
-
-        deoms.push({
-          id: JSON.parse(newDemo.id),
-          createdAt: newDemo.createdAt,
-          if_free: newDemo.is_free,
-          save_stage_as_json: newDemo.save_stage_as_json,
-          thumbnail: newDemo.thumbnail,
-        });
-
-        let currentTab = $(".left-panel")
-          .find("div.tool-tab.active")
-          .first()
-          .text()
-          .trim()
-          .toLowerCase();
-
-        if (currentTab === "demo") {
-          const $demoItemContainer = $("<div>");
-          const $demoItem = $("<img>");
-          $demoItemContainer.attr("class", "demo-component");
-          $demoItem.attr("data-index", parseInt(newDemo.id));
-          $demoItem.attr("src", newDemo.thumbnail);
-          $demoItem.attr("data-config", newDemo.save_stage_as_json);
-
-          $demoItem.appendTo($demoItemContainer);
-          $demoItemContainer.appendTo("div.deznav .deznav-scroll");
-        }
-      },
-      error: function (xhr, status, error) {
-        console.log("Save stage on db error ", error);
-      },
-    });
+  // publish the template adn project
+  $("body").delegate("#savetemplate", "click", function () {
+    publish($(this).attr("id"));
   });
 
   // save as image
@@ -645,6 +630,60 @@ $(function () {
     whiteRect.setAttrs({ image: null });
   }
 
+  function publish(flag) {
+    const destination = `${flag}.php`;
+    // get current status and thumbnail image
+    let data = getCurrentStatusJson();
+    let dataUrl = getThumbnail();
+
+    //save stage on db
+    $.ajax({
+      url: destination,
+      type: "POST",
+      dataType: "JSON",
+      data: { data: JSON.stringify(data), thumbnail: dataUrl },
+      success: function (response) {
+        console.log(
+          "saved stage is ",
+          // JSON.parse(response)
+          response.newDemo
+        );
+
+        let newDemo = response.newDemo;
+
+        demos.push({
+          id: JSON.parse(newDemo.id),
+          createdAt: newDemo.createdAt,
+          if_free: newDemo.is_free,
+          save_stage_as_json: newDemo.save_stage_as_json,
+          thumbnail: newDemo.thumbnail,
+        });
+
+        let currentTab = $(".left-panel")
+          .find("div.tool-tab.active")
+          .first()
+          .text()
+          .trim()
+          .toLowerCase();
+
+        if (currentTab === "demo") {
+          const $demoItemContainer = $("<div>");
+          const $demoItem = $("<img>");
+          $demoItemContainer.attr("class", "demo-component");
+          $demoItem.attr("data-index", parseInt(newDemo.id));
+          $demoItem.attr("src", newDemo.thumbnail);
+          $demoItem.attr("data-config", newDemo.save_stage_as_json);
+
+          $demoItem.appendTo($demoItemContainer);
+          $demoItemContainer.appendTo("div.deznav .deznav-scroll");
+        }
+      },
+      error: function (xhr, status, error) {
+        console.log("Save stage on db error ", error);
+      },
+    });
+  }
+
   function saveAsImage() {
     // download  image
     let dataUrl = stage.toDataURL({
@@ -685,7 +724,7 @@ $(function () {
     let dataUrl = getThumbnail();
     let qrUrl = $("#qrcode img").attr("src");
 
-    const sn = $("#qrcode").attr("title").split("?")[1];
+    const sn = $("#qrcode").attr("title").split("?id=")[1];
     const qrWidth = parseInt($("#qrcode canvas").attr("width"));
     const qrHeight = parseInt($("#qrcode canvas").attr("height"));
     const centerXInPx = paper.width / 2 - qrWidth / 2;
@@ -696,8 +735,38 @@ $(function () {
       url: "saveqrcode.php",
       type: "POST",
       dataType: "JSON",
-      data: { data: JSON.stringify(data), thumbnail: dataUrl, sn },
+      data: { data: JSON.stringify(data), thumbnail: dataUrl, sn, templateId },
       success: function (response) {
+        console.log("response", response);
+        // add new project on project list
+        let newDemo = response.newProject;
+
+        projects.push({
+          id: JSON.parse(newDemo.id),
+          createdBy: newDemo.is_free,
+          createdAt: newDemo.createdAt,
+          save_stage_as_json: newDemo.save_stage_as_json,
+          thumbnail: newDemo.thumbnail,
+        });
+
+        let currentTab = $(".left-panel")
+          .find("div.tool-tab.active")
+          .first()
+          .text()
+          .trim()
+          .toLowerCase();
+
+        if (currentTab === "project") {
+          const $demoItemContainer = $("<div>");
+          const $demoItem = $("<img>");
+          $demoItemContainer.attr("class", "project-component");
+          $demoItem.attr("data-index", parseInt(newDemo.id));
+          $demoItem.attr("src", newDemo.thumbnail);
+          $demoItem.attr("data-config", newDemo.save_stage_as_json);
+
+          $demoItem.appendTo($demoItemContainer);
+          $demoItemContainer.appendTo("div.deznav .deznav-scroll");
+        }
         // download pdf include qrcode file
         let pdf = new jsPDF("p", "px", [paper.width, paper.height]);
         pdf.addImage(qrUrl, "JPG", centerXInPx, centerYInPx, qrWidth, qrHeight);
@@ -782,6 +851,8 @@ $(function () {
       backgroundUrl: undefined,
       shapeGroup: [],
     };
+
+    deselectAllComponents();
 
     // save all nodes on shape group
     shapeGroup.getChildren(function (node) {

@@ -1,13 +1,19 @@
 <?php
+session_start();
 include "db.php";
+$tabs = array("projects", "photos", "bgimages", "texts", "templates");
+$user_id = $_SESSION["userid"];
 
-$tabs = array("photos", "bgimages", "texts", "templates");
 global $resources;
 $resources = array();
 
 
 foreach ($tabs  as $tab) {
-    $query = "SELECT * FROM " . $tab . " WHERE is_free = 1";
+    if ($tab === "projects") {
+        $query = "SELECT * FROM " . $tab . " WHERE createdBy = $user_id";
+    } else {
+        $query = "SELECT * FROM " . $tab . " WHERE is_free = 1";
+    }
 
     $result = mysqli_query($conn, $query);
     if ($result) {
