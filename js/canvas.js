@@ -416,7 +416,8 @@ $(function () {
   // save as  qrcode
   $("body").delegate("#saveqr", "click", function () {
     const sn = generateToken(8);
-    generateQR(`http://localhost/restaurantqr/guest.php?id=${sn}`);
+    // generateQR(`http://localhost/restaurantqr/guest.php?id=${sn}`);
+    generateQR(`https://restaurantqrmenu.ddns.net/guest.php?id=${sn}`);
   });
 
   // save as  qrcode
