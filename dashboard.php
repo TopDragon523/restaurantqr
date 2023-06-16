@@ -775,7 +775,7 @@ include("header.php");
 	<!--**********************************Sidebar start***********************************-->
 	<div class="deznav">
 		<div class="left-panel">
-			<div class="tool-tab" data-tab="demo">
+			<div class="tool-tab" data-tab="project">
 				<div class="d-flex flex-column justify-content-center align-items-center">
 					<i class="lni lni-library"></i>
 					<span>Project</span>
@@ -797,6 +797,12 @@ include("header.php");
 				<div class="d-flex flex-column justify-content-center align-items-center">
 					<i class="lni lni-image"></i>
 					<span>Photo</span>
+				</div>
+			</div>
+			<div class="tool-tab" data-tab="upload">
+				<div class="d-flex flex-column justify-content-center align-items-center">
+					<i class="fa fa-upload"></i>
+					<span>Upload</span>
 				</div>
 			</div>
 			<div class="tool-tab" data-tab="background">

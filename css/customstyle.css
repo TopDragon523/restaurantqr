@@ -72,7 +72,6 @@
 @import "./../vendor/aos/css/aos.min.css";
 @import "./../vendor/perfect-scrollbar/css/perfect-scrollbar.css";
 @import "./../vendor/metismenu/css/metisMenu.min.css";
-/*$primary  : #7356f1 !default;*/
 :root {
   --primary: #2f4cdd;
   --secondary: #3e4954;
@@ -87,6 +86,7 @@
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
+  --hovertab: #2f4cdd25;
 }
 
 .gradient_one {
@@ -14233,13 +14233,13 @@ svg.pulse-svg .third-circle {
 }
 .deznav .left-panel .active {
   border-left: 0.2rem solid var(--primary);
-  background-color: #D2D6DE;
+  background-color: var(--hovertab);
 }
 .deznav .left-panel .tool-tab {
   padding: 1rem 0;
 }
 .deznav .left-panel .tool-tab i {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
 }
 .deznav .left-panel .tool-tab span {
   font-size: 0.7rem !important;
@@ -14251,7 +14251,7 @@ svg.pulse-svg .third-circle {
   overflow-y: scroll;
   width: 17rem;
   border: 1px solid lightgray;
-  background: white;
+  background: var(--hovertab);
 }
 @media only screen and (min-width: 1200px) and (max-width: 1400px) {
   .deznav {
@@ -14702,7 +14702,6 @@ svg.pulse-svg .third-circle {
   width: 50vw;
 }
 
-/*$primary  : #7356f1 !default;*/
 :root {
   --primary: #2f4cdd;
   --secondary: #3e4954;
@@ -14717,6 +14716,7 @@ svg.pulse-svg .third-circle {
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
+  --hovertab: #2f4cdd25;
 }
 
 /*
@@ -14950,7 +14950,6 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   padding-left: 1.875rem;
 }
 
-/*$primary  : #7356f1 !default;*/
 :root {
   --primary: #2f4cdd;
   --secondary: #3e4954;
@@ -14965,6 +14964,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
+  --hovertab: #2f4cdd25;
 }
 
 /*
@@ -15155,7 +15155,6 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 The smaller device rules always should write below the bigger device rules
 Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Component
 */
-/*$primary  : #7356f1 !default;*/
 :root {
   --primary: #2f4cdd;
   --secondary: #3e4954;
@@ -15170,6 +15169,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
+  --hovertab: #2f4cdd25;
 }
 
 @media only screen and (min-width: 768px) {
@@ -18023,7 +18023,6 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   }
 }
 
-/*$primary  : #7356f1 !default;*/
 :root {
   --primary: #2f4cdd;
   --secondary: #3e4954;
@@ -18038,6 +18037,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
+  --hovertab: #2f4cdd25;
 }
 
 .form-check-label {
@@ -18758,7 +18758,6 @@ button.cancelBtn.btn.btn-sm.btn-inverse, .btn-group-sm > button.cancelBtn.btn.bt
 	color:#5E6278;
 	background-color:#f9f9f9!important;
 } */
-/*$primary  : #7356f1 !default;*/
 :root {
   --primary: #2f4cdd;
   --secondary: #3e4954;
@@ -18773,6 +18772,7 @@ button.cancelBtn.btn.btn-sm.btn-inverse, .btn-group-sm > button.cancelBtn.btn.bt
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
+  --hovertab: #2f4cdd25;
 }
 
 /*
@@ -19078,7 +19078,6 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   border-bottom-right-radius: 0;
 }
 
-/*$primary  : #7356f1 !default;*/
 :root {
   --primary: #2f4cdd;
   --secondary: #3e4954;
@@ -19093,6 +19092,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
+  --hovertab: #2f4cdd25;
 }
 
 .clipboard-btn {
@@ -19103,7 +19103,6 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   color: #fff;
 }
 
-/*$primary  : #7356f1 !default;*/
 :root {
   --primary: #2f4cdd;
   --secondary: #3e4954;
@@ -19118,6 +19117,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
+  --hovertab: #2f4cdd25;
 }
 
 .bootstrap-tagsinput {
@@ -19146,7 +19146,6 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   margin-bottom: 0.5rem;
 }
 
-/*$primary  : #7356f1 !default;*/
 :root {
   --primary: #2f4cdd;
   --secondary: #3e4954;
@@ -19161,6 +19160,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
+  --hovertab: #2f4cdd25;
 }
 
 .twitter-typeahead {
@@ -19208,7 +19208,6 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   font-size: 2rem;
 }
 
-/*$primary  : #7356f1 !default;*/
 :root {
   --primary: #2f4cdd;
   --secondary: #3e4954;
@@ -19223,6 +19222,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
+  --hovertab: #2f4cdd25;
 }
 
 .noUi-target {

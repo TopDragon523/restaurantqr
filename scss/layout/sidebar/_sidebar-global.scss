@@ -158,12 +158,12 @@
         overflow: scroll;
         .active {
             border-left: 0.2rem solid var(--primary);
-            background-color: $grey;
+            background-color: var(--hovertab);
         }
         .tool-tab {
             padding: 1rem 0;
             i {
-                font-size: 1.2rem;
+                font-size: 1.5rem;
             }
             span {
                 font-size: 0.7rem !important;
@@ -176,10 +176,9 @@
         position: relative;
         height: 100%;
 		overflow-y: scroll;
-		// background-color: $grey;
         width: 17rem;
         border: 1px solid lightgray;
-        background: white;
+        background: var(--hovertab);
         // overflow: visible!important;
         // border-top-left-radius: 5px;
         // border-top-right-radius: 5px;

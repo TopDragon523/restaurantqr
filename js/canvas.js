@@ -340,6 +340,32 @@ $(function () {
     createImageNode(imageNode);
   });
 
+  $("body").delegate(".upload-image-component img", "click", function () {
+    const index = parseInt($(this).data("index"));
+    const img = uploads.filter(function (item) {
+      return item.id === index;
+    });
+
+    let imageObj = new Image();
+    imageObj.setAttribute("crossOrigin", "anonymous");
+    imageObj.src = img[0].url;
+    // imageObj.width = img[0].width;
+    // imageObj.height = img[0].height;
+
+    let imageNode = new Konva.Image({
+      x: 80,
+      y: 100,
+      image: imageObj,
+      draggable: true,
+    });
+
+    handleTransformer(2);
+    // selectionTr.nodes([imageNode]);
+    selectionTr.show();
+
+    createImageNode(imageNode);
+  });
+
   $("body").delegate(".background-component img", "click", function () {
     const index = parseInt($(this).data("index"));
     const img = backgroundImages.filter(function (item) {
