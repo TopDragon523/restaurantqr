@@ -86,7 +86,7 @@
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
-  --hovertab: #2f4cdd25;
+  --hovertab: #eeeeee;
 }
 
 .gradient_one {
@@ -14245,12 +14245,14 @@ svg.pulse-svg .third-circle {
   font-size: 0.7rem !important;
   margin-top: 0.4rem;
 }
+.deznav .left-panel .tool-tab:hover {
+  background-color: var(--hovertab);
+}
 .deznav .deznav-scroll {
   position: relative;
   height: 100%;
   overflow-y: scroll;
   width: 17rem;
-  border: 1px solid lightgray;
   background: var(--hovertab);
 }
 @media only screen and (min-width: 1200px) and (max-width: 1400px) {
@@ -14716,7 +14718,7 @@ svg.pulse-svg .third-circle {
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
-  --hovertab: #2f4cdd25;
+  --hovertab: #eeeeee;
 }
 
 /*
@@ -14964,7 +14966,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
-  --hovertab: #2f4cdd25;
+  --hovertab: #eeeeee;
 }
 
 /*
@@ -15169,7 +15171,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
-  --hovertab: #2f4cdd25;
+  --hovertab: #eeeeee;
 }
 
 @media only screen and (min-width: 768px) {
@@ -18037,7 +18039,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
-  --hovertab: #2f4cdd25;
+  --hovertab: #eeeeee;
 }
 
 .form-check-label {
@@ -18772,7 +18774,7 @@ button.cancelBtn.btn.btn-sm.btn-inverse, .btn-group-sm > button.cancelBtn.btn.bt
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
-  --hovertab: #2f4cdd25;
+  --hovertab: #eeeeee;
 }
 
 /*
@@ -19092,7 +19094,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
-  --hovertab: #2f4cdd25;
+  --hovertab: #eeeeee;
 }
 
 .clipboard-btn {
@@ -19117,7 +19119,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
-  --hovertab: #2f4cdd25;
+  --hovertab: #eeeeee;
 }
 
 .bootstrap-tagsinput {
@@ -19160,7 +19162,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
-  --hovertab: #2f4cdd25;
+  --hovertab: #eeeeee;
 }
 
 .twitter-typeahead {
@@ -19222,7 +19224,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --rgba-primary-7: rgba(47, 76, 221, 0.7);
   --rgba-primary-8: rgba(47, 76, 221, 0.8);
   --rgba-primary-9: rgba(47, 76, 221, 0.9);
-  --hovertab: #2f4cdd25;
+  --hovertab: #eeeeee;
 }
 
 .noUi-target {

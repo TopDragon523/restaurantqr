@@ -6,11 +6,13 @@ $(function () {
   let width = $("#stage").width();
   let height = $("#stage").height();
   let screenScale = { x: 1, y: 1 };
-  let relativeScaleTemp = Math.max(
+  let relativeScale = 1;
+  let relativeScaleTemp = 1;
+
+  relativeScaleTemp = Math.max(
     Math.max(paper.width / width, 1),
     Math.max(paper.height / height, 1)
   );
-  let relativeScale = 1;
 
   if (relativeScaleTemp > 1) {
     if (paper.width / width > paper.height / height) {
@@ -19,10 +21,9 @@ $(function () {
       relativeScale = height / paper.height;
     }
   } else {
-    relativeScale = relativeScale;
+    relativeScale = 1;
   }
 
-  console.log(width, height);
   // create stage
   let stage = new Konva.Stage({
     container: "stage",
@@ -323,21 +324,28 @@ $(function () {
     let imageObj = new Image();
     imageObj.setAttribute("crossOrigin", "anonymous");
     imageObj.src = img[0].url;
-    imageObj.width = img[0].width;
-    imageObj.height = img[0].height;
+    imageObj.onload = function () {
+      imageObj.width = this.width;
+      imageObj.height = this.height;
 
-    let imageNode = new Konva.Image({
-      x: 80,
-      y: 100,
-      image: imageObj,
-      draggable: true,
-    });
+      let imageNode = new Konva.Image({
+        x:
+          (paper.width * relativeScale) / 2 -
+          (imageObj.width * relativeScale) / 2,
+        y:
+          (paper.height * relativeScale) / 2 -
+          (imageObj.height * relativeScale) / 2,
+        image: imageObj,
+        scale: { x: relativeScale, y: relativeScale },
+        draggable: true,
+      });
 
-    handleTransformer(2);
-    selectionTr.nodes([imageNode]);
-    selectionTr.show();
+      handleTransformer(2);
+      selectionTr.nodes([imageNode]);
+      selectionTr.show();
 
-    createImageNode(imageNode);
+      createImageNode(imageNode);
+    };
   });
 
   $("body").delegate(".upload-image-component img", "click", function () {
@@ -349,21 +357,28 @@ $(function () {
     let imageObj = new Image();
     imageObj.setAttribute("crossOrigin", "anonymous");
     imageObj.src = img[0].url;
-    // imageObj.width = img[0].width;
-    // imageObj.height = img[0].height;
+    imageObj.onload = function () {
+      imageObj.width = this.width;
+      imageObj.height = this.height;
 
-    let imageNode = new Konva.Image({
-      x: 80,
-      y: 100,
-      image: imageObj,
-      draggable: true,
-    });
+      let imageNode = new Konva.Image({
+        x:
+          (paper.width * relativeScale) / 2 -
+          (imageObj.width * relativeScale) / 2,
+        y:
+          (paper.height * relativeScale) / 2 -
+          (imageObj.height * relativeScale) / 2,
+        image: imageObj,
+        scale: { x: relativeScale, y: relativeScale },
+        draggable: true,
+      });
 
-    handleTransformer(2);
-    // selectionTr.nodes([imageNode]);
-    selectionTr.show();
+      handleTransformer(2);
+      selectionTr.nodes([imageNode]);
+      selectionTr.show();
 
-    createImageNode(imageNode);
+      createImageNode(imageNode);
+    };
   });
 
   $("body").delegate(".background-component img", "click", function () {
@@ -401,7 +416,8 @@ $(function () {
   // save as  qrcode
   $("body").delegate("#saveqr", "click", function () {
     const sn = generateToken(8);
-    generateQR(`http://localhost/restaurantqr/guest.php?id=${sn}`);
+    // generateQR(`http://localhost/restaurantqr/guest.php?id=${sn}`);
+    generateQR(`https://restaurantqrmenu.ddns.net/guest.php?id=${sn}`);
   });
 
   // save as  qrcode
