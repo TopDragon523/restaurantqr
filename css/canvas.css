@@ -15,16 +15,22 @@
     border: 2px solid transparent;
 }
 
-.project-component:hover img, .demo-component:hover img, .text-component:hover, .photo-component img:hover, .background-component img:hover {
+.project-component:hover img, .demo-component:hover img, .text-component:hover, .photo-component:hover img, .upload-image-component:hover img, .background-component img:hover {
     border: 2px solid var(--primary);
 }
 
-.project-component, .demo-component, .text-component, .background-component, .photo-component {
+.project-component, .demo-component, .text-component, .background-component, .photo-component, .upload-image-component {
     padding: 1rem 2rem !important;
 }
 
-.project-component img, .demo-component img, .background-component img, .photo-component img {
+.project-component img, .demo-component img, .background-component img, .photo-component img, .upload-image-component img {
     width: 100%;
     box-shadow: 0 0 5px rgba(16, 22, 26, 0.3);
     border-radius: 5px;
+}
+
+#imageSelectBtn {
+    position: sticky;
+    top: 0;
+    padding: 0 1rem;
 }

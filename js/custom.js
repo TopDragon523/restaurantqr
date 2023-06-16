@@ -129,6 +129,69 @@ var Davur = (function () {
             $photoContainer.appendTo("div.deznav .deznav-scroll");
           });
           break;
+        case "upload":
+          clearLeftPanel();
+          $("div.deznav .deznav-scroll").append(`
+          <div id="imageSelectBtn">
+              <input type="file" id="imgaeSelect" name="userimage" hidden />
+              <button
+                type="button"
+                class="w-100 btn btn-primary"
+                onclick="$('#imgaeSelect').trigger('click'); return true;"
+              >
+                Upload Image
+              </button>
+           </div>   
+          `);
+          uploads.map(function (item) {
+            const $uploadImageWrapper = $("<div>");
+            const $uploadImage = $("<img>");
+            $uploadImageWrapper.attr("class", "upload-image-component");
+            $uploadImage.attr("data-index", item.id);
+
+            $uploadImage.attr("src", item.url);
+            $uploadImage.appendTo($uploadImageWrapper);
+            $uploadImageWrapper.appendTo("div.deznav .deznav-scroll");
+          });
+          $("#imgaeSelect").change(function () {
+            let fileInput = $.trim($(this).val());
+            if (fileInput && fileInput !== "") {
+              let fileName = "";
+              fileName = $(this).val();
+
+              let imageData = new FormData();
+              imageData.append("userimage", $(this)[0].files[0]);
+              $.ajax({
+                url: "upload.php",
+                type: "POST",
+                processData: false,
+                contentType: false,
+                data: imageData,
+                success: function (response) {
+                  console.log(response);
+                  let res = JSON.parse(response);
+
+                  if (res.status) {
+                    let uploadedFile = res.uploadedFile;
+                    const $uploadImageWrapper = $("<div>");
+                    const $uploadImage = $("<img>");
+                    $uploadImageWrapper.attr("class", "upload-image-component");
+                    $uploadImage.attr("data-index", uploadedFile.id);
+
+                    $uploadImage.attr("src", uploadedFile.url);
+                    $uploadImage.appendTo($uploadImageWrapper);
+                    $uploadImageWrapper.appendTo("div.deznav .deznav-scroll");
+                  } else {
+                    console.log("Uuload image error: ", res.message);
+                  }
+                },
+                error: function (xhr, status, error) {
+                  console.log("Upload image error ", error);
+                },
+              });
+            }
+          });
+          break;
         case "background":
           clearLeftPanel();
           backgroundImages.map(function (item) {

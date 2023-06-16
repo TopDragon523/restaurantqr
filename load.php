@@ -1,7 +1,7 @@
 <?php
 session_start();
 include "db.php";
-$tabs = array("projects", "photos", "bgimages", "texts", "templates");
+$tabs = array("projects", "templates", "texts", "photos", "uploads", "bgimages");
 $user_id = $_SESSION["userid"];
 
 global $resources;
@@ -9,7 +9,7 @@ $resources = array();
 
 
 foreach ($tabs  as $tab) {
-    if ($tab === "projects") {
+    if ($tab === "projects" || $tab === "uploads") {
         $query = "SELECT * FROM " . $tab . " WHERE createdBy = $user_id";
     } else {
         $query = "SELECT * FROM " . $tab . " WHERE is_free = 1";

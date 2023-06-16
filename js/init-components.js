@@ -3,6 +3,7 @@ let demos = [];
 let textComponents = [];
 let backgroundImages = [];
 let photos = [];
+let uploads = [];
 let templateId = 0;
 
 $.ajax({
@@ -33,6 +34,11 @@ $.ajax({
       item.id = parseInt(item.id);
       item.width = parseInt(item.width);
       item.height = parseInt(item.height);
+      return item;
+    });
+
+    uploads = resoures.uploads.map(function (item) {
+      item.id = parseInt(item.id);
       return item;
     });
 

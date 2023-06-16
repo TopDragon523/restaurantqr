@@ -86,6 +86,8 @@ $skype: #00aff0;
 $quora: #aa2200;
 $riverBed: #4C585C;
 $vimeo: #1ab7ea;
+$hovertab : #2f4cdd25;
+
 
 
 ///////////////////
@@ -132,5 +134,6 @@ $radius: 0.5rem;
 	--rgba-primary-7: #{rgba($primary, 0.7)};
 	--rgba-primary-8: #{rgba($primary, 0.8)};
 	--rgba-primary-9: #{rgba($primary, 0.9)};
+	--hovertab : #{$hovertab};
 }
 
