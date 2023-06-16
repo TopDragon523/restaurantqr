@@ -14253,7 +14253,6 @@ svg.pulse-svg .third-circle {
   height: 100%;
   overflow-y: scroll;
   width: 17rem;
-  border: 1px solid lightgray;
   background: var(--hovertab);
 }
 @media only screen and (min-width: 1200px) and (max-width: 1400px) {
