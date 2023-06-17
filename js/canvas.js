@@ -393,6 +393,32 @@ $(function () {
     whiteRect.image(bgImageObj);
   });
 
+  $("body").delegate(".sample-color", "click", function () {
+    const whiteRectBackColor = $(this)
+      .children()
+      .first()
+      .css("background-color");
+
+    $(".asColorPicker-trigger span").css(
+      "background-color",
+      whiteRectBackColor
+    );
+
+    whiteRect.setAttrs({
+      fill: whiteRectBackColor,
+      image: null,
+    });
+  });
+
+  $("body").delegate("#backcolorpicker", "change", function (e) {
+    const whiteRectBackColor = e.target.value;
+
+    whiteRect.setAttrs({
+      fill: whiteRectBackColor,
+      image: null,
+    });
+  });
+
   // resize window screen
   $(window).on("resize", function () {
     redraw();

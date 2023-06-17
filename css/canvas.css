@@ -34,3 +34,9 @@
     top: 0;
     padding: 0 1rem;
 }
+
+.sample-color {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNSIgaGVpZ2h0PSIxNSIgdmlld0JveD0iMCAwIDggOCI+PGcgZmlsbD0icmdiYSgxMTIsIDExMiwgMTE2LCAxKSIgZmlsbC1vcGFjaXR5PSIxIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wIDBoNHY0SDBWMHptNCA0aDR2NEg0VjR6Ii8+PC9nPjwvc3ZnPg==');
+    width: 1.5rem;
+    height: 1.5rem;
+}

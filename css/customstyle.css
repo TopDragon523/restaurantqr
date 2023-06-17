@@ -18392,13 +18392,9 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   position: absolute;
   right: 0;
   top: 0;
-  width: 2.1875rem;
+  width: 100%;
   border-radius: 0 0.5rem 0.5rem 0;
 }
-.asColorPicker-trigger span {
-  border-radius: 0 0.5rem 0.5rem 0;
-}
-
 [direction=rtl] .asColorPicker-trigger {
   left: 0;
   right: auto;

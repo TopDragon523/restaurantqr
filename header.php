@@ -25,6 +25,8 @@
     <link href="./vendor/jqvmap/css/jqvmap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="./vendor/chartist/css/chartist.min.css">
     <link href="vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">
+    <!-- asColorpicker -->
+    <link href="vendor/jquery-asColorPicker/css/asColorPicker.min.css" rel="stylesheet" />
     <!-- <link href="css/style.css" rel="stylesheet"> -->
     <link href="css/canvas.css" rel="stylesheet">
     <link href="css/customstyle.css" rel="stylesheet">
