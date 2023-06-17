@@ -812,15 +812,7 @@ include("header.php");
 				</div>
 			</div>
 		</div>
-		<div class="deznav-scroll"></div>
-		<!-- <ul class="metismenu" id="menu"> -->
-		<!-- <ul>
-			<li class=""><a class="has-arrow ai-icon d-flex flex-column" href="javascript:void()" aria-expanded="false">
-					<i class="flaticon-381-networking"></i>
-					<span class="nav-text">Dashboard</span>
-				</a>
-			</li>
-		</ul> -->
+		<div class="deznav-scroll"> </div>
 	</div>
 	<!--**********************************Sidebar end***********************************-->
 
