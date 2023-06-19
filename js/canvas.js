@@ -99,6 +99,7 @@ $(function () {
     anchorStroke: "#00a1ff",
     anchorStrokeWidth: 2,
     rotationSnaps: [0, 45, 90, 135, 180, -45, -90, -135],
+    flipEnabled: false,
   });
 
   // create rectangle to select shapes
@@ -215,6 +216,23 @@ $(function () {
     // const isSelected = selectionTr.nodes().indexOf(e.target) >= 0;
   });
 
+  // handle the transformer
+  selectionTr.on("transform dragmove", function () {
+    if (this.nodes().length === 1) {
+      const selectedNode = this.nodes()[0];
+      const nodeType = selectedNode.getClassName();
+
+      switch (nodeType) {
+        case "Text":
+          showControlPanel();
+          console.log("transformer listis changed  ", selectedNode.attrs);
+          break;
+        default:
+          break;
+      }
+    }
+  });
+
   // handle the toolbox tab
   $("body").delegate(".project-component img", "click", function () {
     let savedStage = $(this).data("config");
@@ -301,16 +319,16 @@ $(function () {
       y: (paper.height / 2 - component[0].fontSize) * relativeScale,
       fontSize: component[0].fontSize * relativeScale,
       fontFamily: component[0].fontFamily,
-      scaleX: 1,
-      scaleY: 1,
       draggable: true,
       width: 200,
       fill: component[0].color,
     });
 
+    deselectAllComponents();
     handleTransformer(1);
     selectionTr.nodes([textNode]);
     selectionTr.show();
+    showControlPanel();
 
     createTextNode(textNode);
   });
@@ -398,11 +416,7 @@ $(function () {
       .children()
       .first()
       .css("background-color");
-
-    $(".asColorPicker-trigger span").css(
-      "background-color",
-      whiteRectBackColor
-    );
+    $("#backcolorpicker").asColorPicker("set", whiteRectBackColor);
 
     whiteRect.setAttrs({
       fill: whiteRectBackColor,
@@ -410,8 +424,8 @@ $(function () {
     });
   });
 
-  $("body").delegate("#backcolorpicker", "change", function (e) {
-    const whiteRectBackColor = e.target.value;
+  $("body").delegate("#backcolorpicker", "asColorPicker::change", function (e) {
+    const whiteRectBackColor = $("#backcolorpicker").asColorPicker("get");
 
     whiteRect.setAttrs({
       fill: whiteRectBackColor,
@@ -523,24 +537,20 @@ $(function () {
     selectionTr.hide();
     selectionTr.nodes([]);
     selectionTr.forceUpdate();
+    hideControlPanel();
   }
 
   function createTextNode(textNode) {
     shapeGroup.add(textNode);
 
     textNode.on("dragmove touchmove", function () {
+      deselectAllComponents();
       selectionTr.show();
-      if (selectionTr.nodes().length < 2) {
-        const nodeX = this.x();
-        const nodeY = this.y();
-
+      if (!selectionTr.nodes().includes(this)) {
         handleTransformer(1);
         selectionTr.nodes([this]);
-        selectionTr.x(nodeX);
-        selectionTr.y(nodeY);
-      } else {
-        handleTransformer(0);
       }
+      selectionTr.fire("dragmove");
       layer.batchDraw(); //prevent redrawing too much
     });
     textNode.on("transform", function () {
@@ -571,7 +581,7 @@ $(function () {
       console.log("Text node is clicked ", this);
       handleTransformer(1);
       selectionTr.forceUpdate();
-      const isSelected = selectionTr.nodes().indexOf(e.target) >= 0;
+      const isSelected = selectionTr.nodes().includes(e.target);
       if (!isSelected) {
         deselectAllComponents();
         selectionTr.nodes([this]);
@@ -657,6 +667,7 @@ $(function () {
           window.addEventListener("click", handleOutsideClick);
         });
       }
+      showControlPanel();
     });
   }
 
@@ -665,17 +676,11 @@ $(function () {
 
     imageNode.on("dragmove", function () {
       selectionTr.show();
-      if (selectionTr.nodes().length < 2) {
-        const nodeX = imageNode.x();
-        const nodeY = imageNode.y();
-
+      if (!selectionTr.nodes().includes(this)) {
         handleTransformer(2);
         selectionTr.nodes([this]);
-        selectionTr.x(nodeX);
-        selectionTr.y(nodeY);
-      } else {
-        handleTransformer(0);
       }
+      selectionTr.fire("dragmove");
       layer.batchDraw(); //prevent redrawing too much
     });
 
@@ -960,6 +965,36 @@ $(function () {
     });
 
     return dataUrl;
+  }
+
+  function showControlPanel() {
+    let selectedTextNode = selectionTr.nodes()[0];
+
+    if ($(".header").find("#textcontrol").length === 0) {
+      $(".header-left").append(`
+      <div id="textcontrol" class="d-flex">
+        <div style="width: 2rem; height:2rem;" id="fontcolorpicker"></div>
+        <div style="width: 4rem;">
+        <input class="w-100 text-center" type="number" id="fontsize" value="32" min="0">
+        </div>
+      </div>
+      `);
+
+      $("#fontcolorpicker").asColorPicker({
+        onChange: function (color) {
+          selectedTextNode.setAttrs({
+            fill: color,
+          });
+        },
+        hideInput: false,
+        mode: "complex",
+      });
+    }
+    $("#fontcolorpicker").asColorPicker("set", selectedTextNode.fill());
+  }
+
+  function hideControlPanel() {
+    $(".header .header-left").text("");
   }
 
   function undo() {}
