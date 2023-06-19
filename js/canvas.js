@@ -224,8 +224,8 @@ $(function () {
 
       switch (nodeType) {
         case "Text":
-          showControlPanel();
-          console.log("transformer listis changed  ", selectedNode.attrs);
+          // showControlPanel();
+          // console.log("transformer listis changed  ", selectedNode.attrs);
           break;
         default:
           break;
@@ -541,10 +541,23 @@ $(function () {
   }
 
   function createTextNode(textNode) {
+    let textarea;
     shapeGroup.add(textNode);
+    showControlPanel();
 
-    textNode.on("dragmove touchmove", function () {
-      deselectAllComponents();
+    function handleOutsideClick(e) {
+      if (e.target !== textarea) {
+        removeTextarea(textarea);
+      }
+    }
+
+    function removeTextarea(textarea) {
+      textarea.parentNode.removeChild(textarea);
+      window.removeEventListener("click", handleOutsideClick);
+      textNode.show();
+    }
+
+    textNode.on("dragmove touchmove", function (e) {
       selectionTr.show();
       if (!selectionTr.nodes().includes(this)) {
         handleTransformer(1);
@@ -553,6 +566,7 @@ $(function () {
       selectionTr.fire("dragmove");
       layer.batchDraw(); //prevent redrawing too much
     });
+
     textNode.on("transform", function () {
       const activeAnchor = selectionTr.getActiveAnchor();
       switch (activeAnchor) {
@@ -560,10 +574,13 @@ $(function () {
         case "top-right":
         case "bottom-left":
         case "bottom-right":
+          const changedWidth = this.width() * this.scaleX();
+          const changedFontSize = this.fontSize() * this.scaleX();
           textNode.setAttrs({
-            width: this.width() * this.scaleX(),
-            fontSize: this.fontSize() * this.scaleX(),
+            width: changedWidth,
+            fontSize: changedFontSize,
           });
+          $("#fontsizecontrol").val(parseInt(changedFontSize));
           break;
         case "middle-left":
         case "middle-right":
@@ -575,6 +592,7 @@ $(function () {
       this.scaleX(1);
       this.scaleY(1);
       selectionTr.forceUpdate();
+      layer.batchDraw();
     });
 
     textNode.on("click touchstart", function (e) {
@@ -586,6 +604,7 @@ $(function () {
         deselectAllComponents();
         selectionTr.nodes([this]);
         selectionTr.show();
+        showControlPanel();
       } else {
         textNode.hide();
 
@@ -595,17 +614,20 @@ $(function () {
           y: stage.container().offsetTop + textPosition.y,
         };
 
-        let textarea = document.createElement("textarea");
+        textarea = document.createElement("textarea");
         document.body.appendChild(textarea);
 
+        textarea.id = "editkonvatext";
         textarea.value = textNode.text();
         textarea.style.position = "absolute";
         textarea.style.top = areaPosition.y + "px";
         textarea.style.left = areaPosition.x + "px";
-        textarea.style.width = textNode.width() - textNode.padding() * 2 + "px";
+        textarea.style.width =
+          (textNode.width() - textNode.padding() * 2) * relativeScale + "px";
         textarea.style.height =
-          textNode.height() - textNode.padding() * 2 + 5 + "px";
-        textarea.style.fontSize = textNode.fontSize() + "px";
+          (textNode.height() - textNode.padding() * 2 + 5) * relativeScale +
+          "px";
+        textarea.style.fontSize = textNode.fontSize() * relativeScale + "px";
         textarea.style.border = "none";
         textarea.style.padding = "0px";
         textarea.style.margin = "0px";
@@ -650,24 +672,10 @@ $(function () {
           selectionTr.forceUpdate();
         });
 
-        function handleOutsideClick(e) {
-          if (e.target !== textarea) {
-            removeTextarea();
-          }
-        }
-
-        function removeTextarea() {
-          textarea.parentNode.removeChild(textarea);
-          window.removeEventListener("click", handleOutsideClick);
-          textNode.show();
-          deselectAllComponents();
-        }
-
         setTimeout(() => {
           window.addEventListener("click", handleOutsideClick);
         });
       }
-      showControlPanel();
     });
   }
 
@@ -972,12 +980,12 @@ $(function () {
 
     if ($(".header").find("#textcontrol").length === 0) {
       $(".header-left").append(`
-      <div id="textcontrol" class="d-flex">
-        <div style="width: 2rem; height:2rem;" id="fontcolorpicker"></div>
-        <div style="width: 4rem;">
-        <input class="w-100 text-center" type="number" id="fontsize" value="32" min="0">
+        <div id="textcontrol" class="d-flex">
+          <div style="width: 2rem; height:2rem;" id="fontcolorpicker"></div>
+          <div style="width: 4rem;">
+            <input id="fontsizecontrol" class="w-100 text-center" type="number" id="fontsize" value="32" min="0">
+          </div>
         </div>
-      </div>
       `);
 
       $("#fontcolorpicker").asColorPicker({
@@ -991,6 +999,13 @@ $(function () {
       });
     }
     $("#fontcolorpicker").asColorPicker("set", selectedTextNode.fill());
+    $("#fontsizecontrol").val(parseInt(selectedTextNode.fontSize()));
+    $("body").delegate("#fontsizecontrol", "change", function () {
+      selectedTextNode.setAttrs({
+        fontSize: $(this).val(),
+      });
+      selectionTr.forceUpdate();
+    });
   }
 
   function hideControlPanel() {
