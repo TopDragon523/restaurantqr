@@ -315,14 +315,15 @@ $(function () {
 
     let textNode = new Konva.Text({
       text: component[0].label,
-      x: (paper.width / 2 - 100) * relativeScale,
+      x: (paper.width / 2 - 200) * relativeScale,
       y: (paper.height / 2 - component[0].fontSize) * relativeScale,
       fontSize: component[0].fontSize * relativeScale,
       fontFamily: component[0].fontFamily,
       draggable: true,
-      width: 200,
+      width: 400 * relativeScale,
       fill: component[0].color,
     });
+    textNode.align("center");
 
     deselectAllComponents();
     handleTransformer(1);
@@ -569,13 +570,14 @@ $(function () {
 
     textNode.on("transform", function () {
       const activeAnchor = selectionTr.getActiveAnchor();
+      const changedWidth = this.width() * this.scaleX();
+      const changedFontSize = this.fontSize() * this.scaleX();
+
       switch (activeAnchor) {
         case "top-left":
         case "top-right":
         case "bottom-left":
         case "bottom-right":
-          const changedWidth = this.width() * this.scaleX();
-          const changedFontSize = this.fontSize() * this.scaleX();
           textNode.setAttrs({
             width: changedWidth,
             fontSize: changedFontSize,
@@ -584,7 +586,7 @@ $(function () {
           break;
         case "middle-left":
         case "middle-right":
-          this.width(Math.max(200, this.width() * this.scaleX()));
+          this.width(Math.max(this.fontSize(), this.width() * this.scaleX()));
           break;
         case "rotator":
           break;
@@ -980,14 +982,17 @@ $(function () {
 
     if ($(".header").find("#textcontrol").length === 0) {
       $(".header-left").append(`
-        <div id="textcontrol" class="d-flex">
+        <div id="textcontrol" class="d-flex align-items-center">
           <div style="width: 2rem; height:2rem;" id="fontcolorpicker"></div>
-          <div style="width: 4rem;">
-            <input id="fontsizecontrol" class="w-100 text-center" type="number" id="fontsize" value="32" min="0">
+          <div style="width: 4rem; height:2rem" class="d-flex align-items-center mx-1">
+            <input id="fontsizecontrol" class="w-100 h-100 text-center" type="number" id="fontsize" value="32" min="0">
           </div>
+          <i style="font-size:2rem;" class="text-align lni lni-text-align-left mx-1" data-align="left"></i>
+          <i style="font-size:2rem;" class="text-align lni lni-text-align-center mx-1" data-align="center"></i>
+          <i style="font-size:2rem;" class="text-align lni lni-text-align-right mx-1" data-align="right"></i>
         </div>
       `);
-
+      // font color
       $("#fontcolorpicker").asColorPicker({
         onChange: function (color) {
           selectedTextNode.setAttrs({
@@ -999,12 +1004,18 @@ $(function () {
       });
     }
     $("#fontcolorpicker").asColorPicker("set", selectedTextNode.fill());
+    // font size
     $("#fontsizecontrol").val(parseInt(selectedTextNode.fontSize()));
     $("body").delegate("#fontsizecontrol", "change", function () {
       selectedTextNode.setAttrs({
         fontSize: $(this).val(),
       });
       selectionTr.forceUpdate();
+    });
+    // text align
+    $("body").delegate("i.text-align", "click", function () {
+      const align = $(this).data("align");
+      selectedTextNode.align(align);
     });
   }
 
