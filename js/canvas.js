@@ -978,19 +978,18 @@ $(function () {
   }
 
   function showControlPanel() {
-    let selectedTextNode = selectionTr.nodes()[0];
-
     if ($(".header").find("#textcontrol").length === 0) {
+      const selectedTextNode = selectionTr.nodes()[0];
       $(".header-left").append(`
-        <div id="textcontrol" class="d-flex align-items-center">
-          <div style="width: 2rem; height:2rem;" id="fontcolorpicker"></div>
-          <div style="width: 4rem; height:2rem" class="d-flex align-items-center mx-1">
-            <input id="fontsizecontrol" class="w-100 h-100 text-center" type="number" id="fontsize" value="32" min="0">
-          </div>
-          <i style="font-size:2rem;" class="text-align lni lni-text-align-left mx-1" data-align="left"></i>
-          <i style="font-size:2rem;" class="text-align lni lni-text-align-center mx-1" data-align="center"></i>
-          <i style="font-size:2rem;" class="text-align lni lni-text-align-right mx-1" data-align="right"></i>
-        </div>
+      <div id="textcontrol" class="d-flex align-items-center">
+      <div style="width: 2rem; height:2rem;" id="fontcolorpicker"></div>
+      <div style="width: 4rem; height:2rem" class="d-flex align-items-center mx-1">
+      <input id="fontsizecontrol" class="w-100 h-100 text-center" type="number" id="fontsize" value="32" min="0">
+      </div>
+      <i style="font-size:2rem;" class="konva-text-align lni lni-text-align-left mx-1" data-align="left"></i>
+      <i style="font-size:2rem;" class="konva-text-align lni lni-text-align-center mx-1" data-align="center"></i>
+      <i style="font-size:2rem;" class="konva-text-align lni lni-text-align-right mx-1" data-align="right"></i>
+      </div>
       `);
       // font color
       $("#fontcolorpicker").asColorPicker({
@@ -1002,21 +1001,27 @@ $(function () {
         hideInput: false,
         mode: "complex",
       });
-    }
-    $("#fontcolorpicker").asColorPicker("set", selectedTextNode.fill());
-    // font size
-    $("#fontsizecontrol").val(parseInt(selectedTextNode.fontSize()));
-    $("body").delegate("#fontsizecontrol", "change", function () {
-      selectedTextNode.setAttrs({
-        fontSize: $(this).val(),
+      $("#fontcolorpicker").asColorPicker("set", selectedTextNode.fill());
+
+      // font size
+      $("#fontsizecontrol").val(parseInt(selectedTextNode.fontSize()));
+      $("body").delegate("#fontsizecontrol", "change", function () {
+        console.log("fontsize contrl ijput is changing ");
+        const selectedTextNode = selectionTr.nodes()[0];
+        selectedTextNode.setAttrs({
+          fontSize: $(this).val(),
+        });
+        selectionTr.forceUpdate();
       });
-      selectionTr.forceUpdate();
-    });
-    // text align
-    $("body").delegate("i.text-align", "click", function () {
-      const align = $(this).data("align");
-      selectedTextNode.align(align);
-    });
+
+      // text align
+      $("body").delegate("i.konva-text-align", "click", function () {
+        const selectedTextNode = selectionTr.nodes()[0];
+        const align = $(this).data("align");
+        console.log("I am very intead", selectedTextNode);
+        selectedTextNode.align(align);
+      });
+    }
   }
 
   function hideControlPanel() {
