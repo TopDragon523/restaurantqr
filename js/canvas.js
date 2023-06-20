@@ -154,15 +154,6 @@ $(function () {
       width: Math.abs(x2 - x1),
       height: Math.abs(y2 - y1),
     });
-    // // inint rectanlge when the cursor reach edge of stage
-    // if (x2 < 1 || x2 > stage.width() - 1 || y2 < 1 || y2 > stage.height() - 1) {
-    //   setTimeout(() => {
-    //     selectionRectangle.visible(false);
-    //   });
-    //   selectionRectangle.x(-1);
-    //   selectionRectangle.y(-1);
-    //   return;
-    // }
     layer.batchDraw();
   });
 
@@ -308,20 +299,19 @@ $(function () {
   });
 
   $("body").delegate(".text-component", "click", function () {
-    const index = parseInt($(this).data("index"));
-    const component = textComponents.filter(function (item) {
-      return item.id === index;
-    });
+    const index = $(this).data("size");
+
+    const component = textComponents[index];
 
     let textNode = new Konva.Text({
-      text: component[0].label,
+      text: component.label,
       x: (paper.width / 2 - 200) * relativeScale,
-      y: (paper.height / 2 - component[0].fontSize) * relativeScale,
-      fontSize: component[0].fontSize * relativeScale,
-      fontFamily: component[0].fontFamily,
+      y: (paper.height / 2 - component.fontSize) * relativeScale,
+      fontSize: component.fontSize * relativeScale,
+      fontFamily: component.fontFamily,
       draggable: true,
       width: 400 * relativeScale,
-      fill: component[0].color,
+      fill: component.color,
     });
     textNode.align("center");
 
@@ -336,13 +326,13 @@ $(function () {
 
   $("body").delegate(".photo-component img", "click", function () {
     const index = parseInt($(this).data("index"));
-    const img = photos.filter(function (item) {
+    const [img] = photos.filter(function (item) {
       return item.id === index;
     });
 
     let imageObj = new Image();
     imageObj.setAttribute("crossOrigin", "anonymous");
-    imageObj.src = img[0].url;
+    imageObj.src = img.url;
     imageObj.onload = function () {
       imageObj.width = this.width;
       imageObj.height = this.height;
@@ -369,13 +359,13 @@ $(function () {
 
   $("body").delegate(".upload-image-component img", "click", function () {
     const index = parseInt($(this).data("index"));
-    const img = uploads.filter(function (item) {
+    const [img] = uploads.filter(function (item) {
       return item.id === index;
     });
 
     let imageObj = new Image();
     imageObj.setAttribute("crossOrigin", "anonymous");
-    imageObj.src = img[0].url;
+    imageObj.src = img.url;
     imageObj.onload = function () {
       imageObj.width = this.width;
       imageObj.height = this.height;
@@ -402,13 +392,13 @@ $(function () {
 
   $("body").delegate(".background-component img", "click", function () {
     const index = parseInt($(this).data("index"));
-    const img = backgroundImages.filter(function (item) {
+    const [img] = backgroundImages.filter(function (item) {
       return item.id == index;
     }); // from init-component file
 
     let bgImageObj = new Image();
     bgImageObj.setAttribute("crossOrigin", "anonymous");
-    bgImageObj.src = img[0].url;
+    bgImageObj.src = img.url;
     whiteRect.image(bgImageObj);
   });
 
@@ -544,7 +534,9 @@ $(function () {
   function createTextNode(textNode) {
     let textarea;
     shapeGroup.add(textNode);
-    showControlPanel();
+    if (selectionTr.nodes().length > 0) {
+      showControlPanel();
+    }
 
     function handleOutsideClick(e) {
       if (e.target !== textarea) {
@@ -726,12 +718,6 @@ $(function () {
       dataType: "JSON",
       data: { data: JSON.stringify(data), thumbnail: dataUrl },
       success: function (response) {
-        console.log(
-          "saved stage is ",
-          // JSON.parse(response)
-          response.newDemo
-        );
-
         let newDemo = response.newDemo;
 
         demos.push({
@@ -980,17 +966,27 @@ $(function () {
   function showControlPanel() {
     if ($(".header").find("#textcontrol").length === 0) {
       const selectedTextNode = selectionTr.nodes()[0];
+      const YOUR_API_KEY = "AIzaSyBAKR45ng8gEgjUD7NPVxBpOvVeVajHb7U";
+
       $(".header-left").append(`
-      <div id="textcontrol" class="d-flex align-items-center">
-      <div style="width: 2rem; height:2rem;" id="fontcolorpicker"></div>
-      <div style="width: 4rem; height:2rem" class="d-flex align-items-center mx-1">
-      <input id="fontsizecontrol" class="w-100 h-100 text-center" type="number" id="fontsize" value="32" min="0">
-      </div>
-      <i style="font-size:2rem;" class="konva-text-align lni lni-text-align-left mx-1" data-align="left"></i>
-      <i style="font-size:2rem;" class="konva-text-align lni lni-text-align-center mx-1" data-align="center"></i>
-      <i style="font-size:2rem;" class="konva-text-align lni lni-text-align-right mx-1" data-align="right"></i>
-      </div>
+        <div id="textcontrol" class="d-flex align-items-center">
+          <div style="width: 2rem; height:2rem;" id="fontcolorpicker"></div>
+
+          <div style="width: 4rem; height:2rem" class="d-flex align-items-center mx-1">
+            <input id="fontsizecontrol" class="w-100 h-100 text-center" type="number" id="fontsize" value="32" min="0">
+          </div>
+
+          <select id="fontfailyselect" class="single-select">
+          </select>
+         
+          <i style="font-size:2rem;" class="konva-text-align lni lni-text-align-${selectedTextNode.align()} mx-1" data-align="${selectedTextNode.align()}"></i>
+        </div>
       `);
+
+      const alignList = ["left", "center", "right"];
+      let conunt = alignList.indexOf(selectedTextNode.align());
+      let font;
+
       // font color
       $("#fontcolorpicker").asColorPicker({
         onChange: function (color) {
@@ -1006,7 +1002,6 @@ $(function () {
       // font size
       $("#fontsizecontrol").val(parseInt(selectedTextNode.fontSize()));
       $("body").delegate("#fontsizecontrol", "change", function () {
-        console.log("fontsize contrl ijput is changing ");
         const selectedTextNode = selectionTr.nodes()[0];
         selectedTextNode.setAttrs({
           fontSize: $(this).val(),
@@ -1017,9 +1012,55 @@ $(function () {
       // text align
       $("body").delegate("i.konva-text-align", "click", function () {
         const selectedTextNode = selectionTr.nodes()[0];
-        const align = $(this).data("align");
-        console.log("I am very intead", selectedTextNode);
-        selectedTextNode.align(align);
+        conunt++;
+        $(this).removeClass(`lni-text-align-${alignList[(conunt - 1) % 3]}`);
+        $(this).addClass(`lni-text-align-${alignList[conunt % 3]}`);
+        $(this).data("align", alignList[conunt % 3]);
+        selectedTextNode.align(alignList[conunt % 3]);
+      });
+
+      //font family
+      $.ajax({
+        url: `https://www.googleapis.com/webfonts/v1/webfonts?key=${YOUR_API_KEY}`,
+        type: "GET",
+        success: function (response) {
+          fonts = response.items;
+          let fontsNameList = [];
+
+          $.each(fonts, function (index, font) {
+            // var $option = $("<option>").text(font.family);
+            // $("#fontfailyselect").append($option);
+            fontsNameList.push(font.family);
+          });
+
+          $("#fontfailyselect").select2({
+            data: fontsNameList,
+          });
+
+          $("#fontfailyselect")
+            .val(selectedTextNode.fontFamily())
+            .trigger("change");
+        },
+      });
+
+      $("#fontfailyselect").on("change", function () {
+        const selectedTextNode = selectionTr.nodes()[0];
+        const selectedFontName = $(this).val();
+        const [selectedFont] = fonts.filter(function (font) {
+          return font.family === selectedFontName;
+        });
+
+        const newFont = new FontFace(
+          selectedFontName,
+          `url(${selectedFont.files.regular})`
+        );
+
+        document.fonts.add(newFont);
+
+        Promise.all([newFont.load()]).then(function (font) {
+          selectedTextNode.fontFamily(selectedFontName);
+          layer.batchDraw();
+        });
       });
     }
   }

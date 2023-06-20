@@ -9,7 +9,7 @@ var Davur = (function () {
   };
 
   var handleTheme = function () {
-    $("#preloader").fadeOut(100);
+    $("#preloader").fadeOut(0);
     $("#main-wrapper").addClass("show menu-toggle");
   };
 
@@ -107,34 +107,43 @@ var Davur = (function () {
               class="p-2 position-sticky sticky-top"
               style="background: var(--hovertab);"
             >
-              <button type="button" class="w-100 btn btn-outline-dark mb-2 font-lg">
+              <button
+                type="button"
+                class="text-component w-100 btn btn-outline-dark btn-lg mb-2"
+                data-size="0"
+              >
                 Create header
               </button>
               <button
                 type="button"
-                class="w-100 btn btn-outline-dark btn-sm font-sm mb-2"
+                class="text-component w-100 btn btn-outline-dark btn-sm mb-2"
+                data-size="1"
               >
                 Create subheader
               </button>
-              <button type="button" class="w-100 btn btn-outline-dark font-xs btn-xs">
+              <button
+                type="button"
+                class="text-component w-100 btn btn-outline-dark btn-xs"
+                data-size="2"
+              >
                 Create bodytext
               </button>
             </div>
           `);
 
-          textComponents.map(function (item) {
-            const $textItem = $("<div>");
-            $textItem.attr("class", "text-component");
-            $textItem.attr("data-index", item.id);
-            $textItem.css({
-              color: item.color,
-              fontSize: item.fontSize,
-              fontFamily: item.fontFamily,
-            });
+          // textComponents.map(function (item) {
+          //   const $textItem = $("<div>");
+          //   $textItem.attr("class", "text-component");
+          //   $textItem.attr("data-index", item.id);
+          //   $textItem.css({
+          //     color: item.color,
+          //     fontSize: item.fontSize,
+          //     fontFamily: item.fontFamily,
+          //   });
 
-            $textItem.html(item.label);
-            $textItem.appendTo("div.deznav .deznav-scroll");
-          });
+          //   $textItem.html(item.label);
+          //   $textItem.appendTo("div.deznav .deznav-scroll");
+          // });
           break;
         case "photo":
           clearLeftPanel();
@@ -214,20 +223,6 @@ var Davur = (function () {
           break;
         case "background":
           clearLeftPanel();
-          // <div class="w-100 h-100">
-          //   <svg
-          //     stroke="currentColor"
-          //     fill="currentColor"
-          //     stroke-width="0"
-          //     viewBox="0 0 512 512"
-          //     height="1em"
-          //     width="1em"
-          //     xmlns="http://www.w3.org/2000/svg"
-          //     style="width:100%; height:100%; mix-blend-mode: difference;"
-          //   >
-          //     <path d="M430.1 347.9c-6.6-6.1-16.3-7.6-24.6-9-11.5-1.9-15.9-4-22.6-10-14.3-12.7-14.3-31.1 0-43.8l30.3-26.9c46.4-41 46.4-108.2 0-149.2-34.2-30.1-80.1-45-127.8-45-55.7 0-113.9 20.3-158.8 60.1-83.5 73.8-83.5 194.7 0 268.5 41.5 36.7 97.5 55 152.9 55.4h1.7c55.4 0 110-17.9 148.8-52.4 14.4-12.7 12-36.6.1-47.7zM120 216c0-17.7 14.3-32 32-32s32 14.3 32 32-14.3 32-32 32-32-14.3-32-32zm40 126c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm64-161c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm72 219c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm24-208c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z"></path>
-          //   </svg>
-          // </div>;
           $("div.deznav .deznav-scroll").append(`
             <div style="background-color: var(--hovertab);" class="d-flex justify-content-around align-items-center py-2 position-sticky sticky-top">
               <div id="backcolorpicker" class="bg-white" value="#ffffff" style="width:1.5rem; height:1.5rem; border:none"></div>
