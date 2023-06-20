@@ -102,6 +102,26 @@ var Davur = (function () {
           break;
         case "text":
           clearLeftPanel();
+          $("div.deznav .deznav-scroll").append(`
+            <div
+              class="p-2 position-sticky sticky-top"
+              style="background: var(--hovertab);"
+            >
+              <button type="button" class="w-100 btn btn-outline-dark mb-2 font-lg">
+                Create header
+              </button>
+              <button
+                type="button"
+                class="w-100 btn btn-outline-dark btn-sm font-sm mb-2"
+              >
+                Create subheader
+              </button>
+              <button type="button" class="w-100 btn btn-outline-dark font-xs btn-xs">
+                Create bodytext
+              </button>
+            </div>
+          `);
+
           textComponents.map(function (item) {
             const $textItem = $("<div>");
             $textItem.attr("class", "text-component");
@@ -136,7 +156,7 @@ var Davur = (function () {
                 <input type="file" id="imgaeSelect" name="userimage" hidden />
                 <button
                   type="button"
-                  class="w-100 btn btn-primary"
+                  class="w-100 btn btn-outline-dark"
                   onclick="$('#imgaeSelect').trigger('click'); return true;"
                 >
                   Upload Image
@@ -210,7 +230,7 @@ var Davur = (function () {
           // </div>;
           $("div.deznav .deznav-scroll").append(`
             <div style="background-color: var(--hovertab);" class="d-flex justify-content-around align-items-center py-2 position-sticky sticky-top">
-              <input id="backcolorpicker" class="bg-white" value="#ffffff" style="width:1.5rem; height:1.5rem; border:none"/>
+              <div id="backcolorpicker" class="bg-white" value="#ffffff" style="width:1.5rem; height:1.5rem; border:none"></div>
               <div class="sample-color">
                 <div class="w-100 h-100" style="background-color:white;"></div>
               </div>
@@ -236,12 +256,10 @@ var Davur = (function () {
           `);
 
           $("#backcolorpicker").asColorPicker({
-            onChange: function (color) {
-              $("#backcolorpicker").trigger("change", { color });
-            },
-            // color: "#00ff00",
             mode: "complex",
           });
+
+          $("#backcolorpicker").asColorPicker("set", "white");
 
           backgroundImages.map(function (item) {
             const $backgroundContainer = $("<div>");
