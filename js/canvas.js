@@ -796,7 +796,7 @@ $(function () {
   }
 
   function saveAsQR() {
-    $("#qrcode").append(`
+    $("#qrcode").html(`
     <div id="qrloading"></div>
     `);
     const sn = generateToken(8);

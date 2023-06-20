@@ -58,6 +58,7 @@ span.selection .select2-selection {
 }
 
 #qrloading {
+    margin: auto;
     display: inline-block;
     width: 255px;
     height: 255px;
