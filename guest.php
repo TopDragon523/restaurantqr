@@ -64,14 +64,10 @@ mysqli_close($conn);
         }
 
         .img-container img {
-            position: absolute;
-            top: 50vh;
-            left: 50vw;
-            transform: translate(-50%, -50%);
+            height: 100%;
         }
     </style>
-    <!-- <div class="h-100 d-flex justify-content-center align-items-center"> -->
-    <div class="img-container">
+    <div class="img-container d-flex justify-content-center">
         <img src="<?php echo $menuUrl; ?>" class="img" alt="Your restaurant menu">
     </div>
 </body>

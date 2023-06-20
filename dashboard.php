@@ -826,11 +826,10 @@ include("header.php");
 					</button>
 				</div>
 				<div class="modal-body">
-					<div id="qrcode" class="d-flex flex-column justify-content-center w-100"></div>
-					<!-- <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p> -->
+					<div id="qrcode" class="d-flex flex-column justify-content-center w-100">
+					</div>
 				</div>
 				<div class="modal-footer">
-					<!-- <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button> -->
 					<button id="downloadqr" type="button" class="btn btn-primary">Download</button>
 				</div>
 			</div>

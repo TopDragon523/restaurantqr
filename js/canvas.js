@@ -454,14 +454,12 @@ $(function () {
 
   // save as  qrcode
   $("body").delegate("#saveqr", "click", function () {
-    const sn = generateToken(8);
-    // generateQR(`http://localhost/restaurantqr/guest.php?id=${sn}`);
-    generateQR(`https://restaurantqrmenu.ddns.net/guest.php?id=${sn}`);
+    saveAsQR();
   });
 
   // save as  qrcode
   $("body").delegate("#downloadqr", "click", function () {
-    saveAsQR();
+    downloadQR();
   });
 
   // pervent the default  browser zooming by mouse wheel
@@ -798,12 +796,17 @@ $(function () {
   }
 
   function saveAsQR() {
+    $("#qrcode").append(`
+    <div id="qrloading"></div>
+    `);
+    const sn = generateToken(8);
+
     // get current status and thumbnail image
     let data = getCurrentStatusJson();
     let dataUrl = getThumbnail();
     let qrUrl = $("#qrcode img").attr("src");
 
-    const sn = $("#qrcode").attr("title").split("?id=")[1];
+    // const sn = $("#qrcode").attr("title").split("?id=")[1];
     const qrWidth = parseInt($("#qrcode canvas").attr("width"));
     const qrHeight = parseInt($("#qrcode canvas").attr("height"));
     const centerXInPx = paper.width / 2 - qrWidth / 2;
@@ -846,15 +849,31 @@ $(function () {
           $demoItem.appendTo($demoItemContainer);
           $demoItemContainer.appendTo("div.deznav .deznav-scroll");
         }
-        // download pdf include qrcode file
-        let pdf = new jsPDF("p", "px", [paper.width, paper.height]);
-        pdf.addImage(qrUrl, "JPG", centerXInPx, centerYInPx, qrWidth, qrHeight);
-        pdf.save(`stage-${new Date()}.pdf`);
+
+        // generate QR code
+        $("#qrcode").text("");
+        generateQR(`http://192.168.121.13/restaurantqr/guest.php?id=${sn}`);
+        // generateQR(`https://restaurantqrmenu.ddns.net/guest.php?id=${sn}`);
       },
       error: function (xhr, status, error) {
         console.log("Save stage on db error ", error);
       },
     });
+  }
+
+  function downloadQR() {
+    let qrUrl = $("#qrcode img").attr("src");
+
+    // const sn = $("#qrcode").attr("title").split("?id=")[1];
+    const qrWidth = parseInt($("#qrcode canvas").attr("width"));
+    const qrHeight = parseInt($("#qrcode canvas").attr("height"));
+    const centerXInPx = (paper.width * screenScale.x) / 2 - qrWidth / 2;
+    const centerYInPx = (paper.height * screenScale.y) / 2 - qrHeight / 2;
+
+    // download pdf include qrcode file
+    let pdf = new jsPDF("p", "px", [paper.width, paper.height]);
+    pdf.addImage(qrUrl, "JPG", centerXInPx, centerYInPx, qrWidth, qrHeight);
+    pdf.save(`stage-${new Date()}.pdf`);
   }
 
   function generateQR(content) {
@@ -968,6 +987,7 @@ $(function () {
       width: paper.width * relativeScale,
       height: paper.height * relativeScale,
       imageSmoothingEnabled: true,
+      pixelRatio: 8,
     });
 
     return dataUrl;

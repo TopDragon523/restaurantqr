@@ -56,3 +56,26 @@ span.selection .select2-selection {
 .select2-selection__arrow {
     height: unset !important;
 }
+
+#qrloading {
+    display: inline-block;
+    width: 255px;
+    height: 255px;
+    border: 3px solid rgba(255, 255, 255, .3);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
