@@ -13,7 +13,9 @@
 		<!-- Required vendors -->
 		<script src="vendor/global/global.min.js"></script>
 		<script src="vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
-		<!-- <script src="vendor/chart-js/chart.bundle.min.js"></script> -->
+		<script src="vendor/select2/js/select2.full.min.js"></script>
+		<script src="js/plugins-init/select2-init.js"></script>
+		<script src="vendor/chart-js/chart.bundle.min.js"></script>
 
 		<!-- asColorPicker -->
 		<script src="vendor/jquery-asColor/jquery-asColor.min.js"></script>
@@ -47,5 +49,7 @@
 		<!-- konva script -->
 		<script src="https://unpkg.com/konva@9.2.0/konva.min.js"></script>
 		<script src="js/canvas.js"></script>
+
+
 
 		</html>
