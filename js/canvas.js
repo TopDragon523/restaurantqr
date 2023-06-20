@@ -415,6 +415,14 @@ $(function () {
     });
   });
 
+  $("body").delegate("#backcolorpicker", "asColorPicker::init", function (e) {
+    // if (whiteRect.image() == null) {
+    const backColor = whiteRect.fill();
+    console.log("asdfasdf", backColor);
+    $("#backcolorpicker").asColorPicker("set", "red");
+    // }
+  });
+
   $("body").delegate("#backcolorpicker", "asColorPicker::change", function (e) {
     const whiteRectBackColor = $("#backcolorpicker").asColorPicker("get");
 
@@ -985,7 +993,7 @@ $(function () {
 
       const alignList = ["left", "center", "right"];
       let conunt = alignList.indexOf(selectedTextNode.align());
-      let font;
+      let fonts;
 
       // font color
       $("#fontcolorpicker").asColorPicker({
@@ -1028,8 +1036,6 @@ $(function () {
           let fontsNameList = [];
 
           $.each(fonts, function (index, font) {
-            // var $option = $("<option>").text(font.family);
-            // $("#fontfailyselect").append($option);
             fontsNameList.push(font.family);
           });
 

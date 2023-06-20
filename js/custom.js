@@ -63,46 +63,50 @@ var Davur = (function () {
         $(this).addClass("active");
       }
 
-      var tabName = $(this)
-        .children()
-        .first()
-        .children()
-        .last()
-        .text()
-        .toLowerCase();
+      var isClosedLeftPanel = $("#main-wrapper").hasClass("menu-toggle");
+      if (isClosedLeftPanel) {
+        clearLeftPanel();
+      } else {
+        var tabName = $(this)
+          .children()
+          .first()
+          .children()
+          .last()
+          .text()
+          .toLowerCase();
 
-      switch (tabName) {
-        case "project":
-          clearLeftPanel();
-          projects.map(function (item) {
-            const $demoItemContainer = $("<div>");
-            const $demoItem = $("<img>");
-            $demoItemContainer.attr("class", "project-component");
-            $demoItem.attr("data-index", item.id);
-            $demoItem.attr("src", item.thumbnail);
-            $demoItem.attr("data-config", item.save_stage_as_json);
+        switch (tabName) {
+          case "project":
+            clearLeftPanel();
+            projects.map(function (item) {
+              const $demoItemContainer = $("<div>");
+              const $demoItem = $("<img>");
+              $demoItemContainer.attr("class", "project-component");
+              $demoItem.attr("data-index", item.id);
+              $demoItem.attr("src", item.thumbnail);
+              $demoItem.attr("data-config", item.save_stage_as_json);
 
-            $demoItem.appendTo($demoItemContainer);
-            $demoItemContainer.appendTo("div.deznav .deznav-scroll");
-          });
-          break;
-        case "demo":
-          clearLeftPanel();
-          demos.map(function (item) {
-            const $demoItemContainer = $("<div>");
-            const $demoItem = $("<img>");
-            $demoItemContainer.attr("class", "demo-component");
-            $demoItem.attr("data-index", item.id);
-            $demoItem.attr("src", item.thumbnail);
-            $demoItem.attr("data-config", item.save_stage_as_json);
+              $demoItem.appendTo($demoItemContainer);
+              $demoItemContainer.appendTo("div.deznav .deznav-scroll");
+            });
+            break;
+          case "demo":
+            clearLeftPanel();
+            demos.map(function (item) {
+              const $demoItemContainer = $("<div>");
+              const $demoItem = $("<img>");
+              $demoItemContainer.attr("class", "demo-component");
+              $demoItem.attr("data-index", item.id);
+              $demoItem.attr("src", item.thumbnail);
+              $demoItem.attr("data-config", item.save_stage_as_json);
 
-            $demoItem.appendTo($demoItemContainer);
-            $demoItemContainer.appendTo("div.deznav .deznav-scroll");
-          });
-          break;
-        case "text":
-          clearLeftPanel();
-          $("div.deznav .deznav-scroll").append(`
+              $demoItem.appendTo($demoItemContainer);
+              $demoItemContainer.appendTo("div.deznav .deznav-scroll");
+            });
+            break;
+          case "text":
+            clearLeftPanel();
+            $("div.deznav .deznav-scroll").append(`
             <div
               class="p-2 position-sticky sticky-top"
               style="background: var(--hovertab);"
@@ -131,36 +135,36 @@ var Davur = (function () {
             </div>
           `);
 
-          // textComponents.map(function (item) {
-          //   const $textItem = $("<div>");
-          //   $textItem.attr("class", "text-component");
-          //   $textItem.attr("data-index", item.id);
-          //   $textItem.css({
-          //     color: item.color,
-          //     fontSize: item.fontSize,
-          //     fontFamily: item.fontFamily,
-          //   });
+            // textComponents.map(function (item) {
+            //   const $textItem = $("<div>");
+            //   $textItem.attr("class", "text-component");
+            //   $textItem.attr("data-index", item.id);
+            //   $textItem.css({
+            //     color: item.color,
+            //     fontSize: item.fontSize,
+            //     fontFamily: item.fontFamily,
+            //   });
 
-          //   $textItem.html(item.label);
-          //   $textItem.appendTo("div.deznav .deznav-scroll");
-          // });
-          break;
-        case "photo":
-          clearLeftPanel();
-          photos.map(function (item) {
-            const $photoContainer = $("<div>");
-            const $photoItem = $("<img>");
-            $photoContainer.attr("class", "photo-component");
-            $photoItem.attr("data-index", item.id);
+            //   $textItem.html(item.label);
+            //   $textItem.appendTo("div.deznav .deznav-scroll");
+            // });
+            break;
+          case "photo":
+            clearLeftPanel();
+            photos.map(function (item) {
+              const $photoContainer = $("<div>");
+              const $photoItem = $("<img>");
+              $photoContainer.attr("class", "photo-component");
+              $photoItem.attr("data-index", item.id);
 
-            $photoItem.attr("src", item.url);
-            $photoItem.appendTo($photoContainer);
-            $photoContainer.appendTo("div.deznav .deznav-scroll");
-          });
-          break;
-        case "upload":
-          clearLeftPanel();
-          $("div.deznav .deznav-scroll").append(`
+              $photoItem.attr("src", item.url);
+              $photoItem.appendTo($photoContainer);
+              $photoContainer.appendTo("div.deznav .deznav-scroll");
+            });
+            break;
+          case "upload":
+            clearLeftPanel();
+            $("div.deznav .deznav-scroll").append(`
             <div class="p-2 position-sticky sticky-top" style="background: var(--hovertab);">
                 <input type="file" id="imgaeSelect" name="userimage" hidden />
                 <button
@@ -172,58 +176,61 @@ var Davur = (function () {
                 </button>
             </div>   
           `);
-          uploads.map(function (item) {
-            const $uploadImageWrapper = $("<div>");
-            const $uploadImage = $("<img>");
-            $uploadImageWrapper.attr("class", "upload-image-component");
-            $uploadImage.attr("data-index", item.id);
+            uploads.map(function (item) {
+              const $uploadImageWrapper = $("<div>");
+              const $uploadImage = $("<img>");
+              $uploadImageWrapper.attr("class", "upload-image-component");
+              $uploadImage.attr("data-index", item.id);
 
-            $uploadImage.attr("src", item.url);
-            $uploadImage.appendTo($uploadImageWrapper);
-            $uploadImageWrapper.appendTo("div.deznav .deznav-scroll");
-          });
-          $("#imgaeSelect").change(function () {
-            let fileInput = $.trim($(this).val());
-            if (fileInput && fileInput !== "") {
-              let fileName = "";
-              fileName = $(this).val();
+              $uploadImage.attr("src", item.url);
+              $uploadImage.appendTo($uploadImageWrapper);
+              $uploadImageWrapper.appendTo("div.deznav .deznav-scroll");
+            });
+            $("#imgaeSelect").change(function () {
+              let fileInput = $.trim($(this).val());
+              if (fileInput && fileInput !== "") {
+                let fileName = "";
+                fileName = $(this).val();
 
-              let imageData = new FormData();
-              imageData.append("userimage", $(this)[0].files[0]);
-              $.ajax({
-                url: "upload.php",
-                type: "POST",
-                processData: false,
-                contentType: false,
-                data: imageData,
-                success: function (response) {
-                  console.log(response);
-                  let res = JSON.parse(response);
+                let imageData = new FormData();
+                imageData.append("userimage", $(this)[0].files[0]);
+                $.ajax({
+                  url: "upload.php",
+                  type: "POST",
+                  processData: false,
+                  contentType: false,
+                  data: imageData,
+                  success: function (response) {
+                    console.log(response);
+                    let res = JSON.parse(response);
 
-                  if (res.status) {
-                    let uploadedFile = res.uploadedFile;
-                    const $uploadImageWrapper = $("<div>");
-                    const $uploadImage = $("<img>");
-                    $uploadImageWrapper.attr("class", "upload-image-component");
-                    $uploadImage.attr("data-index", uploadedFile.id);
+                    if (res.status) {
+                      let uploadedFile = res.uploadedFile;
+                      const $uploadImageWrapper = $("<div>");
+                      const $uploadImage = $("<img>");
+                      $uploadImageWrapper.attr(
+                        "class",
+                        "upload-image-component"
+                      );
+                      $uploadImage.attr("data-index", uploadedFile.id);
 
-                    $uploadImage.attr("src", uploadedFile.url);
-                    $uploadImage.appendTo($uploadImageWrapper);
-                    $uploadImageWrapper.appendTo("div.deznav .deznav-scroll");
-                  } else {
-                    console.log("Uuload image error: ", res.message);
-                  }
-                },
-                error: function (xhr, status, error) {
-                  console.log("Upload image error ", error);
-                },
-              });
-            }
-          });
-          break;
-        case "background":
-          clearLeftPanel();
-          $("div.deznav .deznav-scroll").append(`
+                      $uploadImage.attr("src", uploadedFile.url);
+                      $uploadImage.appendTo($uploadImageWrapper);
+                      $uploadImageWrapper.appendTo("div.deznav .deznav-scroll");
+                    } else {
+                      console.log("Uuload image error: ", res.message);
+                    }
+                  },
+                  error: function (xhr, status, error) {
+                    console.log("Upload image error ", error);
+                  },
+                });
+              }
+            });
+            break;
+          case "background":
+            clearLeftPanel();
+            $("div.deznav .deznav-scroll").append(`
             <div style="background-color: var(--hovertab);" class="d-flex justify-content-around align-items-center py-2 position-sticky sticky-top">
               <div id="backcolorpicker" class="bg-white" value="#ffffff" style="width:1.5rem; height:1.5rem; border:none"></div>
               <div class="sample-color">
@@ -250,23 +257,22 @@ var Davur = (function () {
             </div>
           `);
 
-          $("#backcolorpicker").asColorPicker({
-            mode: "complex",
-          });
+            $("#backcolorpicker").asColorPicker({
+              mode: "complex",
+            });
 
-          $("#backcolorpicker").asColorPicker("set", "white");
+            backgroundImages.map(function (item) {
+              const $backgroundContainer = $("<div>");
+              const $backgroundItem = $("<img>");
+              $backgroundContainer.attr("class", "background-component");
+              $backgroundItem.attr("data-index", item.id);
 
-          backgroundImages.map(function (item) {
-            const $backgroundContainer = $("<div>");
-            const $backgroundItem = $("<img>");
-            $backgroundContainer.attr("class", "background-component");
-            $backgroundItem.attr("data-index", item.id);
-
-            $backgroundItem.attr("src", item.url);
-            $backgroundItem.appendTo($backgroundContainer);
-            $backgroundContainer.appendTo("div.deznav .deznav-scroll");
-          });
-          break;
+              $backgroundItem.attr("src", item.url);
+              $backgroundItem.appendTo($backgroundContainer);
+              $backgroundContainer.appendTo("div.deznav .deznav-scroll");
+            });
+            break;
+        }
       }
     });
   };
