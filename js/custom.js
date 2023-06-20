@@ -201,11 +201,14 @@ var Davur = (function () {
                   contentType: false,
                   data: imageData,
                   success: function (response) {
-                    console.log(response);
                     let res = JSON.parse(response);
 
                     if (res.status) {
                       let uploadedFile = res.uploadedFile;
+                      uploads.push({
+                        ...uploadedFile,
+                        id: parseInt(uploadedFile.id),
+                      });
                       const $uploadImageWrapper = $("<div>");
                       const $uploadImage = $("<img>");
                       $uploadImageWrapper.attr(

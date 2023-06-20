@@ -46,8 +46,6 @@ $.ajax({
       item.id = parseInt(item.id);
       return item;
     });
-
-    console.log(textComponents);
   },
   error: function (xhr, status, error) {
     console.log("Fetching templates error ", error);

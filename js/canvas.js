@@ -769,6 +769,7 @@ $(function () {
       width: paper.width * relativeScale,
       height: paper.height * relativeScale,
       imageSmoothingEnabled: true,
+      pixelRatio: 10,
     });
 
     let link = document.createElement("a");
@@ -1065,6 +1066,7 @@ $(function () {
 
         Promise.all([newFont.load()]).then(function (font) {
           selectedTextNode.fontFamily(selectedFontName);
+          selectionTr.forceUpdate();
           layer.batchDraw();
         });
       });
