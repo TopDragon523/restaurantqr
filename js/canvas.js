@@ -788,6 +788,7 @@ $(function () {
       width: paper.width * relativeScale,
       height: paper.height * relativeScale,
       imageSmoothingEnabled: true,
+      pixelRatio: 5,
     });
 
     // download pdf file
