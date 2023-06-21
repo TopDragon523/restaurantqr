@@ -80,3 +80,18 @@ span.selection .select2-selection {
         -webkit-transform: rotate(360deg);
     }
 }
+
+label.label input[type="file"] {
+    position: absolute;
+    top: -1000px;
+}
+
+/* .label {
+    cursor: pointer;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    padding: 5px 15px;
+    margin: 5px;
+    background: var(--primary);
+    display: inline-block;
+} */

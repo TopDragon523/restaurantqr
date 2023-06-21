@@ -825,12 +825,14 @@ include("header.php");
 					<button type="button" class="btn-close" data-bs-dismiss="modal">
 					</button>
 				</div>
-				<div class="modal-body">
-					<div id="qrcode" class="d-flex flex-column justify-content-center w-100">
+				<div class="modal-body d-flex flex-column justify-content-center align-items-center">
+					<div id="menulogo" class="d-flex flex-column justify-content-around w-100"></div>
+					<div id="qrcode" class="d-flex flex-column justify-content-around">
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button id="downloadqr" type="button" class="btn btn-primary">Download</button>
+					<!-- <button id="downloadqr" type="button" class="btn btn-primary">Download</button> -->
+					<button id="selectlogo" type="button" class="btn btn-primary">Download</button>
 				</div>
 			</div>
 		</div>

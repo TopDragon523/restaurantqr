@@ -1,5 +1,8 @@
 $(function () {
   const paper = { width: 499, height: 709 };
+  let step = 1;
+  let logoUrl;
+  let menuDescription;
   let x1, y1, x2, y2;
   let templateId = demos[0].id;
   let nodeList = { Text: 1, Image: 2 };
@@ -454,12 +457,21 @@ $(function () {
 
   // save as  qrcode
   $("body").delegate("#saveqr", "click", function () {
-    saveAsQR();
+    step = 1;
+    selectLogo();
+    step++;
   });
 
-  // save as  qrcode
-  $("body").delegate("#downloadqr", "click", function () {
-    downloadQR();
+  $("body").delegate("#selectlogo", "click", function () {
+    switch (step) {
+      case 2:
+        saveAsQR();
+        step++;
+        break;
+      case 3:
+        downloadQR();
+        break;
+    }
   });
 
   // pervent the default  browser zooming by mouse wheel
@@ -795,23 +807,62 @@ $(function () {
     pdf.save(`stage-${new Date()}.pdf`);
   }
 
+  function selectLogo() {
+    $("#exampleModalCenter .modal-body #qrcode").text("");
+    $("#exampleModalCenter .modal-body #menulogo").html(`
+      <div class="row">
+        <label class="col-lg-4 col-form-label" for="validationCustom04">Add Logo <span class="text-danger">*</span>
+        </label>
+        <label class="label m-auto w-auto btn btn-primary mb-2">
+          <input id="imgInp" type="file" required />
+          <span>Add</span>
+        </label>
+      </div>
+      <img id="blah" src="#" class="w-50 m-auto" hidden />
+      <div class="row">
+        <label class="col-lg-4 col-form-label" for="menudescription">Description <span class="text-danger">*</span>
+        </label>
+        <div class="col-lg-6">
+          <textarea class="form-control" id="menudescription" rows="5" placeholder="What would you like to see?" required></textarea>
+          <div class="invalid-feedback">
+            Please enter a description.
+          </div>
+        </div>
+      </div>
+    `);
+    $("#imgInp").change(function () {
+      readURL(this);
+    });
+
+    $("#menudescription").on("input", function () {
+      console.log("Hello worldasdfasdf");
+      menuDescription = $(this).val();
+    });
+
+    function readURL(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+          $("#blah").removeAttr("hidden");
+          $("#blah").attr("src", e.target.result);
+          logoUrl = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+        $("#exampleModalCenter .label span").text("Change");
+      }
+    }
+  }
+
   function saveAsQR() {
     $("#qrcode").html(`
-    <div id="qrloading"></div>
+      <div id="qrloading"></div>
     `);
     const sn = generateToken(8);
 
     // get current status and thumbnail image
     let data = getCurrentStatusJson();
     let dataUrl = getThumbnail();
-    let qrUrl = $("#qrcode img").attr("src");
-
-    // const sn = $("#qrcode").attr("title").split("?id=")[1];
-    const qrWidth = parseInt($("#qrcode canvas").attr("width"));
-    const qrHeight = parseInt($("#qrcode canvas").attr("height"));
-    const centerXInPx = paper.width / 2 - qrWidth / 2;
-    const centerYInPx = paper.height / 2 - qrHeight / 2;
-
     //save stage on db
     $.ajax({
       url: "saveqrcode.php",
@@ -822,7 +873,6 @@ $(function () {
         console.log("response", response);
         // add new project on project list
         let newDemo = response.newProject;
-
         projects.push({
           id: JSON.parse(newDemo.id),
           createdBy: newDemo.is_free,
@@ -830,14 +880,12 @@ $(function () {
           save_stage_as_json: newDemo.save_stage_as_json,
           thumbnail: newDemo.thumbnail,
         });
-
         let currentTab = $(".left-panel")
           .find("div.tool-tab.active")
           .first()
           .text()
           .trim()
           .toLowerCase();
-
         if (currentTab === "project") {
           const $demoItemContainer = $("<div>");
           const $demoItem = $("<img>");
@@ -845,15 +893,23 @@ $(function () {
           $demoItem.attr("data-index", parseInt(newDemo.id));
           $demoItem.attr("src", newDemo.thumbnail);
           $demoItem.attr("data-config", newDemo.save_stage_as_json);
-
           $demoItem.appendTo($demoItemContainer);
           $demoItemContainer.appendTo("div.deznav .deznav-scroll");
         }
-
         // generate QR code
         $("#qrcode").text("");
-        generateQR(`http://192.168.121.13/restaurantqr/guest.php?id=${sn}`);
-        // generateQR(`https://restaurantqrmenu.ddns.net/guest.php?id=${sn}`);
+        $("#exampleModalCenter .modal-body #menulogo").text("");
+
+        generateQR(`https://restaurantqrmenu.ddns.net/guest.php?id=${sn}`);
+        $("#exampleModalCenter .modal-body #menulogo").prepend(
+          `<h4 class="mb-5 mx-auto text-center">to veiw our menu<br>Scan this QR Code</h4>`
+        );
+        $("#exampleModalCenter .modal-body #menulogo").prepend(
+          `<h2 class="mt-5 mx-auto text-warning">${menuDescription}</h2>`
+        );
+        $("#exampleModalCenter .modal-body #menulogo").prepend(
+          `<img src=${logoUrl} class="w-50 m-auto" alt="your logo"/>`
+        );
       },
       error: function (xhr, status, error) {
         console.log("Save stage on db error ", error);
@@ -864,15 +920,26 @@ $(function () {
   function downloadQR() {
     let qrUrl = $("#qrcode img").attr("src");
 
-    // const sn = $("#qrcode").attr("title").split("?id=")[1];
-    const qrWidth = parseInt($("#qrcode canvas").attr("width"));
-    const qrHeight = parseInt($("#qrcode canvas").attr("height"));
-    const centerXInPx = (paper.width * screenScale.x) / 2 - qrWidth / 2;
-    const centerYInPx = (paper.height * screenScale.y) / 2 - qrHeight / 2;
+    const logoWidth = 100;
+    const logoHeight = 100;
+    const centerLogoX = parseInt(paper.width / 2 - logoWidth / 2);
+    const centerLogoY = 50;
+    const qrWidth = 255;
+    const qrHeight = 255;
+    const centerQRX = paper.width / 2 - qrWidth / 2;
+    const centerQRY = paper.height / 2 - qrHeight / 2;
 
     // download pdf include qrcode file
     let pdf = new jsPDF("p", "px", [paper.width, paper.height]);
-    pdf.addImage(qrUrl, "JPG", centerXInPx, centerYInPx, qrWidth, qrHeight);
+    pdf.addImage(
+      logoUrl,
+      "JPG",
+      centerLogoX,
+      centerLogoY,
+      logoWidth,
+      logoHeight
+    );
+    pdf.addImage(qrUrl, "JPG", centerQRX, centerQRY, qrWidth, qrHeight);
     pdf.save(`stage-${new Date()}.pdf`);
   }
 
