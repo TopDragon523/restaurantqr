@@ -43,13 +43,7 @@
 		<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
 		<script src="js/init-components.js"></script>
-		<script src="js/custom.js"></script>
+		<script src="js/main.js"></script>
 		<script src="js/deznav-init.js"></script>
-
-		<!-- konva script -->
-		<script src="https://unpkg.com/konva@9.2.0/konva.min.js"></script>
-		<script src="js/canvas.js"></script>
-
-
 
 		</html>

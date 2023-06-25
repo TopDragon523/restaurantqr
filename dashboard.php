@@ -812,7 +812,7 @@ include("header.php");
 
 	<!--**********************************Content body start***********************************-->
 	<div class="content-body">
-		<div id="stage"> </div>
+		<div id="stage" class="position-relative"> </div>
 	</div>
 	<!--**********************************Content body end***********************************-->
 
@@ -837,6 +837,15 @@ include("header.php");
 			</div>
 		</div>
 	</div>
-	<?php
-	include("footer.php");
-	?>
+
+</div>
+
+<?php
+include("footer.php");
+?>
+
+<script src="js/handledashboard.js"></script>
+
+<!-- konva script -->
+<script src="https://unpkg.com/konva@9.2.0/konva.min.js"></script>
+<script src="js/canvas.js"></script>

@@ -4,7 +4,7 @@ $(function () {
   let logoUrl;
   let menuDescription;
   let x1, y1, x2, y2;
-  let templateId = demos[0].id;
+  let templateId = 0;
   let nodeList = { Text: 1, Image: 2 };
   let width = $("#stage").width();
   let height = $("#stage").height();
@@ -622,12 +622,12 @@ $(function () {
 
         let textPosition = textNode.absolutePosition();
         let areaPosition = {
-          x: stage.container().offsetLeft + textPosition.x,
-          y: stage.container().offsetTop + textPosition.y,
+          x: textPosition.x * relativeScale,
+          y: textPosition.y * relativeScale,
         };
 
         textarea = document.createElement("textarea");
-        document.body.appendChild(textarea);
+        document.getElementById("stage").appendChild(textarea);
 
         textarea.id = "editkonvatext";
         textarea.value = textNode.text();
@@ -900,7 +900,9 @@ $(function () {
         $("#qrcode").text("");
         $("#exampleModalCenter .modal-body #menulogo").text("");
 
-        generateQR(`https://restaurantqrmenu.ddns.net/guest.php?id=${sn}`);
+        // generateQR(`https://restaurantqrmenu.ddns.net/guest.php?id=${sn}`);
+        generateQR(`http://192.168.121.13/restaurantqr/guest.php?id=${sn}`);
+
         $("#exampleModalCenter .modal-body #menulogo").prepend(
           `<h4 class="mb-5 mx-auto text-center">to veiw our menu<br>Scan this QR Code</h4>`
         );
@@ -994,6 +996,54 @@ $(function () {
     shapeGroup.width(paper.width * relativeScale);
     shapeGroup.height(paper.height * relativeScale);
     shapeGroup.scale(paperScale);
+
+    if ($("body").find("#editkonvatext").length !== 0) {
+      let textarea = document.getElementById("editkonvatext");
+      let [textNode] = selectionTr.nodes();
+      let textPosition = textNode.absolutePosition();
+      let areaPosition = {
+        x: textPosition.x,
+        y: textPosition.y,
+      };
+      console.log("adsfadsfasd", textarea, textNode);
+      textarea.value = textNode.text();
+      textarea.style.position = "absolute";
+      textarea.style.top = areaPosition.y * relativeScale + "px";
+      textarea.style.left = areaPosition.x * relativeScale + "px";
+      textarea.style.width =
+        (textNode.width() - textNode.padding() * 2) * relativeScale + "px";
+      textarea.style.height =
+        (textNode.height() - textNode.padding() * 2 + 5) * relativeScale + "px";
+      textarea.style.fontSize = textNode.fontSize() * relativeScale + "px";
+      textarea.style.border = "none";
+      textarea.style.padding = "0px";
+      textarea.style.margin = "0px";
+      textarea.style.overflow = "hidden";
+      textarea.style.background = "none";
+      textarea.style.outline = "none";
+      textarea.style.resize = "none";
+      textarea.style.lineHeight = textNode.lineHeight();
+      textarea.style.fontFamily = textNode.fontFamily();
+      textarea.style.transformOrigin = "left top";
+      textarea.style.textAlign = textNode.align();
+      textarea.style.color = textNode.fill();
+      rotation = textNode.rotation();
+      let transform = "";
+      if (rotation) {
+        transform += "rotateZ(" + rotation + "deg)";
+      }
+
+      let px = 0;
+      let isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+
+      if (isFirefox) {
+        px += 2 + Math.round(textNode.fontSize() / 20);
+      }
+      transform += "translateY(-" + px + "px)";
+
+      textarea.style.transform = transform;
+      textarea.focus();
+    }
 
     layer.batchDraw();
     // stage.batchDraw();
