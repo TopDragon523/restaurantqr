@@ -1,7 +1,10 @@
 $(function () {
   const paper = { width: 499, height: 709 };
+  let step = 1;
+  let logoUrl;
+  let menuDescription;
   let x1, y1, x2, y2;
-  let templateId = demos[0].id;
+  let templateId = templates.length === 0 ? 0 : templates[0].id;
   let nodeList = { Text: 1, Image: 2 };
   let width = $("#stage").width();
   let height = $("#stage").height();
@@ -121,6 +124,63 @@ $(function () {
   layer.add(maskRect);
   layer.add(selectionRectangle);
   layer.add(selectionTr);
+
+  // load saved stage  from php
+  if (id !== undefined && id !== null && type !== undefined && type !== null) {
+    loadStage();
+  }
+
+  function loadStage() {
+    let selectedTemplate;
+    templateId = id; // from dashboard.php file
+    switch (type) {
+      case "template":
+        [selectedTemplate] = templates.filter((template) => {
+          return template.id === templateId;
+        });
+        break;
+      case "project":
+        [selectedTemplate] = projects.filter((project) => {
+          return project.id === templateId;
+        });
+        break;
+    }
+    let savedStage = JSON.parse(selectedTemplate.save_stage_as_json);
+    initStage();
+
+    savedStage.shapeGroup.forEach((node) => {
+      switch (node.className) {
+        case "Text":
+          let textNode = Konva.Node.create(JSON.stringify(node), shapeGroup);
+          createTextNode(textNode);
+          break;
+        case "Image":
+          let imageObj = new Image();
+          imageObj.setAttribute("crossOrigin", "anonymous");
+          imageObj.src = node.src;
+          let imageNode = new Konva.Image({
+            ...node.attrs,
+            image: imageObj,
+          });
+          createImageNode(imageNode);
+          break;
+        default:
+          break;
+      }
+    });
+
+    whiteRect.fill(savedStage.whiteRect.fill);
+    if (
+      savedStage.backgroundUrl !== null &&
+      savedStage.backgroundUrl !== undefined
+    ) {
+      let bgImageObj = new Image();
+      bgImageObj.setAttribute("crossOrigin", "anonymous");
+      bgImageObj.src = savedStage.backgroundUrl;
+      whiteRect.image(bgImageObj);
+    }
+    layer.batchDraw();
+  }
 
   // clicks should select/deselect shapes
   stage.on("mousedown touchstart", (e) => {
@@ -249,6 +309,9 @@ $(function () {
           break;
       }
     });
+
+    whiteRect.fill(savedStage.whiteRect.fill);
+
     if (
       savedStage.backgroundUrl !== null &&
       savedStage.backgroundUrl !== undefined
@@ -286,6 +349,9 @@ $(function () {
           break;
       }
     });
+
+    whiteRect.fill(savedStage.whiteRect.fill);
+
     if (
       savedStage.backgroundUrl !== null &&
       savedStage.backgroundUrl !== undefined
@@ -415,6 +481,14 @@ $(function () {
     });
   });
 
+  $("body").delegate("#backcolorpicker", "asColorPicker::init", function (e) {
+    // if (whiteRect.image() == null) {
+    const backColor = whiteRect.fill();
+    console.log("asdfasdf", backColor);
+    $("#backcolorpicker").asColorPicker("set", "red");
+    // }
+  });
+
   $("body").delegate("#backcolorpicker", "asColorPicker::change", function (e) {
     const whiteRectBackColor = $("#backcolorpicker").asColorPicker("get");
 
@@ -446,14 +520,21 @@ $(function () {
 
   // save as  qrcode
   $("body").delegate("#saveqr", "click", function () {
-    const sn = generateToken(8);
-    // generateQR(`http://localhost/restaurantqr/guest.php?id=${sn}`);
-    generateQR(`https://restaurantqrmenu.ddns.net/guest.php?id=${sn}`);
+    step = 1;
+    selectLogo();
+    step++;
   });
 
-  // save as  qrcode
-  $("body").delegate("#downloadqr", "click", function () {
-    saveAsQR();
+  $("body").delegate("#selectlogo", "click", function () {
+    switch (step) {
+      case 2:
+        saveAsQR();
+        step++;
+        break;
+      case 3:
+        downloadQR();
+        break;
+    }
   });
 
   // pervent the default  browser zooming by mouse wheel
@@ -604,12 +685,12 @@ $(function () {
 
         let textPosition = textNode.absolutePosition();
         let areaPosition = {
-          x: stage.container().offsetLeft + textPosition.x,
-          y: stage.container().offsetTop + textPosition.y,
+          x: textPosition.x * relativeScale,
+          y: textPosition.y * relativeScale,
         };
 
         textarea = document.createElement("textarea");
-        document.body.appendChild(textarea);
+        document.getElementById("stage").appendChild(textarea);
 
         textarea.id = "editkonvatext";
         textarea.value = textNode.text();
@@ -720,7 +801,7 @@ $(function () {
       success: function (response) {
         let newDemo = response.newDemo;
 
-        demos.push({
+        templates.push({
           id: JSON.parse(newDemo.id),
           createdAt: newDemo.createdAt,
           if_free: newDemo.is_free,
@@ -761,6 +842,7 @@ $(function () {
       width: paper.width * relativeScale,
       height: paper.height * relativeScale,
       imageSmoothingEnabled: true,
+      pixelRatio: 10,
     });
 
     let link = document.createElement("a");
@@ -779,6 +861,7 @@ $(function () {
       width: paper.width * relativeScale,
       height: paper.height * relativeScale,
       imageSmoothingEnabled: true,
+      pixelRatio: 5,
     });
 
     // download pdf file
@@ -787,18 +870,62 @@ $(function () {
     pdf.save(`stage-${new Date()}.pdf`);
   }
 
+  function selectLogo() {
+    $("#exampleModalCenter .modal-body #qrcode").text("");
+    $("#exampleModalCenter .modal-body #menulogo").html(`
+      <div class="row">
+        <label class="col-lg-4 col-form-label" for="validationCustom04">Add Logo <span class="text-danger">*</span>
+        </label>
+        <label class="label m-auto w-auto btn btn-primary mb-2">
+          <input id="imgInp" type="file" required />
+          <span>Add</span>
+        </label>
+      </div>
+      <img id="blah" src="#" class="w-50 m-auto" hidden />
+      <div class="row">
+        <label class="col-lg-4 col-form-label" for="menudescription">Description <span class="text-danger">*</span>
+        </label>
+        <div class="col-lg-6">
+          <textarea class="form-control" id="menudescription" rows="5" placeholder="What would you like to see?" required></textarea>
+          <div class="invalid-feedback">
+            Please enter a description.
+          </div>
+        </div>
+      </div>
+    `);
+    $("#imgInp").change(function () {
+      readURL(this);
+    });
+
+    $("#menudescription").on("input", function () {
+      console.log("Hello worldasdfasdf");
+      menuDescription = $(this).val();
+    });
+
+    function readURL(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+          $("#blah").removeAttr("hidden");
+          $("#blah").attr("src", e.target.result);
+          logoUrl = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+        $("#exampleModalCenter .label span").text("Change");
+      }
+    }
+  }
+
   function saveAsQR() {
+    $("#qrcode").html(`
+      <div id="qrloading"></div>
+    `);
+    const sn = generateToken(8);
+
     // get current status and thumbnail image
     let data = getCurrentStatusJson();
     let dataUrl = getThumbnail();
-    let qrUrl = $("#qrcode img").attr("src");
-
-    const sn = $("#qrcode").attr("title").split("?id=")[1];
-    const qrWidth = parseInt($("#qrcode canvas").attr("width"));
-    const qrHeight = parseInt($("#qrcode canvas").attr("height"));
-    const centerXInPx = paper.width / 2 - qrWidth / 2;
-    const centerYInPx = paper.height / 2 - qrHeight / 2;
-
     //save stage on db
     $.ajax({
       url: "saveqrcode.php",
@@ -809,7 +936,6 @@ $(function () {
         console.log("response", response);
         // add new project on project list
         let newDemo = response.newProject;
-
         projects.push({
           id: JSON.parse(newDemo.id),
           createdBy: newDemo.is_free,
@@ -817,14 +943,12 @@ $(function () {
           save_stage_as_json: newDemo.save_stage_as_json,
           thumbnail: newDemo.thumbnail,
         });
-
         let currentTab = $(".left-panel")
           .find("div.tool-tab.active")
           .first()
           .text()
           .trim()
           .toLowerCase();
-
         if (currentTab === "project") {
           const $demoItemContainer = $("<div>");
           const $demoItem = $("<img>");
@@ -832,19 +956,56 @@ $(function () {
           $demoItem.attr("data-index", parseInt(newDemo.id));
           $demoItem.attr("src", newDemo.thumbnail);
           $demoItem.attr("data-config", newDemo.save_stage_as_json);
-
           $demoItem.appendTo($demoItemContainer);
           $demoItemContainer.appendTo("div.deznav .deznav-scroll");
         }
-        // download pdf include qrcode file
-        let pdf = new jsPDF("p", "px", [paper.width, paper.height]);
-        pdf.addImage(qrUrl, "JPG", centerXInPx, centerYInPx, qrWidth, qrHeight);
-        pdf.save(`stage-${new Date()}.pdf`);
+        // generate QR code
+        $("#qrcode").text("");
+        $("#exampleModalCenter .modal-body #menulogo").text("");
+
+        // generateQR(`https://restaurantqrmenu.ddns.net/guest.php?id=${sn}`);
+        generateQR(`http://192.168.121.13/restaurantqr/guest.php?id=${sn}`);
+
+        $("#exampleModalCenter .modal-body #menulogo").prepend(
+          `<h4 class="mb-5 mx-auto text-center">to veiw our menu<br>Scan this QR Code</h4>`
+        );
+        $("#exampleModalCenter .modal-body #menulogo").prepend(
+          `<h2 class="mt-5 mx-auto text-warning">${menuDescription}</h2>`
+        );
+        $("#exampleModalCenter .modal-body #menulogo").prepend(
+          `<img src=${logoUrl} class="w-50 m-auto" alt="your logo"/>`
+        );
       },
       error: function (xhr, status, error) {
         console.log("Save stage on db error ", error);
       },
     });
+  }
+
+  function downloadQR() {
+    let qrUrl = $("#qrcode img").attr("src");
+
+    const logoWidth = 100;
+    const logoHeight = 100;
+    const centerLogoX = parseInt(paper.width / 2 - logoWidth / 2);
+    const centerLogoY = 50;
+    const qrWidth = 255;
+    const qrHeight = 255;
+    const centerQRX = paper.width / 2 - qrWidth / 2;
+    const centerQRY = paper.height / 2 - qrHeight / 2;
+
+    // download pdf include qrcode file
+    let pdf = new jsPDF("p", "px", [paper.width, paper.height]);
+    pdf.addImage(
+      logoUrl,
+      "JPG",
+      centerLogoX,
+      centerLogoY,
+      logoWidth,
+      logoHeight
+    );
+    pdf.addImage(qrUrl, "JPG", centerQRX, centerQRY, qrWidth, qrHeight);
+    pdf.save(`stage-${new Date()}.pdf`);
   }
 
   function generateQR(content) {
@@ -899,6 +1060,54 @@ $(function () {
     shapeGroup.height(paper.height * relativeScale);
     shapeGroup.scale(paperScale);
 
+    if ($("body").find("#editkonvatext").length !== 0) {
+      let textarea = document.getElementById("editkonvatext");
+      let [textNode] = selectionTr.nodes();
+      let textPosition = textNode.absolutePosition();
+      let areaPosition = {
+        x: textPosition.x,
+        y: textPosition.y,
+      };
+      console.log("adsfadsfasd", textarea, textNode);
+      textarea.value = textNode.text();
+      textarea.style.position = "absolute";
+      textarea.style.top = areaPosition.y * relativeScale + "px";
+      textarea.style.left = areaPosition.x * relativeScale + "px";
+      textarea.style.width =
+        (textNode.width() - textNode.padding() * 2) * relativeScale + "px";
+      textarea.style.height =
+        (textNode.height() - textNode.padding() * 2 + 5) * relativeScale + "px";
+      textarea.style.fontSize = textNode.fontSize() * relativeScale + "px";
+      textarea.style.border = "none";
+      textarea.style.padding = "0px";
+      textarea.style.margin = "0px";
+      textarea.style.overflow = "hidden";
+      textarea.style.background = "none";
+      textarea.style.outline = "none";
+      textarea.style.resize = "none";
+      textarea.style.lineHeight = textNode.lineHeight();
+      textarea.style.fontFamily = textNode.fontFamily();
+      textarea.style.transformOrigin = "left top";
+      textarea.style.textAlign = textNode.align();
+      textarea.style.color = textNode.fill();
+      rotation = textNode.rotation();
+      let transform = "";
+      if (rotation) {
+        transform += "rotateZ(" + rotation + "deg)";
+      }
+
+      let px = 0;
+      let isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+
+      if (isFirefox) {
+        px += 2 + Math.round(textNode.fontSize() / 20);
+      }
+      transform += "translateY(-" + px + "px)";
+
+      textarea.style.transform = transform;
+      textarea.focus();
+    }
+
     layer.batchDraw();
     // stage.batchDraw();
   }
@@ -918,6 +1127,7 @@ $(function () {
       stage: { width, height },
       paper,
       backgroundUrl: undefined,
+      whiteRect: whiteRect.attrs,
       shapeGroup: [],
     };
 
@@ -958,6 +1168,7 @@ $(function () {
       width: paper.width * relativeScale,
       height: paper.height * relativeScale,
       imageSmoothingEnabled: true,
+      pixelRatio: 8,
     });
 
     return dataUrl;
@@ -985,7 +1196,7 @@ $(function () {
 
       const alignList = ["left", "center", "right"];
       let conunt = alignList.indexOf(selectedTextNode.align());
-      let font;
+      let fonts;
 
       // font color
       $("#fontcolorpicker").asColorPicker({
@@ -1028,8 +1239,6 @@ $(function () {
           let fontsNameList = [];
 
           $.each(fonts, function (index, font) {
-            // var $option = $("<option>").text(font.family);
-            // $("#fontfailyselect").append($option);
             fontsNameList.push(font.family);
           });
 
@@ -1059,6 +1268,7 @@ $(function () {
 
         Promise.all([newFont.load()]).then(function (font) {
           selectedTextNode.fontFamily(selectedFontName);
+          selectionTr.forceUpdate();
           layer.batchDraw();
         });
       });

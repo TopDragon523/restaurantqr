@@ -778,7 +778,7 @@ include("header.php");
 			<div class="tool-tab" data-tab="demo">
 				<div class="d-flex flex-column justify-content-center align-items-center">
 					<i class="lni lni-layout"></i>
-					<span>Demo</span>
+					<span>Template</span>
 				</div>
 			</div>
 			<div class="tool-tab" data-tab="text">
@@ -812,7 +812,7 @@ include("header.php");
 
 	<!--**********************************Content body start***********************************-->
 	<div class="content-body">
-		<div id="stage"> </div>
+		<div id="stage" class="position-relative"> </div>
 	</div>
 	<!--**********************************Content body end***********************************-->
 
@@ -825,17 +825,41 @@ include("header.php");
 					<button type="button" class="btn-close" data-bs-dismiss="modal">
 					</button>
 				</div>
-				<div class="modal-body">
-					<div id="qrcode" class="d-flex flex-column justify-content-center w-100"></div>
-					<!-- <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p> -->
+				<div class="modal-body d-flex flex-column justify-content-center align-items-center">
+					<div id="menulogo" class="d-flex flex-column justify-content-around w-100"></div>
+					<div id="qrcode" class="d-flex flex-column justify-content-around">
+					</div>
 				</div>
 				<div class="modal-footer">
-					<!-- <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button> -->
-					<button id="downloadqr" type="button" class="btn btn-primary">Download</button>
+					<!-- <button id="downloadqr" type="button" class="btn btn-primary">Download</button> -->
+					<button id="selectlogo" type="button" class="btn btn-primary">Download</button>
 				</div>
 			</div>
 		</div>
 	</div>
+
+</div>
+
+<?php
+include("footer.php");
+?>
+<script>
 	<?php
-	include("footer.php");
+	if (isset($_GET["type"]) && isset($_GET["id"])) {
 	?>
+		let id = <?php echo $_GET["id"]; ?>;
+		let type = <?php echo '"' . $_GET["type"] . '";' ?>;
+	<?php
+	} else {
+	?>
+		let id = <?php echo "undefined"; ?>;
+		let type = <?php echo "undefined"; ?>;
+	<?php
+	}
+	?>
+</script>
+<script src="js/handledashboard.js"></script>
+
+<!-- konva script -->
+<script src="https://unpkg.com/konva@9.2.0/konva.min.js"></script>
+<script src="js/canvas.js"></script>
