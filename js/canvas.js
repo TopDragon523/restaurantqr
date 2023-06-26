@@ -4,7 +4,7 @@ $(function () {
   let logoUrl;
   let menuDescription;
   let x1, y1, x2, y2;
-  let templateId = templates[0].id;
+  let templateId = templates.length === 0 ? 0 : templates[0].id;
   let nodeList = { Text: 1, Image: 2 };
   let width = $("#stage").width();
   let height = $("#stage").height();
@@ -125,6 +125,7 @@ $(function () {
   layer.add(selectionRectangle);
   layer.add(selectionTr);
 
+  // load saved stage  from php
   if (id !== undefined && id !== null && type !== undefined && type !== null) {
     loadStage();
   }
@@ -167,6 +168,8 @@ $(function () {
           break;
       }
     });
+
+    whiteRect.fill(savedStage.whiteRect.fill);
     if (
       savedStage.backgroundUrl !== null &&
       savedStage.backgroundUrl !== undefined
@@ -178,6 +181,7 @@ $(function () {
     }
     layer.batchDraw();
   }
+
   // clicks should select/deselect shapes
   stage.on("mousedown touchstart", (e) => {
     // do nothing if we mousedown on any shape
@@ -305,6 +309,9 @@ $(function () {
           break;
       }
     });
+
+    whiteRect.fill(savedStage.whiteRect.fill);
+
     if (
       savedStage.backgroundUrl !== null &&
       savedStage.backgroundUrl !== undefined
@@ -342,6 +349,9 @@ $(function () {
           break;
       }
     });
+
+    whiteRect.fill(savedStage.whiteRect.fill);
+
     if (
       savedStage.backgroundUrl !== null &&
       savedStage.backgroundUrl !== undefined
@@ -1117,6 +1127,7 @@ $(function () {
       stage: { width, height },
       paper,
       backgroundUrl: undefined,
+      whiteRect: whiteRect.attrs,
       shapeGroup: [],
     };
 

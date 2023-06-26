@@ -850,6 +850,11 @@ include("footer.php");
 		let id = <?php echo $_GET["id"]; ?>;
 		let type = <?php echo '"' . $_GET["type"] . '";' ?>;
 	<?php
+	} else {
+	?>
+		let id = <?php echo "undefined"; ?>;
+		let type = <?php echo "undefined"; ?>;
+	<?php
 	}
 	?>
 </script>
