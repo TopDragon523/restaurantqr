@@ -4,7 +4,7 @@ $(function () {
   let logoUrl;
   let menuDescription;
   let x1, y1, x2, y2;
-  let templateId = 0;
+  let templateId = templates[0].id;
   let nodeList = { Text: 1, Image: 2 };
   let width = $("#stage").width();
   let height = $("#stage").height();
@@ -125,6 +125,59 @@ $(function () {
   layer.add(selectionRectangle);
   layer.add(selectionTr);
 
+  if (id !== undefined && id !== null && type !== undefined && type !== null) {
+    loadStage();
+  }
+
+  function loadStage() {
+    let selectedTemplate;
+    templateId = id; // from dashboard.php file
+    switch (type) {
+      case "template":
+        [selectedTemplate] = templates.filter((template) => {
+          return template.id === templateId;
+        });
+        break;
+      case "project":
+        [selectedTemplate] = projects.filter((project) => {
+          return project.id === templateId;
+        });
+        break;
+    }
+    let savedStage = JSON.parse(selectedTemplate.save_stage_as_json);
+    initStage();
+
+    savedStage.shapeGroup.forEach((node) => {
+      switch (node.className) {
+        case "Text":
+          let textNode = Konva.Node.create(JSON.stringify(node), shapeGroup);
+          createTextNode(textNode);
+          break;
+        case "Image":
+          let imageObj = new Image();
+          imageObj.setAttribute("crossOrigin", "anonymous");
+          imageObj.src = node.src;
+          let imageNode = new Konva.Image({
+            ...node.attrs,
+            image: imageObj,
+          });
+          createImageNode(imageNode);
+          break;
+        default:
+          break;
+      }
+    });
+    if (
+      savedStage.backgroundUrl !== null &&
+      savedStage.backgroundUrl !== undefined
+    ) {
+      let bgImageObj = new Image();
+      bgImageObj.setAttribute("crossOrigin", "anonymous");
+      bgImageObj.src = savedStage.backgroundUrl;
+      whiteRect.image(bgImageObj);
+    }
+    layer.batchDraw();
+  }
   // clicks should select/deselect shapes
   stage.on("mousedown touchstart", (e) => {
     // do nothing if we mousedown on any shape
@@ -738,7 +791,7 @@ $(function () {
       success: function (response) {
         let newDemo = response.newDemo;
 
-        demos.push({
+        templates.push({
           id: JSON.parse(newDemo.id),
           createdAt: newDemo.createdAt,
           if_free: newDemo.is_free,

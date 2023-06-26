@@ -38,22 +38,21 @@ var TemplateNav = (function () {
                 <button type="button" class="btn btn-primary w-100">All templates</button>
             `);
 
-            demos.forEach((demos) => {
+            templates.forEach((template) => {
               $("#template-content").append(`
-              <div class="col-xl-2 col-xxl-3 col-md-4 col-sm-6 template-item" data-id=${demos.id}>
+              <div class="col-xl-2 col-xxl-3 col-md-4 col-sm-6 template-item" data-id=${template.id}>
                 <div class="card">
                   <div class="card-body product-grid-card">
                     <div class="new-arrival-product position-relative">
                       <div class="new-arrivals-img-contnent">
                         <img
                           class="img-fluid"
-                          src="${demos.thumbnail}"
+                          src="${template.thumbnail}"
                           alt="template thumbnail"
                         />
                       </div>
                       <div style="transform: translate(-50%, -50%);"  class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 w-50 d-none handle-template">
-                          <button class="btn btn-primary btn-xs w-100 my-1">Edit</button>
-                          <button class="btn btn-danger btn-xs w-100 my-1">Remove</button>
+                        <a href="dashboard.php?id=${template.id}&type=template" class="w-100"><button class="btn btn-primary btn-xs my-1 w-100">Edit</button></a>
                       </div>
                     </div>
                   </div>
@@ -95,8 +94,8 @@ var TemplateNav = (function () {
                           />
                         </div>
                         <div style="transform: translate(-50%, -50%);"  class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 w-50 d-none handle-project">
-                          <button class="btn btn-primary btn-xs w-100 my-1">Edit</button>
-                          <button class="btn btn-danger btn-xs w-100 my-1">Remove</button>
+                          <a href="dashboard.php?id=${project.id}&type=project" class="w-100"><button class="btn btn-primary btn-xs my-1 w-100">Edit</button></a>
+                          <a href="dashboard.php" class="w-100"><button class="btn btn-danger btn-xs w-100 my-1">Remove</button></a>
                         </div>
                       </div>
                     </div>

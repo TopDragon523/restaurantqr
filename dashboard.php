@@ -778,7 +778,7 @@ include("header.php");
 			<div class="tool-tab" data-tab="demo">
 				<div class="d-flex flex-column justify-content-center align-items-center">
 					<i class="lni lni-layout"></i>
-					<span>Demo</span>
+					<span>Template</span>
 				</div>
 			</div>
 			<div class="tool-tab" data-tab="text">
@@ -843,7 +843,16 @@ include("header.php");
 <?php
 include("footer.php");
 ?>
-
+<script>
+	<?php
+	if (isset($_GET["type"]) && isset($_GET["id"])) {
+	?>
+		let id = <?php echo $_GET["id"]; ?>;
+		let type = <?php echo '"' . $_GET["type"] . '";' ?>;
+	<?php
+	}
+	?>
+</script>
 <script src="js/handledashboard.js"></script>
 
 <!-- konva script -->

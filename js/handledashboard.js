@@ -40,9 +40,9 @@ var DashboardNav = (function () {
               $demoItemContainer.appendTo("div.deznav .deznav-scroll");
             });
             break;
-          case "demo":
+          case "template":
             clearLeftPanel();
-            demos.map(function (item) {
+            templates.map(function (item) {
               const $demoItemContainer = $("<div>");
               const $demoItem = $("<img>");
               $demoItemContainer.attr("class", "demo-component");
