@@ -20,6 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $project = mysqli_fetch_object($result);
     }
     // upload template thumbnail
+    unlink($project->thumbnail);
+    
     $base64string = $thumbnail;
     $uploadpath   = 'upload/projects/';
     $parts        = explode(";base64,", $base64string);
