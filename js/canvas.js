@@ -151,7 +151,29 @@ $(function () {
     savedStage.shapeGroup.forEach((node) => {
       switch (node.className) {
         case "Text":
+          const selectedFontName = node.attrs.fontFamily;
+          // import font family
+          const [selectedFont] = fonts.filter(function (font) {
+            return font.family === selectedFontName;
+          });
+
+          console.log("selected font is like this", selectedFont);
+
+          const newFont = new FontFace(
+            selectedFontName,
+            `url(${selectedFont.files.regular})`
+          );
+
+          document.fonts.add(newFont);
+
           let textNode = Konva.Node.create(JSON.stringify(node), shapeGroup);
+          // set font family
+          Promise.all([newFont.load()]).then(function (font) {
+            textNode.fontFamily(selectedFontName);
+            selectionTr.forceUpdate();
+            layer.batchDraw();
+          });
+
           createTextNode(textNode);
           break;
         case "Image":
@@ -1177,7 +1199,6 @@ $(function () {
   function showControlPanel() {
     if ($(".header").find("#textcontrol").length === 0) {
       const selectedTextNode = selectionTr.nodes()[0];
-      const YOUR_API_KEY = "AIzaSyBAKR45ng8gEgjUD7NPVxBpOvVeVajHb7U";
 
       $(".header-left").append(`
         <div id="textcontrol" class="d-flex align-items-center">
@@ -1196,7 +1217,6 @@ $(function () {
 
       const alignList = ["left", "center", "right"];
       let conunt = alignList.indexOf(selectedTextNode.align());
-      let fonts;
 
       // font color
       $("#fontcolorpicker").asColorPicker({
@@ -1230,27 +1250,14 @@ $(function () {
         selectedTextNode.align(alignList[conunt % 3]);
       });
 
-      //font family
-      $.ajax({
-        url: `https://www.googleapis.com/webfonts/v1/webfonts?key=${YOUR_API_KEY}`,
-        type: "GET",
-        success: function (response) {
-          fonts = response.items;
-          let fontsNameList = [];
-
-          $.each(fonts, function (index, font) {
-            fontsNameList.push(font.family);
-          });
-
-          $("#fontfailyselect").select2({
-            data: fontsNameList,
-          });
-
-          $("#fontfailyselect")
-            .val(selectedTextNode.fontFamily())
-            .trigger("change");
-        },
+      // font family
+      $("#fontfailyselect").select2({
+        data: fontsNameList,
       });
+
+      $("#fontfailyselect")
+        .val(selectedTextNode.fontFamily())
+        .trigger("change");
 
       $("#fontfailyselect").on("change", function () {
         const selectedTextNode = selectionTr.nodes()[0];
