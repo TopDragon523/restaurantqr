@@ -1,5 +1,10 @@
 <?php
 session_start();
+if (!isset($_SESSION["username"]) || !isset($_SESSION["email"])) {
+    header("location: login.php");
+    exit();
+}
+
 include "db.php";
 $tabs = array("projects", "templates", "texts", "photos", "uploads", "bgimages");
 $user_id = $_SESSION["userid"];

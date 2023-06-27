@@ -45,5 +45,8 @@
 		<script src="js/init-components.js"></script>
 		<script src="js/main.js"></script>
 		<script src="js/deznav-init.js"></script>
+		<!-- sweet alert -->
+		<script src="vendor/sweetalert2/dist/sweetalert2.min.js"></script>
+		<!-- <script src="js/plugins-init/sweetalert.init.js"></script> -->
 
 		</html>

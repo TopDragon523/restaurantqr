@@ -30,6 +30,9 @@
     <!-- asColorpicker -->
     <link href="vendor/jquery-asColorPicker/css/asColorPicker.min.css" rel="stylesheet" />
 
+    <!-- sweet alert -->
+    <link href="vendor/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+
     <!-- <link href="css/style.css" rel="stylesheet"> -->
     <link href="css/canvas.css" rel="stylesheet">
     <link href="css/customstyle.css" rel="stylesheet">
