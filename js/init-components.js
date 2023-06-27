@@ -5,6 +5,22 @@ let backgroundImages = [];
 let photos = [];
 let uploads = [];
 let templateId = 0;
+let fonts = [];
+let fontsNameList = [];
+const YOUR_API_KEY = "AIzaSyBAKR45ng8gEgjUD7NPVxBpOvVeVajHb7U";
+
+//font family
+$.ajax({
+  url: `https://www.googleapis.com/webfonts/v1/webfonts?key=${YOUR_API_KEY}`,
+  type: "GET",
+  success: function (response) {
+    fonts = response.items;
+
+    $.each(fonts, function (index, font) {
+      fontsNameList.push(font.family);
+    });
+  },
+});
 
 $.ajax({
   url: "load.php",
