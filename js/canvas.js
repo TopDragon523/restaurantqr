@@ -504,7 +504,8 @@ $(function () {
 
   $("body").delegate("#backcolorpicker", "asColorPicker::init", function (e) {
     setTimeout(() => {
-      $("#backcolorpicker").asColorPicker("set", whiteRect.fill());
+      if (whiteRect.image() == null)
+        $("#backcolorpicker").asColorPicker("set", whiteRect.fill());
     });
   });
 
@@ -529,6 +530,10 @@ $(function () {
   // publish the template adn project
   $("body").delegate("#savetemplate", "click", function () {
     publish($(this).attr("id"));
+  });
+  // save current status
+  $("body").delegate("#saveproject", "click", function () {
+    saveProject();
   });
 
   // save as image
@@ -857,7 +862,57 @@ $(function () {
     });
   }
 
+  function saveProject() {
+    // get current status and thumbnail image
+    let data = getCurrentStatusJson();
+    let dataUrl = getThumbnail(1);
+
+    //save stage on db
+    $.ajax({
+      url: "saveproject.php",
+      type: "POST",
+      dataType: "json",
+      data: {
+        data: JSON.stringify(data),
+        thumbnail: dataUrl,
+        templateId,
+        projectId,
+      },
+      success: function (response) {
+        console.log("response", response);
+        // add new project on project list
+        toastr.success(
+          "Your project is saved successfulloy.",
+          "Save Success!",
+          {
+            positionClass: "toast-top-full-width",
+            timeOut: 5e3,
+            closeButton: !0,
+            debug: !1,
+            newestOnTop: !0,
+            progressBar: !0,
+            preventDuplicates: !0,
+            onclick: null,
+            showDuration: "300",
+            hideDuration: "1000",
+            extendedTimeOut: "1000",
+            showEasing: "swing",
+            hideEasing: "linear",
+            showMethod: "fadeIn",
+            hideMethod: "fadeOut",
+            tapToDismiss: !1,
+          }
+        );
+      },
+      error: function (xhr, status, error) {
+        console.log("Save stage on db error ", error);
+      },
+    });
+  }
+
   function saveAsImage() {
+    saveProject();
+
     // download  image
     let dataUrl = stage.toDataURL({
       x: (width * screenScale.x) / 2 - (paper.width * relativeScale) / 2,
@@ -878,6 +933,8 @@ $(function () {
   }
 
   function saveAsPDF() {
+    saveProject();
+
     let dataUrl = stage.toDataURL({
       x: (width * screenScale.x) / 2 - (paper.width * relativeScale) / 2,
       y: (height * screenScale.y) / 2 - (paper.height * relativeScale) / 2,
@@ -948,40 +1005,23 @@ $(function () {
 
     // get current status and thumbnail image
     let data = getCurrentStatusJson();
-    let dataUrl = getThumbnail();
+    let dataUrl = getThumbnail(1);
+
     //save stage on db
     $.ajax({
       url: "saveqrcode.php",
       type: "POST",
-      dataType: "JSON",
-      data: { data: JSON.stringify(data), thumbnail: dataUrl, sn, templateId },
+      dataType: "json",
+      data: {
+        data: JSON.stringify(data),
+        thumbnail: dataUrl,
+        templateId,
+        projectId,
+        sn,
+      },
       success: function (response) {
         console.log("response", response);
-        // add new project on project list
-        let newDemo = response.newProject;
-        projects.push({
-          id: JSON.parse(newDemo.id),
-          createdBy: newDemo.is_free,
-          createdAt: newDemo.createdAt,
-          save_stage_as_json: newDemo.save_stage_as_json,
-          thumbnail: newDemo.thumbnail,
-        });
-        let currentTab = $(".left-panel")
-          .find("div.tool-tab.active")
-          .first()
-          .text()
-          .trim()
-          .toLowerCase();
-        if (currentTab === "project") {
-          const $demoItemContainer = $("<div>");
-          const $demoItem = $("<img>");
-          $demoItemContainer.attr("class", "project-component");
-          $demoItem.attr("data-index", parseInt(newDemo.id));
-          $demoItem.attr("src", newDemo.thumbnail);
-          $demoItem.attr("data-config", newDemo.save_stage_as_json);
-          $demoItem.appendTo($demoItemContainer);
-          $demoItemContainer.appendTo("div.deznav .deznav-scroll");
-        }
+
         // generate QR code
         $("#qrcode").text("");
         $("#exampleModalCenter .modal-body #menulogo").text("");
@@ -1154,7 +1194,6 @@ $(function () {
       shapeGroup: [],
     };
 
-    console.log("white react attrs", whiteRect.attrs);
     deselectAllComponents();
 
     // save all nodes on shape group
@@ -1184,7 +1223,7 @@ $(function () {
     return data;
   }
 
-  function getThumbnail() {
+  function getThumbnail(pixelRatio = 8) {
     // download  thumbnail image
     let dataUrl = stage.toDataURL({
       x: (width * screenScale.x) / 2 - (paper.width * relativeScale) / 2,
@@ -1192,7 +1231,7 @@ $(function () {
       width: paper.width * relativeScale,
       height: paper.height * relativeScale,
       imageSmoothingEnabled: true,
-      pixelRatio: 8,
+      pixelRatio,
     });
 
     return dataUrl;

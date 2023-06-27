@@ -33,6 +33,9 @@
     <!-- sweet alert -->
     <link href="vendor/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
 
+    <!-- Toastr -->
+    <link rel="stylesheet" href="./vendor/toastr/css/toastr.min.css">
+
     <!-- <link href="css/style.css" rel="stylesheet"> -->
     <link href="css/canvas.css" rel="stylesheet">
     <link href="css/customstyle.css" rel="stylesheet">
