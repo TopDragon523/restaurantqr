@@ -202,7 +202,6 @@ include("header.php");
     <div class="content-body" style="background-color: #6f85931a;">
         <div class="container-fluid h-100 overflow-scroll">
             <div id="template-content" class="row">
-
                 <?php
                 // foreach ($templates as $template) {
                 //     echo ('

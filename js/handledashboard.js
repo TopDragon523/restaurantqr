@@ -139,7 +139,6 @@ var DashboardNav = (function () {
             $("#imgaeSelect").change(function () {
               let fileInput = $.trim($(this).val());
               if (fileInput && fileInput !== "") {
-                let fileName = "";
                 fileName = $(this).val();
 
                 let imageData = new FormData();

@@ -48,7 +48,7 @@ var TemplateNav = (function () {
                         />
                       </div>
                       <div style="background: #343a40a8; transform: translate(-50%, -50%);" class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 w-100 h-100 d-none handle-template">
-                        <a href="dashboard.php?id=${template.id}&type=template" class="w-50"><button class="btn btn-primary btn-xs my-1 w-100">Edit</button></a>
+                        <button class="btn btn-primary btn-xs my-1 w-50 edit-template">Edit</button>
                       </div>
                     </div>
                   </div>
@@ -65,6 +65,29 @@ var TemplateNav = (function () {
               $(this).find(".handle-template").addClass("d-none");
             }
           );
+
+          $("#template-content  .edit-template").on("click", function () {
+            const templateId = $(this)
+              .parent()
+              .parent()
+              .parent()
+              .parent()
+              .parent()
+              .data("id");
+
+            $.ajax({
+              url: "selecttemplate.php",
+              method: "POST",
+              dataType: "JSON",
+              data: { templateId, flag: false },
+              success: function (response) {
+                window.location.href = `dashboard.php?id=${response.projectId}&tid=${templateId}`;
+              },
+              error: function (xhr, status, error) {
+                console.log("edit template error", error);
+              },
+            });
+          });
           break;
 
         case "projects":
@@ -79,7 +102,7 @@ var TemplateNav = (function () {
           $("#template-content").append(`
             <div class="row page-titles">
                 <ol class="breadcrumb w-100 d-flex justify-content-end">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)"><button class="btn btn-primary">New Project</button></a></li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)"><button id="newproject" class="btn btn-primary">New Project</button></a></li>
                 </ol>
             </div>
           `);
@@ -98,7 +121,7 @@ var TemplateNav = (function () {
                           />
                         </div>
                         <div style="background: #343a40a8; transform: translate(-50%, -50%);" class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 w-100 h-100 d-none handle-project">
-                          <a href="dashboard.php?id=${project.id}&type=project" class="w-50"><button class="btn btn-primary btn-xs my-1 w-100">Edit</button></a>
+                          <a href="dashboard.php?id=${project.id}&tid=${project.templateId}" class="w-50"><button class="btn btn-primary btn-xs my-1 w-100">Edit</button></a>
                           <button class="btn btn-danger sweet-success-cancel btn-xs w-50 my-1">Remove</button>
                         </div>
                       </div>
@@ -157,6 +180,21 @@ var TemplateNav = (function () {
                   type: "success",
                 });
               }
+            });
+          });
+
+          $("#newproject").on("click", function () {
+            $.ajax({
+              url: "selecttemplate.php",
+              method: "POST",
+              dataType: "JSON",
+              data: { flag: true },
+              success: function (response) {
+                window.location.href = `dashboard.php?id=${response.projectId}&tid=${templateId}`;
+              },
+              error: function (xhr, status, error) {
+                console.log("edit template error", error);
+              },
             });
           });
           break;
