@@ -1,4 +1,10 @@
 <?php
+session_start();
+if (!isset($_SESSION["username"]) || !isset($_SESSION["email"])) {
+    header("location: login.php");
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     include "db.php";
     $data  = addslashes($_POST["data"]);

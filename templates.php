@@ -27,7 +27,7 @@ mysqli_close($conn);
 <?php
 include("header.php");
 ?>
- <link href="css/template.css" rel="stylesheet">
+<link href="css/template.css" rel="stylesheet">
 
 <!--**********************************Main wrapper start***********************************-->
 <div id="main-wrapper" class="show menu-toggle">
@@ -253,12 +253,6 @@ include("header.php");
                     <span>Projects</span>
                 </div>
             </div>
-            <div class="tool-tab" data-tab="text">
-                <div class="d-flex flex-column justify-content-center align-items-center">
-                    <i class="lni lni-text-format"></i>
-                    <span>Text</span>
-                </div>
-            </div>
         </div>
         <div class="deznav-scroll">
 
@@ -269,14 +263,12 @@ include("header.php");
     <!--**********************************Content body start***********************************-->
     <div class="content-body" style="background-color: #6f85931a;">
         <div class="container-fluid h-100 overflow-scroll">
-            <div class="row page-titles">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Apps</a></li>
-                    <li class="breadcrumb-item active"><a href="javascript:void(0)">Product Grid</a></li>
-                </ol>
-            </div>
-
             <div id="template-content" class="row">
+                <div class="row page-titles">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)"><button class="btn btn-primary">New Project</button></a></li>
+                    </ol>
+                </div>
                 <?php
                 // foreach ($templates as $template) {
                 //     echo ('
