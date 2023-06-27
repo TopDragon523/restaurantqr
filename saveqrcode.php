@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // upload template thumbnail
     $base64string = $thumbnail;
-    $uploadpath   = 'upload/template/qrcode/';
+    $uploadpath   = 'upload/qrcode/';
     $parts        = explode(";base64,", $base64string);
     $imageparts   = explode("image/", @$parts[0]);
     $imagetype    = $imageparts[1];

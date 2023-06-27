@@ -4,7 +4,8 @@ $(function () {
   let logoUrl;
   let menuDescription;
   let x1, y1, x2, y2;
-  let templateId = templates.length === 0 ? 0 : templates[0].id;
+  let templateId = tid;
+  let projectId = id;
   let nodeList = { Text: 1, Image: 2 };
   let width = $("#stage").width();
   let height = $("#stage").height();
@@ -126,30 +127,22 @@ $(function () {
   layer.add(selectionTr);
 
   // load saved stage  from php
-  if (id !== undefined && id !== null && type !== undefined && type !== null) {
+  if (id !== undefined && id !== null) {
     loadStage();
   }
 
   function loadStage() {
     let selectedTemplate;
-    templateId = id; // from dashboard.php file
-
+    projectId = id; // from dashboard.php
     // initalize the stage
     initStage();
 
     // load  json file from ajax response
-    switch (type) {
-      case "template":
-        [selectedTemplate] = templates.filter((template) => {
-          return template.id === templateId;
-        });
-        break;
-      case "project":
-        [selectedTemplate] = projects.filter((project) => {
-          return project.id === templateId;
-        });
-        break;
-    }
+    [selectedTemplate] = projects.filter((project) => {
+      return project.id === projectId;
+    });
+
+    console.log("adfasdfasdfasdf", selectedTemplate);
     let savedStage = JSON.parse(selectedTemplate.save_stage_as_json);
 
     // load shapes from json file

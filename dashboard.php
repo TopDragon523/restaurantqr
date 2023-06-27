@@ -845,15 +845,10 @@ include("footer.php");
 ?>
 <script>
 	<?php
-	if (isset($_GET["type"]) && isset($_GET["id"])) {
+	if (isset($_GET["id"]) && isset($_GET["tid"])) {
 	?>
 		let id = <?php echo $_GET["id"]; ?>;
-		let type = <?php echo '"' . $_GET["type"] . '";' ?>;
-	<?php
-	} else {
-	?>
-		let id = <?php echo "undefined"; ?>;
-		let type = <?php echo "undefined"; ?>;
+		let tid = <?php echo $_GET["tid"]; ?>;
 	<?php
 	}
 	?>
