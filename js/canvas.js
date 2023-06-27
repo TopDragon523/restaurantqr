@@ -133,6 +133,11 @@ $(function () {
   function loadStage() {
     let selectedTemplate;
     templateId = id; // from dashboard.php file
+
+    // initalize the stage
+    initStage();
+
+    // load  json file from ajax response
     switch (type) {
       case "template":
         [selectedTemplate] = templates.filter((template) => {
@@ -146,27 +151,25 @@ $(function () {
         break;
     }
     let savedStage = JSON.parse(selectedTemplate.save_stage_as_json);
-    initStage();
 
+    // load shapes from json file
     savedStage.shapeGroup.forEach((node) => {
       switch (node.className) {
         case "Text":
+          let textNode = Konva.Node.create(JSON.stringify(node), shapeGroup);
           const selectedFontName = node.attrs.fontFamily;
+
           // import font family
           const [selectedFont] = fonts.filter(function (font) {
             return font.family === selectedFontName;
           });
 
-          console.log("selected font is like this", selectedFont);
-
           const newFont = new FontFace(
             selectedFontName,
             `url(${selectedFont.files.regular})`
           );
-
           document.fonts.add(newFont);
 
-          let textNode = Konva.Node.create(JSON.stringify(node), shapeGroup);
           // set font family
           Promise.all([newFont.load()]).then(function (font) {
             textNode.fontFamily(selectedFontName);
@@ -191,7 +194,10 @@ $(function () {
       }
     });
 
+    // set background color
     whiteRect.fill(savedStage.whiteRect.fill);
+
+    // set background iamge
     if (
       savedStage.backgroundUrl !== null &&
       savedStage.backgroundUrl !== undefined
@@ -504,18 +510,20 @@ $(function () {
   });
 
   $("body").delegate("#backcolorpicker", "asColorPicker::init", function (e) {
-    // if (whiteRect.image() == null) {
-    const backColor = whiteRect.fill();
-    console.log("asdfasdf", backColor);
-    $("#backcolorpicker").asColorPicker("set", "red");
-    // }
+    setTimeout(() => {
+      $("#backcolorpicker").asColorPicker("set", whiteRect.fill());
+    });
   });
 
   $("body").delegate("#backcolorpicker", "asColorPicker::change", function (e) {
     const whiteRectBackColor = $("#backcolorpicker").asColorPicker("get");
+    const r = whiteRectBackColor.value.r;
+    const g = whiteRectBackColor.value.g;
+    const b = whiteRectBackColor.value.b;
+    const a = whiteRectBackColor.value.a;
 
     whiteRect.setAttrs({
-      fill: whiteRectBackColor,
+      fill: `rgba(${r}, ${g}, ${b}, ${a})`,
       image: null,
     });
   });
@@ -985,8 +993,8 @@ $(function () {
         $("#qrcode").text("");
         $("#exampleModalCenter .modal-body #menulogo").text("");
 
-        // generateQR(`https://restaurantqrmenu.ddns.net/guest.php?id=${sn}`);
-        generateQR(`http://192.168.121.13/restaurantqr/guest.php?id=${sn}`);
+        generateQR(`https://restaurantqrmenu.ddns.net/guest.php?id=${sn}`);
+        // generateQR(`http://192.168.121.13/restaurantqr/guest.php?id=${sn}`);
 
         $("#exampleModalCenter .modal-body #menulogo").prepend(
           `<h4 class="mb-5 mx-auto text-center">to veiw our menu<br>Scan this QR Code</h4>`
@@ -1153,6 +1161,7 @@ $(function () {
       shapeGroup: [],
     };
 
+    console.log("white react attrs", whiteRect.attrs);
     deselectAllComponents();
 
     // save all nodes on shape group
