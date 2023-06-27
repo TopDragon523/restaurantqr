@@ -157,19 +157,24 @@ $(function () {
             return font.family === selectedFontName;
           });
 
-          const newFont = new FontFace(
-            selectedFontName,
-            `url(${selectedFont.files.regular})`
-          );
-          document.fonts.add(newFont);
-
-          // set font family
-          Promise.all([newFont.load()]).then(function (font) {
-            textNode.fontFamily(selectedFontName);
+          try {
+            const newFont = new FontFace(
+              selectedFontName,
+              `url(${selectedFont.files.regular})`
+            );
+            document.fonts.add(newFont);
+            // set font family
+            Promise.all([newFont.load()]).then(function (font) {
+              textNode.fontFamily(selectedFontName);
+              selectionTr.forceUpdate();
+              layer.batchDraw();
+            });
+          } catch (e) {
+            console.log("Loading font error ", e.toSting());
+            textNode.fontFamily("sans-serif");
             selectionTr.forceUpdate();
             layer.batchDraw();
-          });
-
+          }
           createTextNode(textNode);
           break;
         case "Image":
