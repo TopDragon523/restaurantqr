@@ -1031,8 +1031,7 @@ $(function () {
         $("#qrcode").text("");
         $("#exampleModalCenter .modal-body #menulogo").text("");
 
-        generateQR(`https://restaurantqrmenu.ddns.net/guest.php?id=${sn}`);
-        // generateQR(`http://192.168.121.13/restaurantqr/guest.php?id=${sn}`);
+        generateQR(`https://menu.imfatguy.info//guest.php?id=${sn}`);
 
         $("#exampleModalCenter .modal-body #menulogo").prepend(
           `<h4 class="mb-5 mx-auto text-center">to veiw our menu<br>Scan this QR Code</h4>`
