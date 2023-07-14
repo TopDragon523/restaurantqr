@@ -170,7 +170,7 @@ $(function () {
               layer.batchDraw();
             });
           } catch (e) {
-            console.log("Loading font error ", e.toSting());
+            console.log("Loading font error ", e.toString());
             textNode.fontFamily("sans-serif");
             selectionTr.forceUpdate();
             layer.batchDraw();
@@ -272,6 +272,19 @@ $(function () {
         handleTransformer(nodeList[nodeType]);
       } else {
         handleTransformer(0);
+      }
+
+      // show remove button
+      if(selected.length > 0 ) { 
+        $("body .navbar-nav").prepend(`
+          <li id="removeshape" class="nav-item dropdown notification_dropdown">
+            <div class="btn btn-danger" role="button">
+              <span>Remove</span>
+            </div>
+          </li>
+        `)
+      } else {
+        $('#removeshape').remove();
       }
       selectionTr.nodes(selected);
       selectionTr.show();
@@ -582,12 +595,13 @@ $(function () {
   document.addEventListener("keydown", function (event) {
     const keyCode = event.keyCode;
     if (keyCode === 46 && selectionTr.nodes().length > 0) {
-      selectionTr.nodes().map(function (node) {
-        node.destroy();
-      });
-      selectionTr.hide();
+      removeShape();
     }
   });
+
+  $('body').delegate('#removeshape', 'click',  function(){
+    removeShape();
+  })
 
   $("body").delegate(".tool-tab", "click", function () {
     redraw();
@@ -643,6 +657,7 @@ $(function () {
     selectionTr.nodes([]);
     selectionTr.forceUpdate();
     hideControlPanel();
+    $('#removeshape').remove();
   }
 
   function createTextNode(textNode) {
@@ -713,6 +728,14 @@ $(function () {
         selectionTr.nodes([this]);
         selectionTr.show();
         showControlPanel();
+
+        $("body .navbar-nav").prepend(`
+          <li id="removeshape" class="nav-item dropdown notification_dropdown">
+            <div class="btn btn-danger" role="button">
+              <span>Remove</span>
+            </div>
+          </li>
+        `);
       } else {
         textNode.hide();
 
@@ -810,6 +833,14 @@ $(function () {
       selectionTr.show();
       imageNode.show();
       selectionTr.forceUpdate();
+      
+      $("body .navbar-nav").prepend(`
+        <li id="removeshape" class="nav-item dropdown notification_dropdown">
+          <div class="btn btn-danger" role="button">
+            <span>Remove</span>
+          </div>
+        </li>
+      `);
     });
   }
 
@@ -1329,6 +1360,15 @@ $(function () {
 
   function hideControlPanel() {
     $(".header .header-left").text("");
+  }
+
+  function removeShape() {
+    selectionTr.nodes().map(function (node) {
+      node.destroy();
+    });
+    selectionTr.hide();
+
+    $('#removeshape').remove();
   }
 
   function undo() {}
